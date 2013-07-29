@@ -30,6 +30,7 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lblHoldInstructions = new System.Windows.Forms.Label();
             this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
             this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.lblAutoclickerRunning = new System.Windows.Forms.Label();
@@ -59,7 +60,9 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
-            this.lblHoldInstructions = new System.Windows.Forms.Label();
+            this.btnActivationButton = new System.Windows.Forms.Button();
+            this.btnDeactivationButton = new System.Windows.Forms.Button();
+            this.btnAutoclickButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
@@ -97,9 +100,20 @@
             this.tabPage1.Text = "Autoclicker";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // lblHoldInstructions
+            // 
+            this.lblHoldInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblHoldInstructions.Location = new System.Drawing.Point(9, 55);
+            this.lblHoldInstructions.Name = "lblHoldInstructions";
+            this.lblHoldInstructions.Size = new System.Drawing.Size(499, 25);
+            this.lblHoldInstructions.TabIndex = 7;
+            this.lblHoldInstructions.Text = "Hold Left Click to autoclick";
+            this.lblHoldInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // pbAutoclickerRunning
             // 
-            this.pbAutoclickerRunning.ImageLocation = "C:\\Users\\Cord\\Desktop\\red_circle_small.png";
+            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerRunning.ImageLocation = "";
             this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
             this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
             this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
@@ -110,7 +124,8 @@
             // 
             // pbAutoclickerEnabled
             // 
-            this.pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.green_circle;
+            this.pbAutoclickerEnabled.ImageLocation = "";
             this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
             this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
             this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
@@ -146,7 +161,7 @@
             this.lblSpeedInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSpeedInstructions.Location = new System.Drawing.Point(9, 141);
             this.lblSpeedInstructions.Name = "lblSpeedInstructions";
-            this.lblSpeedInstructions.Size = new System.Drawing.Size(499, 17);
+            this.lblSpeedInstructions.Size = new System.Drawing.Size(499, 25);
             this.lblSpeedInstructions.TabIndex = 2;
             this.lblSpeedInstructions.Text = "Autoclicker will run between 999 and 1000 clicks per second";
             this.lblSpeedInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -156,7 +171,7 @@
             this.lblDeactivationInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDeactivationInstructions.Location = new System.Drawing.Point(9, 93);
             this.lblDeactivationInstructions.Name = "lblDeactivationInstructions";
-            this.lblDeactivationInstructions.Size = new System.Drawing.Size(499, 17);
+            this.lblDeactivationInstructions.Size = new System.Drawing.Size(499, 25);
             this.lblDeactivationInstructions.TabIndex = 1;
             this.lblDeactivationInstructions.Text = "Press ~ to deactivate Autoclicker on Left Click";
             this.lblDeactivationInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -166,13 +181,16 @@
             this.lblActivationInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblActivationInstructions.Location = new System.Drawing.Point(9, 38);
             this.lblActivationInstructions.Name = "lblActivationInstructions";
-            this.lblActivationInstructions.Size = new System.Drawing.Size(499, 17);
+            this.lblActivationInstructions.Size = new System.Drawing.Size(499, 25);
             this.lblActivationInstructions.TabIndex = 0;
             this.lblActivationInstructions.Text = "Press ~ to activate Autoclicker on Left Click";
             this.lblActivationInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btnAutoclickButton);
+            this.tabPage2.Controls.Add(this.btnDeactivationButton);
+            this.tabPage2.Controls.Add(this.btnActivationButton);
             this.tabPage2.Controls.Add(this.btnManageProfiles);
             this.tabPage2.Controls.Add(this.btnSave);
             this.tabPage2.Controls.Add(this.ddbActivationMode);
@@ -354,9 +372,11 @@
             // 
             this.tbAutoclickButton.Location = new System.Drawing.Point(10, 183);
             this.tbAutoclickButton.Name = "tbAutoclickButton";
-            this.tbAutoclickButton.Size = new System.Drawing.Size(120, 22);
+            this.tbAutoclickButton.ReadOnly = true;
+            this.tbAutoclickButton.Size = new System.Drawing.Size(92, 22);
             this.tbAutoclickButton.TabIndex = 9;
             this.tbAutoclickButton.Text = "Left Click";
+            this.tbAutoclickButton.Click += new System.EventHandler(this.tbAutoclickButton_Click);
             this.tbAutoclickButton.TextChanged += new System.EventHandler(this.tbAutoclickButton_TextChanged);
             // 
             // lblAutoclickButton
@@ -371,18 +391,20 @@
             // tbDeactivationButton
             // 
             this.tbDeactivationButton.Enabled = false;
-            this.tbDeactivationButton.Location = new System.Drawing.Point(151, 183);
+            this.tbDeactivationButton.Location = new System.Drawing.Point(166, 183);
             this.tbDeactivationButton.Name = "tbDeactivationButton";
-            this.tbDeactivationButton.Size = new System.Drawing.Size(120, 22);
+            this.tbDeactivationButton.ReadOnly = true;
+            this.tbDeactivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbDeactivationButton.TabIndex = 6;
             this.tbDeactivationButton.Text = "~";
+            this.tbDeactivationButton.Click += new System.EventHandler(this.tbDeactivationButton_Click);
             this.tbDeactivationButton.TextChanged += new System.EventHandler(this.tbDeactivationButton_TextChanged);
             // 
             // lblDeactivationButton
             // 
             this.lblDeactivationButton.AutoSize = true;
             this.lblDeactivationButton.Enabled = false;
-            this.lblDeactivationButton.Location = new System.Drawing.Point(148, 163);
+            this.lblDeactivationButton.Location = new System.Drawing.Point(163, 162);
             this.lblDeactivationButton.Name = "lblDeactivationButton";
             this.lblDeactivationButton.Size = new System.Drawing.Size(135, 17);
             this.lblDeactivationButton.TabIndex = 5;
@@ -391,7 +413,7 @@
             // cbUseDeactivationButton
             // 
             this.cbUseDeactivationButton.AutoSize = true;
-            this.cbUseDeactivationButton.Location = new System.Drawing.Point(151, 139);
+            this.cbUseDeactivationButton.Location = new System.Drawing.Point(166, 139);
             this.cbUseDeactivationButton.Name = "cbUseDeactivationButton";
             this.cbUseDeactivationButton.Size = new System.Drawing.Size(261, 21);
             this.cbUseDeactivationButton.TabIndex = 4;
@@ -401,17 +423,19 @@
             // 
             // tbActivationButton
             // 
-            this.tbActivationButton.Location = new System.Drawing.Point(151, 111);
+            this.tbActivationButton.Location = new System.Drawing.Point(166, 111);
             this.tbActivationButton.Name = "tbActivationButton";
-            this.tbActivationButton.Size = new System.Drawing.Size(120, 22);
+            this.tbActivationButton.ReadOnly = true;
+            this.tbActivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbActivationButton.TabIndex = 3;
             this.tbActivationButton.Text = "~";
+            this.tbActivationButton.Click += new System.EventHandler(this.tbActivationButton_Click);
             this.tbActivationButton.TextChanged += new System.EventHandler(this.tbActivationButton_TextChanged);
             // 
             // lblActivationButton
             // 
             this.lblActivationButton.AutoSize = true;
-            this.lblActivationButton.Location = new System.Drawing.Point(148, 91);
+            this.lblActivationButton.Location = new System.Drawing.Point(163, 91);
             this.lblActivationButton.Name = "lblActivationButton";
             this.lblActivationButton.Size = new System.Drawing.Size(118, 17);
             this.lblActivationButton.TabIndex = 2;
@@ -440,15 +464,36 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
-            // lblHoldInstructions
+            // btnActivationButton
             // 
-            this.lblHoldInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHoldInstructions.Location = new System.Drawing.Point(9, 55);
-            this.lblHoldInstructions.Name = "lblHoldInstructions";
-            this.lblHoldInstructions.Size = new System.Drawing.Size(499, 17);
-            this.lblHoldInstructions.TabIndex = 7;
-            this.lblHoldInstructions.Text = "Hold Left Click to autoclick";
-            this.lblHoldInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnActivationButton.Location = new System.Drawing.Point(264, 111);
+            this.btnActivationButton.Name = "btnActivationButton";
+            this.btnActivationButton.Size = new System.Drawing.Size(42, 23);
+            this.btnActivationButton.TabIndex = 22;
+            this.btnActivationButton.Text = "Set";
+            this.btnActivationButton.UseVisualStyleBackColor = true;
+            this.btnActivationButton.Click += new System.EventHandler(this.btnActivationButton_Click);
+            // 
+            // btnDeactivationButton
+            // 
+            this.btnDeactivationButton.Enabled = false;
+            this.btnDeactivationButton.Location = new System.Drawing.Point(264, 182);
+            this.btnDeactivationButton.Name = "btnDeactivationButton";
+            this.btnDeactivationButton.Size = new System.Drawing.Size(42, 23);
+            this.btnDeactivationButton.TabIndex = 23;
+            this.btnDeactivationButton.Text = "Set";
+            this.btnDeactivationButton.UseVisualStyleBackColor = true;
+            this.btnDeactivationButton.Click += new System.EventHandler(this.btnDeactivationButton_Click);
+            // 
+            // btnAutoclickButton
+            // 
+            this.btnAutoclickButton.Location = new System.Drawing.Point(108, 183);
+            this.btnAutoclickButton.Name = "btnAutoclickButton";
+            this.btnAutoclickButton.Size = new System.Drawing.Size(42, 23);
+            this.btnAutoclickButton.TabIndex = 24;
+            this.btnAutoclickButton.Text = "Set";
+            this.btnAutoclickButton.UseVisualStyleBackColor = true;
+            this.btnAutoclickButton.Click += new System.EventHandler(this.btnAutoclickButton_Click);
             // 
             // Form1
             // 
@@ -508,6 +553,9 @@
         private System.Windows.Forms.PictureBox pbAutoclickerRunning;
         private System.Windows.Forms.PictureBox pbAutoclickerEnabled;
         private System.Windows.Forms.Label lblHoldInstructions;
+        private System.Windows.Forms.Button btnActivationButton;
+        private System.Windows.Forms.Button btnAutoclickButton;
+        private System.Windows.Forms.Button btnDeactivationButton;
     }
 }
 

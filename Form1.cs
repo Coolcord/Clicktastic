@@ -21,6 +21,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Clicktastic
@@ -29,6 +30,23 @@ namespace Clicktastic
     {
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
+
+        public static class Prompt
+        {
+            public static int ShowDialog(string text, string caption)
+            {
+                Form prompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
+                prompt.StartPosition = FormStartPosition.CenterParent;
+                prompt.Width = 250;
+                prompt.Height = 100;
+                prompt.Text = caption;
+                Label textLabel = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = text };
+                textLabel.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
+                prompt.Controls.Add(textLabel);
+                prompt.ShowDialog();
+                return 0;
+            }
+        }
 
         public Form1()
         {
@@ -46,7 +64,7 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to activate Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to deactivate Autoclicker";
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = false;
@@ -65,7 +83,7 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to toggle Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to toggle Autoclicker";
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = false;
@@ -82,7 +100,7 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = true;
@@ -99,7 +117,7 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = true;
@@ -138,12 +156,14 @@ namespace Clicktastic
             {
                 lblDeactivationButton.Enabled = true;
                 tbDeactivationButton.Enabled = true;
+                btnDeactivationButton.Enabled = true;
             }
             else
             {
                 lblDeactivationButton.Enabled = false;
                 tbDeactivationButton.Text = tbActivationButton.Text;
                 tbDeactivationButton.Enabled = false;
+                btnDeactivationButton.Enabled = false;
             }
             setInstructions();
         }
@@ -155,6 +175,21 @@ namespace Clicktastic
                 tbDeactivationButton.Text = tbActivationButton.Text;
             }
             setInstructions();
+        }
+
+        private void tbActivationButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+        }
+
+        private void tbDeactivationButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+        }
+
+        private void tbAutoclickButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
         }
 
         private void ddbSpeedMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -223,14 +258,14 @@ namespace Clicktastic
             if (AutoclickerEnabled == true)
             {
                 AutoclickerEnabled = false;
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\red_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
                 lblAutoclickerEnabled.Text = "Disabled";
                 lblAutoclickerEnabled.ForeColor = Color.Red;
             }
             else
             {
                 AutoclickerEnabled = true;
-                pbAutoclickerEnabled.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
             }
@@ -241,17 +276,32 @@ namespace Clicktastic
             if (AutoclickerActivated == true)
             {
                 AutoclickerActivated = false;
-                pbAutoclickerRunning.ImageLocation = "C:\\Users\\Cord\\Desktop\\red_circle_small.png";
+                pbAutoclickerRunning.Image = Properties.Resources.red_circle;
                 lblAutoclickerRunning.Text = "Waiting";
                 lblAutoclickerRunning.ForeColor = Color.Red;
             }
             else
             {
                 AutoclickerActivated = true;
-                pbAutoclickerRunning.ImageLocation = "C:\\Users\\Cord\\Desktop\\green_circle_small.png";
+                pbAutoclickerRunning.Image = Properties.Resources.green_circle;
                 lblAutoclickerRunning.Text = "Running";
                 lblAutoclickerRunning.ForeColor = Color.Lime;
             }
+        }
+
+        private void btnActivationButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+        }
+
+        private void btnDeactivationButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+        }
+
+        private void btnAutoclickButton_Click(object sender, EventArgs e)
+        {
+            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
         }
     }
 }
