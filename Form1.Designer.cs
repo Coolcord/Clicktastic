@@ -48,13 +48,13 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.ddbActivationMode = new System.Windows.Forms.ComboBox();
             this.lblActivationMode = new System.Windows.Forms.Label();
-            this.lblMaxSpeed = new System.Windows.Forms.Label();
+            this.lblMaxDelay = new System.Windows.Forms.Label();
             this.lblMaxCPS = new System.Windows.Forms.Label();
-            this.numMaxSpeed = new System.Windows.Forms.NumericUpDown();
-            this.lblMinSpeed = new System.Windows.Forms.Label();
+            this.numMaxDelay = new System.Windows.Forms.NumericUpDown();
+            this.lblMinDelay = new System.Windows.Forms.Label();
             this.ddbSpeedMode = new System.Windows.Forms.ComboBox();
             this.lblMinCPS = new System.Windows.Forms.Label();
-            this.numMinSpeed = new System.Windows.Forms.NumericUpDown();
+            this.numMinDelay = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.tbAutoclickButton = new System.Windows.Forms.TextBox();
             this.lblAutoclickButton = new System.Windows.Forms.Label();
@@ -70,8 +70,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numMaxSpeed)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numMinSpeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -165,7 +165,7 @@
             this.lblSpeedInstructions.Name = "lblSpeedInstructions";
             this.lblSpeedInstructions.Size = new System.Drawing.Size(499, 25);
             this.lblSpeedInstructions.TabIndex = 2;
-            this.lblSpeedInstructions.Text = "Autoclicker will run between 999 and 1000 clicks per second";
+            this.lblSpeedInstructions.Text = "Delay on Autoclicker will be between 999 ms and 1000 ms";
             this.lblSpeedInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lblDeactivationInstructions
@@ -199,13 +199,13 @@
             this.tabPage2.Controls.Add(this.btnSave);
             this.tabPage2.Controls.Add(this.ddbActivationMode);
             this.tabPage2.Controls.Add(this.lblActivationMode);
-            this.tabPage2.Controls.Add(this.lblMaxSpeed);
+            this.tabPage2.Controls.Add(this.lblMaxDelay);
             this.tabPage2.Controls.Add(this.lblMaxCPS);
-            this.tabPage2.Controls.Add(this.numMaxSpeed);
-            this.tabPage2.Controls.Add(this.lblMinSpeed);
+            this.tabPage2.Controls.Add(this.numMaxDelay);
+            this.tabPage2.Controls.Add(this.lblMinDelay);
             this.tabPage2.Controls.Add(this.ddbSpeedMode);
             this.tabPage2.Controls.Add(this.lblMinCPS);
-            this.tabPage2.Controls.Add(this.numMinSpeed);
+            this.tabPage2.Controls.Add(this.numMinDelay);
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.tbAutoclickButton);
             this.tabPage2.Controls.Add(this.lblAutoclickButton);
@@ -324,14 +324,14 @@
             this.lblActivationMode.TabIndex = 18;
             this.lblActivationMode.Text = "Activation Mode:";
             // 
-            // lblMaxSpeed
+            // lblMaxDelay
             // 
-            this.lblMaxSpeed.AutoSize = true;
-            this.lblMaxSpeed.Location = new System.Drawing.Point(168, 255);
-            this.lblMaxSpeed.Name = "lblMaxSpeed";
-            this.lblMaxSpeed.Size = new System.Drawing.Size(145, 17);
-            this.lblMaxSpeed.TabIndex = 17;
-            this.lblMaxSpeed.Text = "Maximum Sleep Time:";
+            this.lblMaxDelay.AutoSize = true;
+            this.lblMaxDelay.Location = new System.Drawing.Point(168, 255);
+            this.lblMaxDelay.Name = "lblMaxDelay";
+            this.lblMaxDelay.Size = new System.Drawing.Size(145, 17);
+            this.lblMaxDelay.TabIndex = 17;
+            this.lblMaxDelay.Text = "Maximum Delay Time:";
             // 
             // lblMaxCPS
             // 
@@ -342,37 +342,37 @@
             this.lblMaxCPS.TabIndex = 16;
             this.lblMaxCPS.Text = "ms";
             // 
-            // numMaxSpeed
+            // numMaxDelay
             // 
-            this.numMaxSpeed.Location = new System.Drawing.Point(171, 278);
-            this.numMaxSpeed.Maximum = new decimal(new int[] {
+            this.numMaxDelay.Location = new System.Drawing.Point(171, 278);
+            this.numMaxDelay.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
-            this.numMaxSpeed.Minimum = new decimal(new int[] {
+            this.numMaxDelay.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numMaxSpeed.Name = "numMaxSpeed";
-            this.numMaxSpeed.Size = new System.Drawing.Size(120, 22);
-            this.numMaxSpeed.TabIndex = 15;
-            this.numMaxSpeed.Value = new decimal(new int[] {
+            this.numMaxDelay.Name = "numMaxDelay";
+            this.numMaxDelay.Size = new System.Drawing.Size(120, 22);
+            this.numMaxDelay.TabIndex = 15;
+            this.numMaxDelay.Value = new decimal(new int[] {
             1000,
             0,
             0,
             0});
-            this.numMaxSpeed.ValueChanged += new System.EventHandler(this.numMaxSpeed_ValueChanged);
+            this.numMaxDelay.ValueChanged += new System.EventHandler(this.numMaxDelay_ValueChanged);
             // 
-            // lblMinSpeed
+            // lblMinDelay
             // 
-            this.lblMinSpeed.AutoSize = true;
-            this.lblMinSpeed.Location = new System.Drawing.Point(7, 255);
-            this.lblMinSpeed.Name = "lblMinSpeed";
-            this.lblMinSpeed.Size = new System.Drawing.Size(142, 17);
-            this.lblMinSpeed.TabIndex = 14;
-            this.lblMinSpeed.Text = "Minimum Sleep Time:";
+            this.lblMinDelay.AutoSize = true;
+            this.lblMinDelay.Location = new System.Drawing.Point(7, 255);
+            this.lblMinDelay.Name = "lblMinDelay";
+            this.lblMinDelay.Size = new System.Drawing.Size(142, 17);
+            this.lblMinDelay.TabIndex = 14;
+            this.lblMinDelay.Text = "Minimum Delay Time:";
             // 
             // ddbSpeedMode
             // 
@@ -398,28 +398,28 @@
             this.lblMinCPS.TabIndex = 12;
             this.lblMinCPS.Text = "ms";
             // 
-            // numMinSpeed
+            // numMinDelay
             // 
-            this.numMinSpeed.Location = new System.Drawing.Point(10, 275);
-            this.numMinSpeed.Maximum = new decimal(new int[] {
+            this.numMinDelay.Location = new System.Drawing.Point(10, 275);
+            this.numMinDelay.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
-            this.numMinSpeed.Minimum = new decimal(new int[] {
+            this.numMinDelay.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numMinSpeed.Name = "numMinSpeed";
-            this.numMinSpeed.Size = new System.Drawing.Size(120, 22);
-            this.numMinSpeed.TabIndex = 11;
-            this.numMinSpeed.Value = new decimal(new int[] {
+            this.numMinDelay.Name = "numMinDelay";
+            this.numMinDelay.Size = new System.Drawing.Size(120, 22);
+            this.numMinDelay.TabIndex = 11;
+            this.numMinDelay.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numMinSpeed.ValueChanged += new System.EventHandler(this.numMinSpeed_ValueChanged);
+            this.numMinDelay.ValueChanged += new System.EventHandler(this.numMinDelay_ValueChanged);
             // 
             // label5
             // 
@@ -544,8 +544,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numMaxSpeed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numMinSpeed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -558,7 +558,7 @@
         private System.Windows.Forms.ComboBox ddbProfile;
         private System.Windows.Forms.ComboBox ddbSpeedMode;
         private System.Windows.Forms.Label lblMinCPS;
-        private System.Windows.Forms.NumericUpDown numMinSpeed;
+        private System.Windows.Forms.NumericUpDown numMinDelay;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbAutoclickButton;
         private System.Windows.Forms.Label lblAutoclickButton;
@@ -570,10 +570,10 @@
         private System.Windows.Forms.Label lblSelectProfile;
         private System.Windows.Forms.ComboBox ddbActivationMode;
         private System.Windows.Forms.Label lblActivationMode;
-        private System.Windows.Forms.Label lblMaxSpeed;
+        private System.Windows.Forms.Label lblMaxDelay;
         private System.Windows.Forms.Label lblMaxCPS;
-        private System.Windows.Forms.NumericUpDown numMaxSpeed;
-        private System.Windows.Forms.Label lblMinSpeed;
+        private System.Windows.Forms.NumericUpDown numMaxDelay;
+        private System.Windows.Forms.Label lblMinDelay;
         private System.Windows.Forms.Button btnManageProfiles;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblActivationInstructions;

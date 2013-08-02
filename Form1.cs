@@ -41,8 +41,8 @@ namespace Clicktastic
         string DeactivationKey = "~";
         string AutoclickKey = "a";
         int turbo = 1;
-        int MinSpeed = 1;
-        int MaxSpeed = 1000;
+        int MinDelay = 1;
+        int MaxDelay = 1000;
 
         public string GetKeyDialog()
         {
@@ -165,8 +165,8 @@ namespace Clicktastic
             ddbActivationMode.SelectedIndex = 0;
             ddbSpeedMode.SelectedIndex = 0;
             ddbTurboMode.SelectedIndex = 0;
-            MinSpeed = (int)numMinSpeed.Value;
-            MaxSpeed = (int)numMaxSpeed.Value;
+            MinDelay = (int)numMinDelay.Value;
+            MaxDelay = (int)numMaxDelay.Value;
             setInstructions();
         }
 
@@ -187,7 +187,7 @@ namespace Clicktastic
                     //SendKeys.SendWait("{ENTER}"); //press key or click
                 }
                 if (Random)
-                    timer.Interval = randomNumber.Next(MinSpeed, MaxSpeed);
+                    timer.Interval = randomNumber.Next(MinDelay, MaxDelay);
             }
             catch (Exception ex)
             {
@@ -200,7 +200,7 @@ namespace Clicktastic
             if (Random)
             {
                 Random randomGen = new Random();
-                int randomNumber = randomGen.Next(MinSpeed, MaxSpeed);
+                int randomNumber = randomGen.Next(MinDelay, MaxDelay);
                 System.Timers.Timer timer1 = new System.Timers.Timer(randomNumber);
                 timer1.AutoReset = true;
                 timer1.Enabled = true;
@@ -209,7 +209,7 @@ namespace Clicktastic
             else
             {
                 Random randomGen = null;
-                System.Timers.Timer timer1 = new System.Timers.Timer(MinSpeed);
+                System.Timers.Timer timer1 = new System.Timers.Timer(MinDelay);
                 timer1.AutoReset = true;
                 timer1.Enabled = true;
                 timer1.Elapsed += (sender, e) => PerformClick(timer1, randomGen);
@@ -307,23 +307,15 @@ namespace Clicktastic
             }
             if (ddbSpeedMode.SelectedIndex == 0)
             {
-                lblSpeedInstructions.Text = "Autoclicker will run at " + pluralCPS(numMinSpeed.Value);
+                lblSpeedInstructions.Text = "Autoclicker will run with " + numMinDelay.Value + " ms delay";
             }
             else
             {
-                if (numMinSpeed.Value == numMaxSpeed.Value)
-                    lblSpeedInstructions.Text = "Autoclicker will run at " + pluralCPS(numMinSpeed.Value);
+                if (numMinDelay.Value == numMaxDelay.Value)
+                    lblSpeedInstructions.Text = "Autoclicker will run with " + numMinDelay.Value + " ms delay";
                 else
-                    lblSpeedInstructions.Text = "Autoclicker will run between " + numMinSpeed.Value + " and " + pluralCPS(numMaxSpeed.Value);
+                    lblSpeedInstructions.Text = "Delay on Autoclicker will be between " + numMinDelay.Value + " ms and " + numMaxDelay.Value + " ms";
             }
-        }
-
-        private string pluralCPS(decimal num)
-        {
-            if (num == 1)
-                return "1 click per second";
-            else
-                return num + " clicks per second";
         }
 
         private void cbUseDeactivationButton_CheckedChanged(object sender, EventArgs e)
@@ -388,45 +380,45 @@ namespace Clicktastic
             if (ddbSpeedMode.SelectedIndex == 0) //constant speed
             {
                 lblMaxCPS.Enabled = false;
-                lblMaxSpeed.Enabled = false;
-                numMaxSpeed.Enabled = false;
+                lblMaxDelay.Enabled = false;
+                numMaxDelay.Enabled = false;
                 lblMaxCPS.Visible = false;
-                lblMaxSpeed.Visible = false;
-                numMaxSpeed.Visible = false;
-                numMaxSpeed.Value = numMinSpeed.Value;
-                lblMinSpeed.Text = "Sleep Time:";
+                lblMaxDelay.Visible = false;
+                numMaxDelay.Visible = false;
+                numMaxDelay.Value = numMinDelay.Value;
+                lblMinDelay.Text = "Delay Time:";
                 Random = false;
             }
             else //random speed
             {
                 lblMaxCPS.Enabled = true;
-                lblMaxSpeed.Enabled = true;
-                numMaxSpeed.Enabled = true;
+                lblMaxDelay.Enabled = true;
+                numMaxDelay.Enabled = true;
                 lblMaxCPS.Visible = true;
-                lblMaxSpeed.Visible = true;
-                numMaxSpeed.Visible = true;
-                numMaxSpeed.Value = numMinSpeed.Value;
-                lblMinSpeed.Text = "Minimum Sleep Time:";
+                lblMaxDelay.Visible = true;
+                numMaxDelay.Visible = true;
+                numMaxDelay.Value = numMinDelay.Value;
+                lblMinDelay.Text = "Minimum Delay Time:";
                 Random = true;
             }
             setInstructions();
         }
 
-        private void numMinSpeed_ValueChanged(object sender, EventArgs e)
+        private void numMinDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (numMaxSpeed.Value < numMinSpeed.Value)
-                numMaxSpeed.Value = numMinSpeed.Value;
-            MinSpeed = (int)numMinSpeed.Value;
-            MaxSpeed = (int)numMaxSpeed.Value;
+            if (numMaxDelay.Value < numMinDelay.Value)
+                numMaxDelay.Value = numMinDelay.Value;
+            MinDelay = (int)numMinDelay.Value;
+            MaxDelay = (int)numMaxDelay.Value;
             setInstructions();
         }
 
-        private void numMaxSpeed_ValueChanged(object sender, EventArgs e)
+        private void numMaxDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (numMinSpeed.Value > numMaxSpeed.Value)
-                numMinSpeed.Value = numMaxSpeed.Value;
-            MinSpeed = (int)numMinSpeed.Value;
-            MaxSpeed = (int)numMaxSpeed.Value;
+            if (numMinDelay.Value > numMaxDelay.Value)
+                numMinDelay.Value = numMaxDelay.Value;
+            MinDelay = (int)numMinDelay.Value;
+            MaxDelay = (int)numMaxDelay.Value;
             setInstructions();
         }
 
