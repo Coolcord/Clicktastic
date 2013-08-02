@@ -63,6 +63,8 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
+            this.ddbTurboMode = new System.Windows.Forms.ComboBox();
+            this.lblTurboMode = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
@@ -188,6 +190,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.lblTurboMode);
+            this.tabPage2.Controls.Add(this.ddbTurboMode);
             this.tabPage2.Controls.Add(this.btnAutoclickButton);
             this.tabPage2.Controls.Add(this.btnDeactivationButton);
             this.tabPage2.Controls.Add(this.btnActivationButton);
@@ -495,6 +499,33 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
+            // ddbTurboMode
+            // 
+            this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddbTurboMode.FormattingEnabled = true;
+            this.ddbTurboMode.Items.AddRange(new object[] {
+            "None",
+            "Afterburners",
+            "Hyperdrive",
+            "Warp 10",
+            "Ludicrous Speed"});
+            this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
+            this.ddbTurboMode.MaxDropDownItems = 2;
+            this.ddbTurboMode.Name = "ddbTurboMode";
+            this.ddbTurboMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.ddbTurboMode.Size = new System.Drawing.Size(135, 24);
+            this.ddbTurboMode.TabIndex = 26;
+            this.ddbTurboMode.SelectedIndexChanged += new System.EventHandler(this.ddbTurboMode_SelectedIndexChanged);
+            // 
+            // lblTurboMode
+            // 
+            this.lblTurboMode.AutoSize = true;
+            this.lblTurboMode.Location = new System.Drawing.Point(163, 208);
+            this.lblTurboMode.Name = "lblTurboMode";
+            this.lblTurboMode.Size = new System.Drawing.Size(89, 17);
+            this.lblTurboMode.TabIndex = 27;
+            this.lblTurboMode.Text = "Turbo Mode:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -556,6 +587,8 @@
         private System.Windows.Forms.Button btnActivationButton;
         private System.Windows.Forms.Button btnAutoclickButton;
         private System.Windows.Forms.Button btnDeactivationButton;
+        private System.Windows.Forms.Label lblTurboMode;
+        private System.Windows.Forms.ComboBox ddbTurboMode;
     }
 }
 

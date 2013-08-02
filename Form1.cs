@@ -33,26 +33,7 @@ namespace Clicktastic
         string ActivationKey = "~";
         string DeactivationKey = "~";
         string AutoclickKey = "a";
-
-        /*
-        public static class Prompt
-        {
-            public static int ShowDialog(string text, string caption)
-            {
-                Form prompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
-                keyPrompt.StartPosition = FormStartPosition.CenterParent;
-                keyPrompt.Width = 250;
-                keyPrompt.Height = 100;
-                keyPrompt.Text = caption;
-                //keyPrompt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.GetKeyPress);
-                Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = text };
-                lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
-                keyPrompt.Controls.Add(lblKey);
-                keyPrompt.ShowDialog();
-                return 0;
-            }
-        }
-        */
+        int turbo = 0;
 
         public string GetKeyDialog()
         {
@@ -143,6 +124,8 @@ namespace Clicktastic
                     key = "RightClick";
                 else if (e.Button == MouseButtons.Middle)
                     key = "MiddleClick";
+                else
+                    key = e.Button.ToString();
                 string lastKey = lblKey.Text.Split(' ').Last();
                 if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
                     key = lblKey.Text + " + " + key;
@@ -172,7 +155,38 @@ namespace Clicktastic
             ddbProfile.SelectedIndex = 0;
             ddbActivationMode.SelectedIndex = 0;
             ddbSpeedMode.SelectedIndex = 0;
+            ddbTurboMode.SelectedIndex = 0;
             setInstructions();
+        }
+
+        private void Click(System.Timers.Timer timer)
+        {
+            try
+            {
+                if (AutoclickerActivated == false) //stop the autoclicker
+                {
+                    timer.Stop();
+                    timer.Dispose();
+                    return;
+                }
+                for (int i = 0; i < turbo; i++)
+                {
+                    SendKeys.SendWait("{ENTER}"); //press key or click
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        private void AutoClick()
+        {
+            System.Timers.Timer timer1 = new System.Timers.Timer(1);
+            timer1.AutoReset = true;
+            timer1.Enabled = true;
+            timer1.Elapsed += (sender, e) => Click(timer1);
+
         }
 
         private void setInstructions()
@@ -435,7 +449,13 @@ namespace Clicktastic
                 pbAutoclickerRunning.Image = Properties.Resources.green_circle;
                 lblAutoclickerRunning.Text = "Running";
                 lblAutoclickerRunning.ForeColor = Color.Lime;
+                AutoClick();
             }
+        }
+
+        private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            turbo = ddbTurboMode.SelectedIndex + 1;
         }
     }
 }
