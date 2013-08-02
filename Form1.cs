@@ -30,22 +30,140 @@ namespace Clicktastic
     {
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
+        string ActivationKey = "~";
+        string DeactivationKey = "~";
+        string AutoclickKey = "a";
 
+        /*
         public static class Prompt
         {
             public static int ShowDialog(string text, string caption)
             {
                 Form prompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
-                prompt.StartPosition = FormStartPosition.CenterParent;
-                prompt.Width = 250;
-                prompt.Height = 100;
-                prompt.Text = caption;
-                Label textLabel = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = text };
-                textLabel.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
-                prompt.Controls.Add(textLabel);
-                prompt.ShowDialog();
+                keyPrompt.StartPosition = FormStartPosition.CenterParent;
+                keyPrompt.Width = 250;
+                keyPrompt.Height = 100;
+                keyPrompt.Text = caption;
+                //keyPrompt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.GetKeyPress);
+                Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = text };
+                lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
+                keyPrompt.Controls.Add(lblKey);
+                keyPrompt.ShowDialog();
                 return 0;
             }
+        }
+        */
+
+        public string GetKeyDialog()
+        {
+            Form keyPrompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
+            keyPrompt.StartPosition = FormStartPosition.CenterParent;
+            keyPrompt.Width = 250;
+            keyPrompt.Height = 100;
+            keyPrompt.Text = "Clicktastic";
+            keyPrompt.KeyPreview = true;
+            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = "Press any key" };
+            lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
+            keyPrompt.Controls.Add(lblKey);
+            System.Timers.Timer timer = new System.Timers.Timer(750);
+            int textState = 1;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            timer.Elapsed += (sender, e) =>
+            {
+                try
+                {
+                    this.Invoke(new MethodInvoker(() =>
+                    {
+                        switch (textState)
+                        {
+                            case 0:
+                                lblKey.Text = "Press any key";
+                                break;
+                            case 1:
+                                lblKey.Text = "Press any key.";
+                                break;
+                            case 2:
+                                lblKey.Text = "Press any key..";
+                                break;
+                            case 3:
+                                lblKey.Text = "Press any key...";
+                                break;
+                        }
+                    }));
+                    textState = (textState + 1) % 4;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            };
+            string key = null;
+            keyPrompt.PreviewKeyDown += (sender, e) =>
+            {
+                timer.Stop();
+
+                //Determine the key pressed
+                if (e.KeyCode == Keys.Menu)
+                    key = "Alt";
+                else if (e.KeyCode == Keys.ShiftKey)
+                    key = "Shift";
+                else if (e.KeyCode == Keys.ControlKey)
+                    key = "Ctrl";
+                else
+                    key = e.KeyCode.ToString();
+
+                //Determine key modifiers
+                if (e.Alt && e.KeyCode != Keys.Menu)
+                    key = "Alt + " + key;
+                if (e.Shift && e.KeyCode != Keys.ShiftKey)
+                    key = "Shift + " + key;
+                if (e.Control && e.KeyCode != Keys.ControlKey)
+                    key = "Ctrl + " + key;
+
+                lblKey.Text = key;
+            };
+            keyPrompt.KeyDown += (sender, e) =>
+            {
+                if (e.Modifiers.Equals(Keys.Alt))
+                {
+                    e.Handled = true; //don't open the menu with alt
+                }
+            };
+            keyPrompt.KeyUp += (sender, e) =>
+            {
+                keyPrompt.Close();
+            };
+            lblKey.MouseClick += (sender, e) =>
+            {
+                timer.Stop();
+                if (e.Button == MouseButtons.Left)
+                    key = "LeftClick";
+                else if (e.Button == MouseButtons.Right)
+                    key = "RightClick";
+                else if (e.Button == MouseButtons.Middle)
+                    key = "MiddleClick";
+                string lastKey = lblKey.Text.Split(' ').Last();
+                if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
+                    key = lblKey.Text + " + " + key;
+                lblKey.Text = key;
+                keyPrompt.Close();
+            };
+            keyPrompt.MouseWheel += (sender, e) =>
+            {
+                timer.Stop();
+                if (e.Delta < 0) //negative is down
+                    key = "MouseWheelDown";
+                else //positive is up
+                    key = "MouseWheelUp";
+                string lastKey = lblKey.Text.Split(' ').Last();
+                if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
+                    key = lblKey.Text + " + " + key;
+                lblKey.Text = key;
+                keyPrompt.Close();
+            };
+            keyPrompt.ShowDialog();
+            return key;
         }
 
         public Form1()
@@ -69,8 +187,16 @@ namespace Clicktastic
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = false;
                 lblHoldInstructions.Visible = false;
-                lblDeactivationInstructions.Enabled = true;
-                lblDeactivationInstructions.Visible = true;
+                if (tbActivationButton.Text == tbDeactivationButton.Text)
+                {
+                    lblDeactivationInstructions.Enabled = false;
+                    lblDeactivationInstructions.Visible = false;
+                }
+                else
+                {
+                    lblDeactivationInstructions.Enabled = true;
+                    lblDeactivationInstructions.Visible = true;
+                }
                 lblAutoclickerEnabled.Enabled = false;
                 lblAutoclickerEnabled.Visible = false;
                 lblAutoclickerEnabled.Enabled = false;
@@ -105,8 +231,16 @@ namespace Clicktastic
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblHoldInstructions.Enabled = true;
                 lblHoldInstructions.Visible = true;
-                lblDeactivationInstructions.Enabled = true;
-                lblDeactivationInstructions.Visible = true;
+                if (tbActivationButton.Text == tbDeactivationButton.Text)
+                {
+                    lblDeactivationInstructions.Enabled = false;
+                    lblDeactivationInstructions.Visible = false;
+                }
+                else
+                {
+                    lblDeactivationInstructions.Enabled = true;
+                    lblDeactivationInstructions.Visible = true;
+                }
                 lblAutoclickerEnabled.Enabled = true;
                 lblAutoclickerEnabled.Visible = true;
                 pbAutoclickerEnabled.Enabled = true;
@@ -177,19 +311,34 @@ namespace Clicktastic
             setInstructions();
         }
 
-        private void tbActivationButton_Click(object sender, EventArgs e)
+        private void ActivationButton_Click(object sender, EventArgs e)
         {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+            string key = GetKeyDialog();
+            if (key != null)
+            {
+                ActivationKey = key;
+                tbActivationButton.Text = key.ToString();
+            }
         }
 
-        private void tbDeactivationButton_Click(object sender, EventArgs e)
+        private void DeactivationButton_Click(object sender, EventArgs e)
         {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+            string key = GetKeyDialog();
+            if (key != null)
+            {
+                DeactivationKey = key;
+                tbDeactivationButton.Text = key.ToString();
+            }
         }
 
-        private void tbAutoclickButton_Click(object sender, EventArgs e)
+        private void AutoclickButton_Click(object sender, EventArgs e)
         {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
+            string key = GetKeyDialog();
+            if (key != null)
+            {
+                AutoclickKey = key;
+                tbAutoclickButton.Text = key.ToString();
+            }
         }
 
         private void ddbSpeedMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -287,21 +436,6 @@ namespace Clicktastic
                 lblAutoclickerRunning.Text = "Running";
                 lblAutoclickerRunning.ForeColor = Color.Lime;
             }
-        }
-
-        private void btnActivationButton_Click(object sender, EventArgs e)
-        {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
-        }
-
-        private void btnDeactivationButton_Click(object sender, EventArgs e)
-        {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
-        }
-
-        private void btnAutoclickButton_Click(object sender, EventArgs e)
-        {
-            int promptValue = Prompt.ShowDialog("Press any key...", "Clicktastic");
         }
     }
 }

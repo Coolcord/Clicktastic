@@ -39,6 +39,9 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnAutoclickButton = new System.Windows.Forms.Button();
+            this.btnDeactivationButton = new System.Windows.Forms.Button();
+            this.btnActivationButton = new System.Windows.Forms.Button();
             this.btnManageProfiles = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.ddbActivationMode = new System.Windows.Forms.ComboBox();
@@ -60,9 +63,6 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
-            this.btnActivationButton = new System.Windows.Forms.Button();
-            this.btnDeactivationButton = new System.Windows.Forms.Button();
-            this.btnAutoclickButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
@@ -220,6 +220,37 @@
             this.tabPage2.Text = "Preferences";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // btnAutoclickButton
+            // 
+            this.btnAutoclickButton.Location = new System.Drawing.Point(108, 183);
+            this.btnAutoclickButton.Name = "btnAutoclickButton";
+            this.btnAutoclickButton.Size = new System.Drawing.Size(42, 23);
+            this.btnAutoclickButton.TabIndex = 24;
+            this.btnAutoclickButton.Text = "Set";
+            this.btnAutoclickButton.UseVisualStyleBackColor = true;
+            this.btnAutoclickButton.Click += new System.EventHandler(this.AutoclickButton_Click);
+            // 
+            // btnDeactivationButton
+            // 
+            this.btnDeactivationButton.Enabled = false;
+            this.btnDeactivationButton.Location = new System.Drawing.Point(264, 182);
+            this.btnDeactivationButton.Name = "btnDeactivationButton";
+            this.btnDeactivationButton.Size = new System.Drawing.Size(42, 23);
+            this.btnDeactivationButton.TabIndex = 23;
+            this.btnDeactivationButton.Text = "Set";
+            this.btnDeactivationButton.UseVisualStyleBackColor = true;
+            this.btnDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
+            // 
+            // btnActivationButton
+            // 
+            this.btnActivationButton.Location = new System.Drawing.Point(264, 111);
+            this.btnActivationButton.Name = "btnActivationButton";
+            this.btnActivationButton.Size = new System.Drawing.Size(42, 23);
+            this.btnActivationButton.TabIndex = 22;
+            this.btnActivationButton.Text = "Set";
+            this.btnActivationButton.UseVisualStyleBackColor = true;
+            this.btnActivationButton.Click += new System.EventHandler(this.ActivationButton_Click);
+            // 
             // btnManageProfiles
             // 
             this.btnManageProfiles.Location = new System.Drawing.Point(91, 58);
@@ -375,8 +406,8 @@
             this.tbAutoclickButton.ReadOnly = true;
             this.tbAutoclickButton.Size = new System.Drawing.Size(92, 22);
             this.tbAutoclickButton.TabIndex = 9;
-            this.tbAutoclickButton.Text = "Left Click";
-            this.tbAutoclickButton.Click += new System.EventHandler(this.tbAutoclickButton_Click);
+            this.tbAutoclickButton.Text = "LeftClick";
+            this.tbAutoclickButton.Click += new System.EventHandler(this.AutoclickButton_Click);
             this.tbAutoclickButton.TextChanged += new System.EventHandler(this.tbAutoclickButton_TextChanged);
             // 
             // lblAutoclickButton
@@ -397,7 +428,7 @@
             this.tbDeactivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbDeactivationButton.TabIndex = 6;
             this.tbDeactivationButton.Text = "~";
-            this.tbDeactivationButton.Click += new System.EventHandler(this.tbDeactivationButton_Click);
+            this.tbDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
             this.tbDeactivationButton.TextChanged += new System.EventHandler(this.tbDeactivationButton_TextChanged);
             // 
             // lblDeactivationButton
@@ -429,7 +460,7 @@
             this.tbActivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbActivationButton.TabIndex = 3;
             this.tbActivationButton.Text = "~";
-            this.tbActivationButton.Click += new System.EventHandler(this.tbActivationButton_Click);
+            this.tbActivationButton.Click += new System.EventHandler(this.ActivationButton_Click);
             this.tbActivationButton.TextChanged += new System.EventHandler(this.tbActivationButton_TextChanged);
             // 
             // lblActivationButton
@@ -463,37 +494,6 @@
             this.ddbProfile.Size = new System.Drawing.Size(215, 24);
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
-            // 
-            // btnActivationButton
-            // 
-            this.btnActivationButton.Location = new System.Drawing.Point(264, 111);
-            this.btnActivationButton.Name = "btnActivationButton";
-            this.btnActivationButton.Size = new System.Drawing.Size(42, 23);
-            this.btnActivationButton.TabIndex = 22;
-            this.btnActivationButton.Text = "Set";
-            this.btnActivationButton.UseVisualStyleBackColor = true;
-            this.btnActivationButton.Click += new System.EventHandler(this.btnActivationButton_Click);
-            // 
-            // btnDeactivationButton
-            // 
-            this.btnDeactivationButton.Enabled = false;
-            this.btnDeactivationButton.Location = new System.Drawing.Point(264, 182);
-            this.btnDeactivationButton.Name = "btnDeactivationButton";
-            this.btnDeactivationButton.Size = new System.Drawing.Size(42, 23);
-            this.btnDeactivationButton.TabIndex = 23;
-            this.btnDeactivationButton.Text = "Set";
-            this.btnDeactivationButton.UseVisualStyleBackColor = true;
-            this.btnDeactivationButton.Click += new System.EventHandler(this.btnDeactivationButton_Click);
-            // 
-            // btnAutoclickButton
-            // 
-            this.btnAutoclickButton.Location = new System.Drawing.Point(108, 183);
-            this.btnAutoclickButton.Name = "btnAutoclickButton";
-            this.btnAutoclickButton.Size = new System.Drawing.Size(42, 23);
-            this.btnAutoclickButton.TabIndex = 24;
-            this.btnAutoclickButton.Text = "Set";
-            this.btnAutoclickButton.UseVisualStyleBackColor = true;
-            this.btnAutoclickButton.Click += new System.EventHandler(this.btnAutoclickButton_Click);
             // 
             // Form1
             // 
