@@ -126,7 +126,7 @@
             // 
             // pbAutoclickerEnabled
             // 
-            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.green_circle;
+            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
             this.pbAutoclickerEnabled.ImageLocation = "";
             this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
             this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
@@ -151,12 +151,12 @@
             // 
             this.lblAutoclickerEnabled.AutoSize = true;
             this.lblAutoclickerEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAutoclickerEnabled.ForeColor = System.Drawing.Color.Lime;
+            this.lblAutoclickerEnabled.ForeColor = System.Drawing.Color.Red;
             this.lblAutoclickerEnabled.Location = new System.Drawing.Point(238, 190);
             this.lblAutoclickerEnabled.Name = "lblAutoclickerEnabled";
-            this.lblAutoclickerEnabled.Size = new System.Drawing.Size(106, 29);
+            this.lblAutoclickerEnabled.Size = new System.Drawing.Size(112, 29);
             this.lblAutoclickerEnabled.TabIndex = 3;
-            this.lblAutoclickerEnabled.Text = "Enabled";
+            this.lblAutoclickerEnabled.Text = "Disabled";
             // 
             // lblSpeedInstructions
             // 
@@ -242,7 +242,7 @@
             "(2x) Afterburners",
             "(3x) Hyperdrive",
             "(4x) Warp 10",
-            "(5x) Ludicrous Speed"});
+            "(5x) Ludicrous Speed!"});
             this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
             this.ddbTurboMode.MaxDropDownItems = 2;
             this.ddbTurboMode.Name = "ddbTurboMode";

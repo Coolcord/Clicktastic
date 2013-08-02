@@ -37,6 +37,7 @@ namespace Clicktastic
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
         Boolean Random = false;
+        Boolean Hold = false;
         string ActivationKey = "~";
         string DeactivationKey = "~";
         string AutoclickKey = "a";
@@ -174,20 +175,36 @@ namespace Clicktastic
         {
             try
             {
-                if (AutoclickerActivated == false) //stop the autoclicker
+                Boolean KeyHeld = ((Control.MouseButtons & MouseButtons.Left) != 0);
+                if (!Hold || (AutoclickerEnabled && KeyHeld))
                 {
-                    timer.Stop();
-                    timer.Dispose();
-                    return;
+                    if (AutoclickerActivated == false) //stop the autoclicker
+                    {
+                        timer.Stop();
+                        timer.Dispose();
+                        return;
+                    }
+                    if (Hold)
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
+                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
+                            //SendKeys.SendWait("{ENTER}"); //press key or click
+                        }
+                    }
+                    else //trigger
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
+                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
+                            //SendKeys.SendWait("{ENTER}"); //press key or click
+                        }
+                    }
+                    if (Random)
+                        timer.Interval = randomNumber.Next(MinDelay, MaxDelay);
                 }
-                for (int i = 0; i < turbo; i++)
-                {
-                    mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
-                    mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
-                    //SendKeys.SendWait("{ENTER}"); //press key or click
-                }
-                if (Random)
-                    timer.Interval = randomNumber.Next(MinDelay, MaxDelay);
             }
             catch (Exception ex)
             {
@@ -268,9 +285,9 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                lblAutoclickerEnabled.Text = "Enabled";
-                lblAutoclickerEnabled.ForeColor = Color.Lime;
+                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                lblAutoclickerEnabled.Text = "Disabled";
+                lblAutoclickerEnabled.ForeColor = Color.Red;
                 lblHoldInstructions.Enabled = true;
                 lblHoldInstructions.Visible = true;
                 if (tbActivationButton.Text == tbDeactivationButton.Text)
@@ -293,9 +310,9 @@ namespace Clicktastic
                 lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
                 lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
                 lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                lblAutoclickerEnabled.Text = "Enabled";
-                lblAutoclickerEnabled.ForeColor = Color.Lime;
+                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                lblAutoclickerEnabled.Text = "Disabled";
+                lblAutoclickerEnabled.ForeColor = Color.Red;
                 lblHoldInstructions.Enabled = true;
                 lblHoldInstructions.Visible = true;
                 lblDeactivationInstructions.Enabled = false;
@@ -434,6 +451,16 @@ namespace Clicktastic
 
         private void ddbActivationMode_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ddbActivationMode.SelectedIndex == 0)
+            {
+                Hold = false;
+                AutoclickerEnabled = true;
+            }
+            else
+            {
+                Hold = true;
+                AutoclickerEnabled = false;
+            }
             setInstructions();
         }
 
