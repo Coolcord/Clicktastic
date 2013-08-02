@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -28,6 +29,11 @@ namespace Clicktastic
 {
     public partial class Form1 : Form
     {
+        private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
+        private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInf);
+
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
         Boolean Random = false;
@@ -176,7 +182,9 @@ namespace Clicktastic
                 }
                 for (int i = 0; i < turbo; i++)
                 {
-                    SendKeys.SendWait("{ENTER}"); //press key or click
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
+                    mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
+                    //SendKeys.SendWait("{ENTER}"); //press key or click
                 }
                 if (Random)
                     timer.Interval = randomNumber.Next(MinSpeed, MaxSpeed);
@@ -475,6 +483,7 @@ namespace Clicktastic
                 pbAutoclickerRunning.Image = Properties.Resources.green_circle;
                 lblAutoclickerRunning.Text = "Running";
                 lblAutoclickerRunning.ForeColor = Color.Lime;
+                Thread.Sleep(1000); //debug code
                 AutoClick();
             }
         }

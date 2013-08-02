@@ -238,16 +238,16 @@
             this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ddbTurboMode.FormattingEnabled = true;
             this.ddbTurboMode.Items.AddRange(new object[] {
-            "None",
-            "Afterburners",
-            "Hyperdrive",
-            "Warp 10",
-            "Ludicrous Speed"});
+            "(1x) None",
+            "(2x) Afterburners",
+            "(3x) Hyperdrive",
+            "(4x) Warp 10",
+            "(5x) Ludicrous Speed"});
             this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
             this.ddbTurboMode.MaxDropDownItems = 2;
             this.ddbTurboMode.Name = "ddbTurboMode";
             this.ddbTurboMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbTurboMode.Size = new System.Drawing.Size(135, 24);
+            this.ddbTurboMode.Size = new System.Drawing.Size(157, 24);
             this.ddbTurboMode.TabIndex = 26;
             this.ddbTurboMode.SelectedIndexChanged += new System.EventHandler(this.ddbTurboMode_SelectedIndexChanged);
             // 
