@@ -30,10 +30,13 @@ namespace Clicktastic
     {
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
+        Boolean Random = false;
         string ActivationKey = "~";
         string DeactivationKey = "~";
         string AutoclickKey = "a";
-        int turbo = 0;
+        int turbo = 1;
+        int MinSpeed = 1;
+        int MaxSpeed = 1000;
 
         public string GetKeyDialog()
         {
@@ -156,10 +159,12 @@ namespace Clicktastic
             ddbActivationMode.SelectedIndex = 0;
             ddbSpeedMode.SelectedIndex = 0;
             ddbTurboMode.SelectedIndex = 0;
+            MinSpeed = (int)numMinSpeed.Value;
+            MaxSpeed = (int)numMaxSpeed.Value;
             setInstructions();
         }
 
-        private void Click(System.Timers.Timer timer)
+        private void PerformClick(System.Timers.Timer timer, Random randomNumber)
         {
             try
             {
@@ -173,6 +178,8 @@ namespace Clicktastic
                 {
                     SendKeys.SendWait("{ENTER}"); //press key or click
                 }
+                if (Random)
+                    timer.Interval = randomNumber.Next(MinSpeed, MaxSpeed);
             }
             catch (Exception ex)
             {
@@ -182,10 +189,23 @@ namespace Clicktastic
 
         private void AutoClick()
         {
-            System.Timers.Timer timer1 = new System.Timers.Timer(1);
-            timer1.AutoReset = true;
-            timer1.Enabled = true;
-            timer1.Elapsed += (sender, e) => Click(timer1);
+            if (Random)
+            {
+                Random randomGen = new Random();
+                int randomNumber = randomGen.Next(MinSpeed, MaxSpeed);
+                System.Timers.Timer timer1 = new System.Timers.Timer(randomNumber);
+                timer1.AutoReset = true;
+                timer1.Enabled = true;
+                timer1.Elapsed += (sender, e) => PerformClick(timer1, randomGen);
+            }
+            else
+            {
+                Random randomGen = null;
+                System.Timers.Timer timer1 = new System.Timers.Timer(MinSpeed);
+                timer1.AutoReset = true;
+                timer1.Enabled = true;
+                timer1.Elapsed += (sender, e) => PerformClick(timer1, randomGen);
+            }
 
         }
 
@@ -366,7 +386,8 @@ namespace Clicktastic
                 lblMaxSpeed.Visible = false;
                 numMaxSpeed.Visible = false;
                 numMaxSpeed.Value = numMinSpeed.Value;
-                lblMinSpeed.Text = "Speed:";
+                lblMinSpeed.Text = "Sleep Time:";
+                Random = false;
             }
             else //random speed
             {
@@ -377,7 +398,8 @@ namespace Clicktastic
                 lblMaxSpeed.Visible = true;
                 numMaxSpeed.Visible = true;
                 numMaxSpeed.Value = numMinSpeed.Value;
-                lblMinSpeed.Text = "Minimum Speed:";
+                lblMinSpeed.Text = "Minimum Sleep Time:";
+                Random = true;
             }
             setInstructions();
         }
@@ -386,6 +408,8 @@ namespace Clicktastic
         {
             if (numMaxSpeed.Value < numMinSpeed.Value)
                 numMaxSpeed.Value = numMinSpeed.Value;
+            MinSpeed = (int)numMinSpeed.Value;
+            MaxSpeed = (int)numMaxSpeed.Value;
             setInstructions();
         }
 
@@ -393,6 +417,8 @@ namespace Clicktastic
         {
             if (numMinSpeed.Value > numMaxSpeed.Value)
                 numMinSpeed.Value = numMaxSpeed.Value;
+            MinSpeed = (int)numMinSpeed.Value;
+            MaxSpeed = (int)numMaxSpeed.Value;
             setInstructions();
         }
 

@@ -39,6 +39,8 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.lblTurboMode = new System.Windows.Forms.Label();
+            this.ddbTurboMode = new System.Windows.Forms.ComboBox();
             this.btnAutoclickButton = new System.Windows.Forms.Button();
             this.btnDeactivationButton = new System.Windows.Forms.Button();
             this.btnActivationButton = new System.Windows.Forms.Button();
@@ -63,8 +65,6 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
-            this.ddbTurboMode = new System.Windows.Forms.ComboBox();
-            this.lblTurboMode = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
@@ -224,6 +224,33 @@
             this.tabPage2.Text = "Preferences";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // lblTurboMode
+            // 
+            this.lblTurboMode.AutoSize = true;
+            this.lblTurboMode.Location = new System.Drawing.Point(163, 208);
+            this.lblTurboMode.Name = "lblTurboMode";
+            this.lblTurboMode.Size = new System.Drawing.Size(89, 17);
+            this.lblTurboMode.TabIndex = 27;
+            this.lblTurboMode.Text = "Turbo Mode:";
+            // 
+            // ddbTurboMode
+            // 
+            this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddbTurboMode.FormattingEnabled = true;
+            this.ddbTurboMode.Items.AddRange(new object[] {
+            "None",
+            "Afterburners",
+            "Hyperdrive",
+            "Warp 10",
+            "Ludicrous Speed"});
+            this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
+            this.ddbTurboMode.MaxDropDownItems = 2;
+            this.ddbTurboMode.Name = "ddbTurboMode";
+            this.ddbTurboMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.ddbTurboMode.Size = new System.Drawing.Size(135, 24);
+            this.ddbTurboMode.TabIndex = 26;
+            this.ddbTurboMode.SelectedIndexChanged += new System.EventHandler(this.ddbTurboMode_SelectedIndexChanged);
+            // 
             // btnAutoclickButton
             // 
             this.btnAutoclickButton.Location = new System.Drawing.Point(108, 183);
@@ -300,26 +327,26 @@
             // lblMaxSpeed
             // 
             this.lblMaxSpeed.AutoSize = true;
-            this.lblMaxSpeed.Location = new System.Drawing.Point(258, 255);
+            this.lblMaxSpeed.Location = new System.Drawing.Point(168, 255);
             this.lblMaxSpeed.Name = "lblMaxSpeed";
-            this.lblMaxSpeed.Size = new System.Drawing.Size(115, 17);
+            this.lblMaxSpeed.Size = new System.Drawing.Size(145, 17);
             this.lblMaxSpeed.TabIndex = 17;
-            this.lblMaxSpeed.Text = "Maximum Speed:";
+            this.lblMaxSpeed.Text = "Maximum Sleep Time:";
             // 
             // lblMaxCPS
             // 
             this.lblMaxCPS.AutoSize = true;
-            this.lblMaxCPS.Location = new System.Drawing.Point(387, 279);
+            this.lblMaxCPS.Location = new System.Drawing.Point(297, 279);
             this.lblMaxCPS.Name = "lblMaxCPS";
-            this.lblMaxCPS.Size = new System.Drawing.Size(119, 17);
+            this.lblMaxCPS.Size = new System.Drawing.Size(26, 17);
             this.lblMaxCPS.TabIndex = 16;
-            this.lblMaxCPS.Text = "Clicks per second";
+            this.lblMaxCPS.Text = "ms";
             // 
             // numMaxSpeed
             // 
-            this.numMaxSpeed.Location = new System.Drawing.Point(261, 278);
+            this.numMaxSpeed.Location = new System.Drawing.Point(171, 278);
             this.numMaxSpeed.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -332,7 +359,7 @@
             this.numMaxSpeed.Size = new System.Drawing.Size(120, 22);
             this.numMaxSpeed.TabIndex = 15;
             this.numMaxSpeed.Value = new decimal(new int[] {
-            1,
+            1000,
             0,
             0,
             0});
@@ -343,9 +370,9 @@
             this.lblMinSpeed.AutoSize = true;
             this.lblMinSpeed.Location = new System.Drawing.Point(7, 255);
             this.lblMinSpeed.Name = "lblMinSpeed";
-            this.lblMinSpeed.Size = new System.Drawing.Size(112, 17);
+            this.lblMinSpeed.Size = new System.Drawing.Size(142, 17);
             this.lblMinSpeed.TabIndex = 14;
-            this.lblMinSpeed.Text = "Minimum Speed:";
+            this.lblMinSpeed.Text = "Minimum Sleep Time:";
             // 
             // ddbSpeedMode
             // 
@@ -367,15 +394,15 @@
             this.lblMinCPS.AutoSize = true;
             this.lblMinCPS.Location = new System.Drawing.Point(136, 279);
             this.lblMinCPS.Name = "lblMinCPS";
-            this.lblMinCPS.Size = new System.Drawing.Size(119, 17);
+            this.lblMinCPS.Size = new System.Drawing.Size(26, 17);
             this.lblMinCPS.TabIndex = 12;
-            this.lblMinCPS.Text = "Clicks per second";
+            this.lblMinCPS.Text = "ms";
             // 
             // numMinSpeed
             // 
             this.numMinSpeed.Location = new System.Drawing.Point(10, 275);
             this.numMinSpeed.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -498,33 +525,6 @@
             this.ddbProfile.Size = new System.Drawing.Size(215, 24);
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
-            // 
-            // ddbTurboMode
-            // 
-            this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ddbTurboMode.FormattingEnabled = true;
-            this.ddbTurboMode.Items.AddRange(new object[] {
-            "None",
-            "Afterburners",
-            "Hyperdrive",
-            "Warp 10",
-            "Ludicrous Speed"});
-            this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
-            this.ddbTurboMode.MaxDropDownItems = 2;
-            this.ddbTurboMode.Name = "ddbTurboMode";
-            this.ddbTurboMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbTurboMode.Size = new System.Drawing.Size(135, 24);
-            this.ddbTurboMode.TabIndex = 26;
-            this.ddbTurboMode.SelectedIndexChanged += new System.EventHandler(this.ddbTurboMode_SelectedIndexChanged);
-            // 
-            // lblTurboMode
-            // 
-            this.lblTurboMode.AutoSize = true;
-            this.lblTurboMode.Location = new System.Drawing.Point(163, 208);
-            this.lblTurboMode.Name = "lblTurboMode";
-            this.lblTurboMode.Size = new System.Drawing.Size(89, 17);
-            this.lblTurboMode.TabIndex = 27;
-            this.lblTurboMode.Text = "Turbo Mode:";
             // 
             // Form1
             // 
