@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -31,8 +32,86 @@ namespace Clicktastic
     {
         private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
+        private const UInt32 MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+        private const UInt32 MOUSEEVENTF_MIDDLEUP = 0x0040;
+        private const UInt32 MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        private const UInt32 MOUSEEVENTF_RIGHTUP = 0x0010;
+
+        /*
+        private const UInt32 MOD_ALT = 0x0001;
+        private const UInt32 MOD_CONTROL = 0x0002;
+        private const UInt32 MOD_NOREPEAT = 0x4000;
+        private const UInt32 MOD_SHIFT = 0x0004;
+        private const UInt32 MOD_WIN = 0x0008;
+         */
+
         [DllImport("user32.dll")]
         private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInf);
+
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook,
+            LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
+            IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+
+        private const int WH_KEYBOARD_LL = 13;
+        private const int WM_KEYDOWN = 0x0100;
+        private static LowLevelKeyboardProc _proc = HookCallback;
+        private static IntPtr _hookID = IntPtr.Zero;
+
+
+
+        private static IntPtr SetHook(LowLevelKeyboardProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+                    GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private delegate IntPtr LowLevelKeyboardProc(
+            int nCode, IntPtr wParam, IntPtr lParam);
+
+        private static IntPtr HookCallback(
+            int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            {
+                int vkCode = Marshal.ReadInt32(lParam);
+                if ((Keys)vkCode == Keys.Oemtilde)
+                {
+                    Console.WriteLine("You pressed " + (Keys)vkCode);
+                }
+            }
+            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         Boolean AutoclickerEnabled = false;
         Boolean AutoclickerActivated = false;
@@ -53,7 +132,7 @@ namespace Clicktastic
             keyPrompt.Height = 100;
             keyPrompt.Text = "Clicktastic";
             keyPrompt.KeyPreview = true;
-            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = "Press any key" };
+            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = "Press any key or click here" };
             lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
             keyPrompt.Controls.Add(lblKey);
             System.Timers.Timer timer = new System.Timers.Timer(750);
@@ -69,16 +148,16 @@ namespace Clicktastic
                         switch (textState)
                         {
                             case 0:
-                                lblKey.Text = "Press any key";
+                                lblKey.Text = "Press any key or click here";
                                 break;
                             case 1:
-                                lblKey.Text = "Press any key.";
+                                lblKey.Text = "Press any key or click here.";
                                 break;
                             case 2:
-                                lblKey.Text = "Press any key..";
+                                lblKey.Text = "Press any key or click here..";
                                 break;
                             case 3:
-                                lblKey.Text = "Press any key...";
+                                lblKey.Text = "Press any key or click here...";
                                 break;
                         }
                     }));
@@ -168,7 +247,15 @@ namespace Clicktastic
             ddbTurboMode.SelectedIndex = 0;
             MinDelay = (int)numMinDelay.Value;
             MaxDelay = (int)numMaxDelay.Value;
+
+            _hookID = SetHook(_proc);
+
             setInstructions();
+        }
+
+        ~Form1()
+        {
+            UnhookWindowsHookEx(_hookID);
         }
 
         private void PerformClick(System.Timers.Timer timer, Random randomNumber)
@@ -471,7 +558,7 @@ namespace Clicktastic
 
         private void pbAutoclickerEnabled_Click(object sender, EventArgs e)
         {
-            if (AutoclickerEnabled == true)
+            if (AutoclickerEnabled)
             {
                 AutoclickerEnabled = false;
                 pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
@@ -489,20 +576,33 @@ namespace Clicktastic
 
         private void pbAutoclickerRunning_Click(object sender, EventArgs e)
         {
-            if (AutoclickerActivated == true)
+            if (AutoclickerActivated)
             {
                 AutoclickerActivated = false;
+                AutoclickerEnabled = false;
                 pbAutoclickerRunning.Image = Properties.Resources.red_circle;
                 lblAutoclickerRunning.Text = "Waiting";
                 lblAutoclickerRunning.ForeColor = Color.Red;
+
+                //Debug Code
+                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                lblAutoclickerEnabled.Text = "Disabled";
+                lblAutoclickerEnabled.ForeColor = Color.Red;
             }
             else
             {
                 AutoclickerActivated = true;
+                AutoclickerEnabled = true;
                 pbAutoclickerRunning.Image = Properties.Resources.green_circle;
                 lblAutoclickerRunning.Text = "Running";
                 lblAutoclickerRunning.ForeColor = Color.Lime;
-                Thread.Sleep(1000); //debug code
+
+                //Debug Code
+                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                lblAutoclickerEnabled.Text = "Enabled";
+                lblAutoclickerEnabled.ForeColor = Color.Lime;
+
+                Thread.Sleep(100); //debug code
                 AutoClick();
             }
         }
@@ -510,6 +610,21 @@ namespace Clicktastic
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             turbo = ddbTurboMode.SelectedIndex + 1;
+        }
+
+        private void PlayMarioTheme()
+        {
+            Console.Beep(659, 125);
+            Console.Beep(659, 125);
+            Thread.Sleep(125);
+            Console.Beep(659, 125);
+            Thread.Sleep(167);
+            Console.Beep(523, 125);
+            Console.Beep(659, 125);
+            Thread.Sleep(125);
+            Console.Beep(784, 125);
+            Thread.Sleep(375);
+            Console.Beep(392, 125);
         }
     }
 }
