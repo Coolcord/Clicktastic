@@ -420,6 +420,12 @@ namespace Clicktastic
             {
                 Console.WriteLine(ex);
             }
+            if (!AutoclickerActivated) //stop the autoclicker
+            {
+                timer.Stop();
+                timer.Dispose();
+                return;
+            }
         }
 
         private void AutoClick()
@@ -613,6 +619,7 @@ namespace Clicktastic
                 lblMaxDelay.Visible = false;
                 numMaxDelay.Visible = false;
                 numMaxDelay.Value = numMinDelay.Value;
+                MaxDelay = (int)numMaxDelay.Value;
                 lblMinDelay.Text = "Delay Time:";
                 Random = false;
             }
@@ -625,6 +632,7 @@ namespace Clicktastic
                 lblMaxDelay.Visible = true;
                 numMaxDelay.Visible = true;
                 numMaxDelay.Value = numMinDelay.Value;
+                MaxDelay = (int)numMaxDelay.Value;
                 lblMinDelay.Text = "Minimum Delay Time:";
                 Random = true;
             }
