@@ -120,23 +120,48 @@ namespace Clicktastic
                         {
                             AutoclickerEnabled = false;
                             AutoclickerActivated = false;
-                            pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
-                            lblAutoclickerEnabled.Text = "Disabled";
-                            lblAutoclickerEnabled.ForeColor = Color.Red;
-                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                            lblAutoclickerRunning.Text = "Waiting";
-                            lblAutoclickerRunning.ForeColor = Color.Red;
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                                lblAutoclickerEnabled.Text = "Disabled";
+                                lblAutoclickerEnabled.ForeColor = Color.Red;
+                                pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                                lblAutoclickerRunning.Text = "Waiting";
+                                lblAutoclickerRunning.ForeColor = Color.Red;
+                            }));
+                            AutoclickerWaiting = true;
                         }
                         else
                         {
                             AutoclickerEnabled = true;
                             AutoclickerActivated = true;
-                            pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                            lblAutoclickerEnabled.Text = "Enabled";
-                            lblAutoclickerEnabled.ForeColor = Color.Lime;
-                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                            lblAutoclickerRunning.Text = "Waiting";
-                            lblAutoclickerRunning.ForeColor = Color.Red;
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                                lblAutoclickerEnabled.Text = "Enabled";
+                                lblAutoclickerEnabled.ForeColor = Color.Lime;
+                            }));
+                            Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
+                            if (ButtonHeld && AutoclickerWaiting)
+                            {
+                                this.Invoke(new MethodInvoker(() =>
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                                    lblAutoclickerRunning.Text = "Running";
+                                    lblAutoclickerRunning.ForeColor = Color.Lime;
+                                }));
+                                AutoclickerWaiting = false;
+                            }
+                            else
+                            {
+                                this.Invoke(new MethodInvoker(() =>
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                                    lblAutoclickerRunning.Text = "Waiting";
+                                    lblAutoclickerRunning.ForeColor = Color.Red;
+                                }));
+                                AutoclickerWaiting = true;
+                            }
                             AutoClick();
                         }
                     }
