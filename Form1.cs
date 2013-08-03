@@ -124,10 +124,30 @@ namespace Clicktastic
                         if (AutoclickerActivated)
                         {
                             AutoclickerActivated = false;
+                            if (!AutoclickerWaiting)
+                            {
+                                this.Invoke(new MethodInvoker(() =>
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                                    lblAutoclickerRunning.Text = "Waiting";
+                                    lblAutoclickerRunning.ForeColor = Color.Red;
+                                }));
+                                AutoclickerWaiting = true;
+                            }
                         }
                         else
                         {
                             AutoclickerActivated = true;
+                            if (AutoclickerWaiting)
+                            {
+                                this.Invoke(new MethodInvoker(() =>
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                                    lblAutoclickerRunning.Text = "Running";
+                                    lblAutoclickerRunning.ForeColor = Color.Lime;
+                                }));
+                                AutoclickerWaiting = false;
+                            }
                             AutoClick();
                         }
                     }
@@ -163,7 +183,7 @@ namespace Clicktastic
         int MinDelay = 1;
         int MaxDelay = 1000;
 
-        public string GetKeyDialog()
+        private string GetKeyDialog()
         {
             Form keyPrompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
             keyPrompt.StartPosition = FormStartPosition.CenterParent;
@@ -377,7 +397,6 @@ namespace Clicktastic
 
         private void AutoClick()
         {
-            AutoclickerWaiting = true;
             if (Random)
             {
                 Random randomGen = new Random();
