@@ -122,7 +122,6 @@
             this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pbAutoclickerRunning.TabIndex = 6;
             this.pbAutoclickerRunning.TabStop = false;
-            this.pbAutoclickerRunning.Click += new System.EventHandler(this.pbAutoclickerRunning_Click);
             // 
             // pbAutoclickerEnabled
             // 
@@ -134,7 +133,6 @@
             this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pbAutoclickerEnabled.TabIndex = 5;
             this.pbAutoclickerEnabled.TabStop = false;
-            this.pbAutoclickerEnabled.Click += new System.EventHandler(this.pbAutoclickerEnabled_Click);
             // 
             // lblAutoclickerRunning
             // 

@@ -67,7 +67,7 @@ namespace Clicktastic
 
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
-        private static LowLevelKeyboardProc _proc = HookCallback;
+        private LowLevelKeyboardProc _proc = null;
         private static IntPtr _hookID = IntPtr.Zero;
 
 
@@ -85,7 +85,7 @@ namespace Clicktastic
         private delegate IntPtr LowLevelKeyboardProc(
             int nCode, IntPtr wParam, IntPtr lParam);
 
-        private static IntPtr HookCallback(
+        private IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
@@ -93,7 +93,44 @@ namespace Clicktastic
                 int vkCode = Marshal.ReadInt32(lParam);
                 if ((Keys)vkCode == Keys.Oemtilde)
                 {
-                    Console.WriteLine("You pressed " + (Keys)vkCode);
+                    if (Hold)
+                    {
+                        if (AutoclickerEnabled)
+                        {
+                            AutoclickerEnabled = false;
+                            AutoclickerActivated = false;
+                            pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                            lblAutoclickerEnabled.Text = "Disabled";
+                            lblAutoclickerEnabled.ForeColor = Color.Red;
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                        }
+                        else
+                        {
+                            AutoclickerEnabled = true;
+                            AutoclickerActivated = true;
+                            pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                            lblAutoclickerEnabled.Text = "Enabled";
+                            lblAutoclickerEnabled.ForeColor = Color.Lime;
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                            AutoClick();
+                        }
+                    }
+                    else
+                    {
+                        if (AutoclickerActivated)
+                        {
+                            AutoclickerActivated = false;
+                        }
+                        else
+                        {
+                            AutoclickerActivated = true;
+                            AutoClick();
+                        }
+                    }
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
@@ -113,8 +150,10 @@ namespace Clicktastic
 
 
 
-        Boolean AutoclickerEnabled = false;
+        Boolean AutoclickerEnabled = true;
         Boolean AutoclickerActivated = false;
+        Boolean AutoclickerWaiting = true;
+        Boolean SimulatingClicksOnHold = false; //this might need to be a mutex fo some kind
         Boolean Random = false;
         Boolean Hold = false;
         string ActivationKey = "~";
@@ -240,6 +279,8 @@ namespace Clicktastic
 
         public Form1()
         {
+            _proc = HookCallback;
+
             InitializeComponent();
             ddbProfile.SelectedIndex = 0;
             ddbActivationMode.SelectedIndex = 0;
@@ -265,12 +306,33 @@ namespace Clicktastic
                 Boolean KeyHeld = ((Control.MouseButtons & MouseButtons.Left) != 0);
                 if (!Hold || (AutoclickerEnabled && KeyHeld))
                 {
-                    if (AutoclickerActivated == false) //stop the autoclicker
+                    if (!AutoclickerActivated) //stop the autoclicker
                     {
+                        if (!AutoclickerWaiting)
+                        {
+                            AutoclickerWaiting = true;
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                                lblAutoclickerRunning.Text = "Waiting";
+                                lblAutoclickerRunning.ForeColor = Color.Red;
+                            }));
+                        }
                         timer.Stop();
                         timer.Dispose();
                         return;
                     }
+                    if (AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            lblAutoclickerRunning.Text = "Running";
+                            lblAutoclickerRunning.ForeColor = Color.Lime;
+                        }));
+                        AutoclickerWaiting = false;
+                    }
+                    SimulatingClicksOnHold = true;
                     if (Hold)
                     {
                         for (int i = 0; i < turbo; i++)
@@ -289,8 +351,22 @@ namespace Clicktastic
                             //SendKeys.SendWait("{ENTER}"); //press key or click
                         }
                     }
+                    SimulatingClicksOnHold = false;
                     if (Random)
                         timer.Interval = randomNumber.Next(MinDelay, MaxDelay);
+                }
+                else
+                {
+                    if (!AutoclickerWaiting && !SimulatingClicksOnHold)
+                    {
+                        AutoclickerWaiting = true;
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                        }));
+                    }
                 }
             }
             catch (Exception ex)
@@ -301,6 +377,7 @@ namespace Clicktastic
 
         private void AutoClick()
         {
+            AutoclickerWaiting = true;
             if (Random)
             {
                 Random randomGen = new Random();
@@ -554,57 +631,6 @@ namespace Clicktastic
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
             setInstructions();
-        }
-
-        private void pbAutoclickerEnabled_Click(object sender, EventArgs e)
-        {
-            if (AutoclickerEnabled)
-            {
-                AutoclickerEnabled = false;
-                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
-                lblAutoclickerEnabled.Text = "Disabled";
-                lblAutoclickerEnabled.ForeColor = Color.Red;
-            }
-            else
-            {
-                AutoclickerEnabled = true;
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                lblAutoclickerEnabled.Text = "Enabled";
-                lblAutoclickerEnabled.ForeColor = Color.Lime;
-            }
-        }
-
-        private void pbAutoclickerRunning_Click(object sender, EventArgs e)
-        {
-            if (AutoclickerActivated)
-            {
-                AutoclickerActivated = false;
-                AutoclickerEnabled = false;
-                pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                lblAutoclickerRunning.Text = "Waiting";
-                lblAutoclickerRunning.ForeColor = Color.Red;
-
-                //Debug Code
-                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
-                lblAutoclickerEnabled.Text = "Disabled";
-                lblAutoclickerEnabled.ForeColor = Color.Red;
-            }
-            else
-            {
-                AutoclickerActivated = true;
-                AutoclickerEnabled = true;
-                pbAutoclickerRunning.Image = Properties.Resources.green_circle;
-                lblAutoclickerRunning.Text = "Running";
-                lblAutoclickerRunning.ForeColor = Color.Lime;
-
-                //Debug Code
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                lblAutoclickerEnabled.Text = "Enabled";
-                lblAutoclickerEnabled.ForeColor = Color.Lime;
-
-                Thread.Sleep(100); //debug code
-                AutoClick();
-            }
         }
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
