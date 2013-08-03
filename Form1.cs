@@ -65,6 +65,112 @@ namespace Clicktastic
         private static extern IntPtr GetModuleHandle(string lpModuleName);
 
 
+        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+        private static LowLevelMouseProc _proc2 = null;
+        private static IntPtr _hookID2 = IntPtr.Zero;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook,
+            LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
+
+        private static IntPtr SetHookMouse(LowLevelMouseProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(WH_MOUSE_LL, proc,
+                    GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private IntPtr HookCallbackMouse(
+        int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 &&
+                MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
+            {
+                if (Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
+                {
+                    if (AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            lblAutoclickerRunning.Text = "Running";
+                            lblAutoclickerRunning.ForeColor = Color.Lime;
+                        }));
+                        AutoclickerWaiting = false;
+                    }
+                }
+            }
+            if (nCode >= 0 &&
+                MouseMessages.WM_LBUTTONUP == (MouseMessages)wParam)
+            {
+                if (Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
+                {
+                    if (!AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                        }));
+                        AutoclickerWaiting = true;
+                    }
+                }
+            }
+            return CallNextHookEx(_hookID2, nCode, wParam, lParam);
+        }
+
+        private const int WH_MOUSE_LL = 14;
+
+        private enum MouseMessages
+        {
+            WM_LBUTTONDOWN = 0x0201,
+            WM_LBUTTONUP = 0x0202,
+            WM_MOUSEMOVE = 0x0200,
+            WM_MOUSEWHEEL = 0x020A,
+            WM_RBUTTONDOWN = 0x0204,
+            WM_RBUTTONUP = 0x0205
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MSLLHOOKSTRUCT
+        {
+            public POINT pt;
+            public uint mouseData;
+            public uint flags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
         private LowLevelKeyboardProc _proc = null;
@@ -72,7 +178,7 @@ namespace Clicktastic
 
 
 
-        private static IntPtr SetHook(LowLevelKeyboardProc proc)
+        private static IntPtr SetHookKey(LowLevelKeyboardProc proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
@@ -85,7 +191,7 @@ namespace Clicktastic
         private delegate IntPtr LowLevelKeyboardProc(
             int nCode, IntPtr wParam, IntPtr lParam);
 
-        private IntPtr HookCallback(
+        private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
@@ -299,7 +405,8 @@ namespace Clicktastic
 
         public Form1()
         {
-            _proc = HookCallback;
+            _proc = HookCallbackKey;
+            _proc2 = HookCallbackMouse;
 
             InitializeComponent();
             ddbProfile.SelectedIndex = 0;
@@ -309,7 +416,8 @@ namespace Clicktastic
             MinDelay = (int)numMinDelay.Value;
             MaxDelay = (int)numMaxDelay.Value;
 
-            _hookID = SetHook(_proc);
+            _hookID = SetHookKey(_proc);
+            _hookID2 = SetHookMouse(_proc2);
 
             setInstructions();
         }
@@ -317,6 +425,7 @@ namespace Clicktastic
         ~Form1()
         {
             UnhookWindowsHookEx(_hookID);
+            UnhookWindowsHookEx(_hookID2);
         }
 
         private void PerformClick(System.Timers.Timer timer, Random randomNumber)
@@ -328,6 +437,7 @@ namespace Clicktastic
                 {
                     if (!AutoclickerActivated) //stop the autoclicker
                     {
+                        /*
                         if (!AutoclickerWaiting)
                         {
                             AutoclickerWaiting = true;
@@ -338,10 +448,12 @@ namespace Clicktastic
                                 lblAutoclickerRunning.ForeColor = Color.Red;
                             }));
                         }
+                         */
                         timer.Stop();
                         timer.Dispose();
                         return;
                     }
+                    /*
                     if (AutoclickerWaiting)
                     {
                         this.Invoke(new MethodInvoker(() =>
@@ -352,6 +464,7 @@ namespace Clicktastic
                         }));
                         AutoclickerWaiting = false;
                     }
+                     */
                     SimulatingClicksOnHold = true;
                     if (Hold)
                     {
@@ -377,6 +490,7 @@ namespace Clicktastic
                 }
                 else
                 {
+                    /*
                     if (!AutoclickerWaiting && !SimulatingClicksOnHold)
                     {
                         AutoclickerWaiting = true;
@@ -387,6 +501,7 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
                     }
+                     */
                 }
             }
             catch (Exception ex)
