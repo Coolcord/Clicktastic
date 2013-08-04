@@ -128,11 +128,11 @@ namespace Clicktastic
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
-                if ((Keys)vkCode == Keys.Oemtilde)
+                if ((Keys)vkCode == ActivationKey.key || (Keys)vkCode == DeactivationKey.key)
                 {
                     if (Hold)
                     {
-                        if (AutoclickerEnabled)
+                        if (AutoclickerEnabled && (Keys)vkCode == DeactivationKey.key)
                         {
                             AutoclickerEnabled = false;
                             AutoclickerActivated = false;
@@ -147,7 +147,7 @@ namespace Clicktastic
                             }));
                             AutoclickerWaiting = true;
                         }
-                        else
+                        else if (!AutoclickerEnabled && (Keys)vkCode == ActivationKey.key)
                         {
                             AutoclickerEnabled = true;
                             AutoclickerActivated = true;
@@ -183,7 +183,7 @@ namespace Clicktastic
                     }
                     else
                     {
-                        if (AutoclickerActivated)
+                        if (AutoclickerActivated && (Keys)vkCode == DeactivationKey.key)
                         {
                             AutoclickerActivated = false;
                             if (!AutoclickerWaiting)
@@ -197,7 +197,7 @@ namespace Clicktastic
                                 AutoclickerWaiting = true;
                             }
                         }
-                        else
+                        else if (!AutoclickerActivated && (Keys)vkCode == ActivationKey.key)
                         {
                             AutoclickerActivated = true;
                             if (AutoclickerWaiting)
