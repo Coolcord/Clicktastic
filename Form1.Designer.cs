@@ -469,7 +469,7 @@
             this.tbDeactivationButton.ReadOnly = true;
             this.tbDeactivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbDeactivationButton.TabIndex = 6;
-            this.tbDeactivationButton.Text = "Oemtilde";
+            this.tbDeactivationButton.Text = "` (~)";
             this.tbDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
             this.tbDeactivationButton.TextChanged += new System.EventHandler(this.tbDeactivationButton_TextChanged);
             // 
@@ -501,7 +501,7 @@
             this.tbActivationButton.ReadOnly = true;
             this.tbActivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbActivationButton.TabIndex = 3;
-            this.tbActivationButton.Text = "Oemtilde";
+            this.tbActivationButton.Text = "` (~)";
             this.tbActivationButton.Click += new System.EventHandler(this.ActivationButton_Click);
             this.tbActivationButton.TextChanged += new System.EventHandler(this.tbActivationButton_TextChanged);
             // 

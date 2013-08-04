@@ -336,14 +336,10 @@ namespace Clicktastic
                 timer.Stop();
 
                 //Determine the key pressed
-                if (e.KeyCode == Keys.Menu)
-                    strKey = "Alt";
-                else if (e.KeyCode == Keys.ShiftKey)
-                    strKey = "Shift";
-                else if (e.KeyCode == Keys.ControlKey)
-                    strKey = "Ctrl";
-                else
-                    strKey = e.KeyCode.ToString();
+                KeysConverter converter = new KeysConverter();
+                strKey = converter.ConvertToString(e.KeyCode);
+                if (strKey == "Oemtilde")
+                    strKey = "` (~)";
 
                 //Determine key modifiers
                 if (e.Alt && e.KeyCode != Keys.Menu)
@@ -423,7 +419,7 @@ namespace Clicktastic
             string lastKey = buttons.Last();
             foreach(string button in buttons)
             {
-                if (button == "+")
+                if (button == "+" || button == "(~)")
                     continue;
                 if (button != lastKey)
                 {
@@ -451,8 +447,11 @@ namespace Clicktastic
                 else
                 {
                     key.isKeyboard = true;
+                    string value = button;
+                    if (value == "`")
+                        value = "Oemtilde";
                     KeysConverter converter = new KeysConverter();
-                    key.key = (Keys)converter.ConvertFromString(button);
+                    key.key = (Keys)converter.ConvertFromString(value);
                 }
             }
             key.valid = true;
@@ -741,6 +740,7 @@ namespace Clicktastic
             else
             {
                 lblDeactivationButton.Enabled = false;
+                DeactivationKey = ActivationKey;
                 tbDeactivationButton.Text = tbActivationButton.Text;
                 tbDeactivationButton.Enabled = false;
                 btnDeactivationButton.Enabled = false;
@@ -828,6 +828,8 @@ namespace Clicktastic
             if (isActivationSettingsValid(key))
             {
                 ActivationKey = key;
+                if (!cbUseDeactivationButton.Checked)
+                    DeactivationKey = key;
                 tbActivationButton.Text = key.keyString;
             }
         }
