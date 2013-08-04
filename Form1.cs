@@ -284,7 +284,7 @@ namespace Clicktastic
         int MinDelay = 1;
         int MaxDelay = 1000;
 
-        private KEYCOMBO GetKeyDialog()
+        private KEYCOMBO GetKeyDialog(string message)
         {
             Form keyPrompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
             keyPrompt.StartPosition = FormStartPosition.CenterParent;
@@ -292,7 +292,7 @@ namespace Clicktastic
             keyPrompt.Height = 100;
             keyPrompt.Text = "Clicktastic";
             keyPrompt.KeyPreview = true;
-            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = "Press any key or click here" };
+            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = message };
             lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
             keyPrompt.Controls.Add(lblKey);
             System.Timers.Timer timer = new System.Timers.Timer(750);
@@ -308,16 +308,16 @@ namespace Clicktastic
                         switch (textState)
                         {
                             case 0:
-                                lblKey.Text = "Press any key or click here";
+                                lblKey.Text = message;
                                 break;
                             case 1:
-                                lblKey.Text = "Press any key or click here.";
+                                lblKey.Text = message + ".";
                                 break;
                             case 2:
-                                lblKey.Text = "Press any key or click here..";
+                                lblKey.Text = message + "..";
                                 break;
                             case 3:
-                                lblKey.Text = "Press any key or click here...";
+                                lblKey.Text = message + "...";
                                 break;
                         }
                     }));
@@ -406,6 +406,11 @@ namespace Clicktastic
         private KEYCOMBO ParseKEYCOMBO(string strKey)
         {
             KEYCOMBO key = new KEYCOMBO();
+            if (strKey == null)
+            {
+                key.valid = false;
+                return key;
+            }
             key.keyString = strKey;
             key.ctrl = false;
             key.shift = false;
@@ -423,11 +428,20 @@ namespace Clicktastic
                 if (button != lastKey)
                 {
                     if (button == "Ctrl")
+                    {
                         key.ctrl = true;
+                        continue;
+                    }
                     else if (button == "Shift")
+                    {
                         key.shift = true;
+                        continue;
+                    }
                     else if (button == "Alt")
+                    {
                         key.alt = true;
+                        continue;
+                    }
                 }
                 if (button == "LeftClick") key.mouseButton = MOUSEEVENTF_LEFTDOWN;
                 else if (button == "RightClick") key.mouseButton = MOUSEEVENTF_RIGHTDOWN;
@@ -481,10 +495,7 @@ namespace Clicktastic
             {
                 if (key.isKeyboard) //keyboard key
                 {
-                    for (int i = 0; i < turbo; i++)
-                    {
-                        //SendKeys.SendWait(key.key);
-                    }
+                    return; //keyboard keys are not supported in hold mode
                 }
                 else //is mouse
                 {
@@ -514,10 +525,7 @@ namespace Clicktastic
                     }
                     else //scroll
                     {
-                        for (int i = 0; i < turbo; i++)
-                        {
-                            mouse_event(MOUSEEVENTF_WHEEL, 0, 0, key.wheel, 0);
-                        }
+                        return; //mouse scroll is not supported in hold mode
                     }
                 }
             }
@@ -527,7 +535,7 @@ namespace Clicktastic
                 {
                     for (int i = 0; i < turbo; i++)
                     {
-                        //SendKeys.SendWait(key.key);
+                        SendKeys.SendWait("{ENTER}");
                     }
                 }
                 else //is mouse
@@ -740,6 +748,71 @@ namespace Clicktastic
             setInstructions();
         }
 
+        private Boolean isActivationSettingsValid(KEYCOMBO key)
+        {
+            if (!key.valid)
+                return false;
+            if (!key.isKeyboard)
+            {
+                MessageBox.Show("Mouse buttons cannot be used as activator hotkeys!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
+        }
+
+        private Boolean isAutoclickKeySettingsValid(KEYCOMBO key)
+        {
+            if (!key.valid)
+                return false;
+            if (!key.isKeyboard && (key.ctrl || key.shift || key.alt))
+            {
+                MessageBox.Show("Keyboard combos are not supported with the mouse!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (Hold && key.isKeyboard)
+            {
+                DialogResult result = DialogResult.Yes;
+                result = MessageBox.Show("Keyboard keys are not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (result == DialogResult.Yes)
+                {
+                    ddbActivationMode.SelectedIndex = 0;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            if (Hold && key.wheel != 0)
+            {
+                DialogResult result = DialogResult.Yes;
+                result = MessageBox.Show("Mouse wheel is not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (result == DialogResult.Yes)
+                {
+                    ddbActivationMode.SelectedIndex = 0;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            return true;
+        }
+
+        private void CheckActivationModeSettings()
+        {
+            if (ddbActivationMode.SelectedIndex == 0)
+                return; //trigger mode is always fine
+            if (AutoclickKey.isKeyboard)
+            {
+                MessageBox.Show("Keyboard keys are not supported in hold mode!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ddbActivationMode.SelectedIndex = 0; //fall back to trigger mode
+            }
+            if (AutoclickKey.wheel != 0)
+            {
+                MessageBox.Show("Mouse wheel is not supported in hold mode!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ddbActivationMode.SelectedIndex = 0; //fall back to trigger mode
+            }
+            return;
+        }
+
         private void tbActivationButton_TextChanged(object sender, EventArgs e)
         {
             if (!cbUseDeactivationButton.Checked)
@@ -751,8 +824,8 @@ namespace Clicktastic
 
         private void ActivationButton_Click(object sender, EventArgs e)
         {
-            KEYCOMBO key = GetKeyDialog();
-            if (key.valid)
+            KEYCOMBO key = GetKeyDialog("Press any key");
+            if (isActivationSettingsValid(key))
             {
                 ActivationKey = key;
                 tbActivationButton.Text = key.keyString;
@@ -761,8 +834,8 @@ namespace Clicktastic
 
         private void DeactivationButton_Click(object sender, EventArgs e)
         {
-            KEYCOMBO key = GetKeyDialog();
-            if (key.valid)
+            KEYCOMBO key = GetKeyDialog("Press any key");
+            if (isActivationSettingsValid(key))
             {
                 DeactivationKey = key;
                 tbDeactivationButton.Text = key.keyString;
@@ -771,8 +844,8 @@ namespace Clicktastic
 
         private void AutoclickButton_Click(object sender, EventArgs e)
         {
-            KEYCOMBO key = GetKeyDialog();
-            if (key.valid)
+            KEYCOMBO key = GetKeyDialog("Press any key or click here");
+            if (isAutoclickKeySettingsValid(key))
             {
                 AutoclickKey = key;
                 tbAutoclickButton.Text = key.keyString;
@@ -840,6 +913,7 @@ namespace Clicktastic
 
         private void ddbActivationMode_SelectedIndexChanged(object sender, EventArgs e)
         {
+            CheckActivationModeSettings();
             if (ddbActivationMode.SelectedIndex == 0)
             {
                 Hold = false;
