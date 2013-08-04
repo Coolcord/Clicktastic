@@ -457,6 +457,9 @@ namespace Clicktastic
             ddbTurboMode.SelectedIndex = 0;
             MinDelay = (int)numMinDelay.Value;
             MaxDelay = (int)numMaxDelay.Value;
+            ActivationKey = ParseKEYCOMBO("Oemtilde");
+            DeactivationKey = ParseKEYCOMBO("Oemtilde");
+            AutoclickKey = ParseKEYCOMBO("LeftClick");
 
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);

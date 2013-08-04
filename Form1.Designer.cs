@@ -32,6 +32,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.lblHoldInstructions = new System.Windows.Forms.Label();
+            this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
+            this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.lblAutoclickerRunning = new System.Windows.Forms.Label();
             this.lblAutoclickerEnabled = new System.Windows.Forms.Label();
             this.lblSpeedInstructions = new System.Windows.Forms.Label();
@@ -65,15 +67,13 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
-            this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
-            this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -113,6 +113,28 @@
             this.lblHoldInstructions.TabIndex = 7;
             this.lblHoldInstructions.Text = "Hold Left Click to autoclick";
             this.lblHoldInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // pbAutoclickerRunning
+            // 
+            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerRunning.ImageLocation = "";
+            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
+            this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
+            this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
+            this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbAutoclickerRunning.TabIndex = 6;
+            this.pbAutoclickerRunning.TabStop = false;
+            // 
+            // pbAutoclickerEnabled
+            // 
+            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerEnabled.ImageLocation = "";
+            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
+            this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
+            this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
+            this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbAutoclickerEnabled.TabIndex = 5;
+            this.pbAutoclickerEnabled.TabStop = false;
             // 
             // lblAutoclickerRunning
             // 
@@ -447,7 +469,7 @@
             this.tbDeactivationButton.ReadOnly = true;
             this.tbDeactivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbDeactivationButton.TabIndex = 6;
-            this.tbDeactivationButton.Text = "~";
+            this.tbDeactivationButton.Text = "Oemtilde";
             this.tbDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
             this.tbDeactivationButton.TextChanged += new System.EventHandler(this.tbDeactivationButton_TextChanged);
             // 
@@ -479,7 +501,7 @@
             this.tbActivationButton.ReadOnly = true;
             this.tbActivationButton.Size = new System.Drawing.Size(92, 22);
             this.tbActivationButton.TabIndex = 3;
-            this.tbActivationButton.Text = "~";
+            this.tbActivationButton.Text = "Oemtilde";
             this.tbActivationButton.Click += new System.EventHandler(this.ActivationButton_Click);
             this.tbActivationButton.TextChanged += new System.EventHandler(this.tbActivationButton_TextChanged);
             // 
@@ -515,28 +537,6 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
-            // pbAutoclickerRunning
-            // 
-            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
-            this.pbAutoclickerRunning.ImageLocation = "";
-            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
-            this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
-            this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
-            this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbAutoclickerRunning.TabIndex = 6;
-            this.pbAutoclickerRunning.TabStop = false;
-            // 
-            // pbAutoclickerEnabled
-            // 
-            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
-            this.pbAutoclickerEnabled.ImageLocation = "";
-            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
-            this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
-            this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
-            this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbAutoclickerEnabled.TabIndex = 5;
-            this.pbAutoclickerEnabled.TabStop = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -552,12 +552,12 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.ResumeLayout(false);
 
         }
