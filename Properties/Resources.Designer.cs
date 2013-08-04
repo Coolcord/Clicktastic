@@ -60,6 +60,13 @@ namespace Clicktastic.Properties {
             }
         }
         
+        internal static System.Drawing.Icon clicktastic {
+            get {
+                object obj = ResourceManager.GetObject("clicktastic", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap green_circle {
             get {
                 object obj = ResourceManager.GetObject("green_circle", resourceCulture);

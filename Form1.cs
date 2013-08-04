@@ -21,6 +21,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -376,6 +377,8 @@ namespace Clicktastic
                 keyPrompt.Close();
             };
             keyPrompt.ShowDialog();
+            keyPrompt.Dispose();
+            lblKey.Dispose();
             return key;
         }
 
@@ -730,6 +733,43 @@ namespace Clicktastic
             Console.Beep(784, 125);
             Thread.Sleep(375);
             Console.Beep(392, 125);
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            Form aboutForm = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
+            aboutForm.StartPosition = FormStartPosition.CenterParent;
+            aboutForm.Width = 400;
+            aboutForm.Height = 200;
+            aboutForm.Text = "About Clicktastic";
+            aboutForm.Icon = Clicktastic.Properties.Resources.clicktastic;
+
+            //Get the version number
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+            Label aboutText = new Label()
+            {
+                Width = 400,
+                Height = 130,
+                Location = new Point(0, 0),
+                ImageAlign = ContentAlignment.MiddleCenter,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Text = "Clicktastic v" + fileVersionInfo.ProductMajorPart + "." + fileVersionInfo.ProductMinorPart + "." + fileVersionInfo.ProductBuildPart + "\n\n" +
+                    "Mass Click Mouse Buttons or\n" + "Mass Press Keyboard Keys\n\n" +
+                    "Programmed and Designed by Coolcord"
+            };
+            Font aboutFont = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
+            aboutText.Font = aboutFont;
+            Button btnOk = new Button() { Width = 100, Height = 30, Text = "OK", Location = new Point(150, 130), ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter };
+            btnOk.Click += (btnSender, btnE) => aboutForm.Close(); //click ok to close
+            aboutForm.Controls.Add(aboutText);
+            aboutForm.Controls.Add(btnOk);
+            aboutForm.ShowDialog();
+            aboutForm.Dispose();
+            btnOk.Dispose();
+            aboutText.Dispose();
+            aboutFont.Dispose();
         }
     }
 }

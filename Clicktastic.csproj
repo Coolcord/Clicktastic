@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>clicktastic.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,6 +81,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="clicktastic.ico" />
     <Content Include="data\green_circle.png" />
     <Content Include="data\red_circle.png" />
   </ItemGroup>

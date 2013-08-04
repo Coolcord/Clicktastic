@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.lblHoldInstructions = new System.Windows.Forms.Label();
-            this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
-            this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.lblAutoclickerRunning = new System.Windows.Forms.Label();
             this.lblAutoclickerEnabled = new System.Windows.Forms.Label();
             this.lblSpeedInstructions = new System.Windows.Forms.Label();
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnAbout = new System.Windows.Forms.Button();
             this.lblTurboMode = new System.Windows.Forms.Label();
             this.ddbTurboMode = new System.Windows.Forms.ComboBox();
             this.btnAutoclickButton = new System.Windows.Forms.Button();
@@ -65,13 +65,15 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
+            this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
+            this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -111,28 +113,6 @@
             this.lblHoldInstructions.TabIndex = 7;
             this.lblHoldInstructions.Text = "Hold Left Click to autoclick";
             this.lblHoldInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // pbAutoclickerRunning
-            // 
-            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
-            this.pbAutoclickerRunning.ImageLocation = "";
-            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
-            this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
-            this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
-            this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbAutoclickerRunning.TabIndex = 6;
-            this.pbAutoclickerRunning.TabStop = false;
-            // 
-            // pbAutoclickerEnabled
-            // 
-            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
-            this.pbAutoclickerEnabled.ImageLocation = "";
-            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
-            this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
-            this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
-            this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbAutoclickerEnabled.TabIndex = 5;
-            this.pbAutoclickerEnabled.TabStop = false;
             // 
             // lblAutoclickerRunning
             // 
@@ -188,6 +168,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btnAbout);
             this.tabPage2.Controls.Add(this.lblTurboMode);
             this.tabPage2.Controls.Add(this.ddbTurboMode);
             this.tabPage2.Controls.Add(this.btnAutoclickButton);
@@ -221,6 +202,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Preferences";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Location = new System.Drawing.Point(316, 28);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(152, 59);
+            this.btnAbout.TabIndex = 28;
+            this.btnAbout.Text = "About Clicktastic";
+            this.btnAbout.UseVisualStyleBackColor = true;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // lblTurboMode
             // 
@@ -524,6 +515,28 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
+            // pbAutoclickerRunning
+            // 
+            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerRunning.ImageLocation = "";
+            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
+            this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
+            this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
+            this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbAutoclickerRunning.TabIndex = 6;
+            this.pbAutoclickerRunning.TabStop = false;
+            // 
+            // pbAutoclickerEnabled
+            // 
+            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerEnabled.ImageLocation = "";
+            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
+            this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
+            this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
+            this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbAutoclickerEnabled.TabIndex = 5;
+            this.pbAutoclickerEnabled.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -532,18 +545,19 @@
             this.ClientSize = new System.Drawing.Size(523, 334);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Clicktastic";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -587,6 +601,7 @@
         private System.Windows.Forms.Button btnDeactivationButton;
         private System.Windows.Forms.Label lblTurboMode;
         private System.Windows.Forms.ComboBox ddbTurboMode;
+        private System.Windows.Forms.Button btnAbout;
     }
 }
 
