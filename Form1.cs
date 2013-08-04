@@ -37,6 +37,7 @@ namespace Clicktastic
         private const UInt32 MOUSEEVENTF_MIDDLEUP = 0x0040;
         private const UInt32 MOUSEEVENTF_RIGHTDOWN = 0x0008;
         private const UInt32 MOUSEEVENTF_RIGHTUP = 0x0010;
+        private const UInt32 MOUSEEVENTF_WHEEL = 0x0800;
 
         /*
         private const UInt32 MOD_ALT = 0x0001;
@@ -46,9 +47,23 @@ namespace Clicktastic
         private const UInt32 MOD_WIN = 0x0008;
          */
 
+        [StructLayout(LayoutKind.Auto)]
+        private struct KEYCOMBO
+        {
+            public Boolean valid;
+            public string keyString;
+            public Boolean isKeyboard;
+            public Boolean ctrl;
+            public Boolean shift;
+            public Boolean alt;
+            public Keys key;
+            public UInt32 mouseButton;
+            public int wheel;
+        }
+
         //Mouse Output
         [DllImport("user32.dll")]
-        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInf);
+        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, int dwData, uint dwExtraInf);
 
         //Keyboard Hook
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -259,14 +274,17 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false; //this might need to be a mutex fo some kind
         Boolean Random = false;
         Boolean Hold = false;
-        string ActivationKey = "~";
-        string DeactivationKey = "~";
-        string AutoclickKey = "a";
+        //string ActivationKey = "~";
+        //string DeactivationKey = "~";
+        //string AutoclickKey = "a";
+        KEYCOMBO ActivationKey = new KEYCOMBO();
+        KEYCOMBO DeactivationKey = new KEYCOMBO();
+        KEYCOMBO AutoclickKey = new KEYCOMBO();
         int turbo = 1;
         int MinDelay = 1;
         int MaxDelay = 1000;
 
-        private string GetKeyDialog()
+        private KEYCOMBO GetKeyDialog()
         {
             Form keyPrompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
             keyPrompt.StartPosition = FormStartPosition.CenterParent;
@@ -310,30 +328,32 @@ namespace Clicktastic
                     Console.WriteLine(ex);
                 }
             };
-            string key = null;
+            KEYCOMBO key = new KEYCOMBO();
+            key.valid = false;
+            string strKey = null;
             keyPrompt.PreviewKeyDown += (sender, e) =>
             {
                 timer.Stop();
 
                 //Determine the key pressed
                 if (e.KeyCode == Keys.Menu)
-                    key = "Alt";
+                    strKey = "Alt";
                 else if (e.KeyCode == Keys.ShiftKey)
-                    key = "Shift";
+                    strKey = "Shift";
                 else if (e.KeyCode == Keys.ControlKey)
-                    key = "Ctrl";
+                    strKey = "Ctrl";
                 else
-                    key = e.KeyCode.ToString();
+                    strKey = e.KeyCode.ToString();
 
                 //Determine key modifiers
                 if (e.Alt && e.KeyCode != Keys.Menu)
-                    key = "Alt + " + key;
+                    strKey = "Alt + " + strKey;
                 if (e.Shift && e.KeyCode != Keys.ShiftKey)
-                    key = "Shift + " + key;
+                    strKey = "Shift + " + strKey;
                 if (e.Control && e.KeyCode != Keys.ControlKey)
-                    key = "Ctrl + " + key;
+                    strKey = "Ctrl + " + strKey;
 
-                lblKey.Text = key;
+                lblKey.Text = strKey;
             };
             keyPrompt.KeyDown += (sender, e) =>
             {
@@ -350,35 +370,78 @@ namespace Clicktastic
             {
                 timer.Stop();
                 if (e.Button == MouseButtons.Left)
-                    key = "LeftClick";
+                    strKey = "LeftClick";
                 else if (e.Button == MouseButtons.Right)
-                    key = "RightClick";
+                    strKey = "RightClick";
                 else if (e.Button == MouseButtons.Middle)
-                    key = "MiddleClick";
+                    strKey = "MiddleClick";
                 else
-                    key = e.Button.ToString();
+                    strKey = e.Button.ToString();
                 string lastKey = lblKey.Text.Split(' ').Last();
                 if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
-                    key = lblKey.Text + " + " + key;
-                lblKey.Text = key;
+                    strKey = lblKey.Text + " + " + strKey;
+                lblKey.Text = strKey;
                 keyPrompt.Close();
             };
             keyPrompt.MouseWheel += (sender, e) =>
             {
                 timer.Stop();
                 if (e.Delta < 0) //negative is down
-                    key = "MouseWheelDown";
+                    strKey = "MouseWheelDown";
                 else //positive is up
-                    key = "MouseWheelUp";
+                    strKey = "MouseWheelUp";
                 string lastKey = lblKey.Text.Split(' ').Last();
                 if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
-                    key = lblKey.Text + " + " + key;
-                lblKey.Text = key;
+                    strKey = lblKey.Text + " + " + strKey;
+                lblKey.Text = strKey;
                 keyPrompt.Close();
             };
             keyPrompt.ShowDialog();
             keyPrompt.Dispose();
             lblKey.Dispose();
+            key = ParseKEYCOMBO(strKey);
+            return key;
+        }
+
+        private KEYCOMBO ParseKEYCOMBO(string strKey)
+        {
+            KEYCOMBO key = new KEYCOMBO();
+            key.keyString = strKey;
+            key.ctrl = false;
+            key.shift = false;
+            key.alt = false;
+            key.isKeyboard = false;
+            key.mouseButton = 0;
+            key.wheel = 0;
+            key.key = Keys.None;
+            string[] buttons = strKey.Split(' ');
+            string lastKey = buttons.Last();
+            foreach(string button in buttons)
+            {
+                if (button == "+")
+                    continue;
+                if (button != lastKey)
+                {
+                    if (button == "Ctrl")
+                        key.ctrl = true;
+                    else if (button == "Shift")
+                        key.shift = true;
+                    else if (button == "Alt")
+                        key.alt = true;
+                }
+                if (button == "LeftClick") key.mouseButton = MOUSEEVENTF_LEFTDOWN;
+                else if (button == "RightClick") key.mouseButton = MOUSEEVENTF_RIGHTDOWN;
+                else if (button == "MiddleClick") key.mouseButton = MOUSEEVENTF_MIDDLEDOWN;
+                else if (button == "MouseWheelDown") key.wheel = -120;
+                else if (button == "MouseWheelUp") key.wheel = 120;
+                else
+                {
+                    key.isKeyboard = true;
+                    KeysConverter converter = new KeysConverter();
+                    key.key = (Keys)converter.ConvertFromString(button);
+                }
+            }
+            key.valid = true;
             return key;
         }
 
@@ -407,6 +470,112 @@ namespace Clicktastic
             UnhookWindowsHookEx(_hookIDMouse);
         }
 
+        private void PlayKeyCombo(KEYCOMBO key)
+        {
+            if (!key.valid)
+                return; //key combo is invalid, so don't try running it
+            if (Hold)
+            {
+                if (key.isKeyboard) //keyboard key
+                {
+                    for (int i = 0; i < turbo; i++)
+                    {
+                        //SendKeys.SendWait(key.key);
+                    }
+                }
+                else //is mouse
+                {
+                    if (key.mouseButton == MOUSEEVENTF_LEFTDOWN) //left mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                        }
+                    }
+                    else if (key.mouseButton == MOUSEEVENTF_RIGHTDOWN) //right mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+                        }
+                    }
+                    else if (key.mouseButton == MOUSEEVENTF_MIDDLEDOWN) //middle mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                    else if (key.wheel > 0) //scroll up
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                    else //scroll down
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                }
+            }
+            else //toggle
+            {
+                if (key.isKeyboard) //keyboard key
+                {
+                    for (int i = 0; i < turbo; i++)
+                    {
+                        //SendKeys.SendWait(key.key);
+                    }
+                }
+                else //is mouse
+                {
+                    if (key.mouseButton == MOUSEEVENTF_LEFTDOWN) //left mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                        }
+                    }
+                    else if (key.mouseButton == MOUSEEVENTF_RIGHTDOWN) //right mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+                            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+                        }
+                    }
+                    else if (key.mouseButton == MOUSEEVENTF_MIDDLEDOWN) //middle mouse click
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                    else if (key.wheel > 0) //scroll up
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                    else //scroll down
+                    {
+                        for (int i = 0; i < turbo; i++)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
         private void PerformClick(System.Timers.Timer timer, Random randomNumber)
         {
             try
@@ -421,24 +590,7 @@ namespace Clicktastic
                         return;
                     }
                     SimulatingClicksOnHold = true;
-                    if (Hold)
-                    {
-                        for (int i = 0; i < turbo; i++)
-                        {
-                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
-                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
-                            //SendKeys.SendWait("{ENTER}"); //press key or click
-                        }
-                    }
-                    else //trigger
-                    {
-                        for (int i = 0; i < turbo; i++)
-                        {
-                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);//make left button down
-                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);//make left button up
-                            //SendKeys.SendWait("{ENTER}"); //press key or click
-                        }
-                    }
+                    PlayKeyCombo(AutoclickKey);
                     SimulatingClicksOnHold = false;
                     if (Random && randomNumber != null)
                         timer.Interval = randomNumber.Next(MinDelay, MaxDelay);
@@ -608,31 +760,31 @@ namespace Clicktastic
 
         private void ActivationButton_Click(object sender, EventArgs e)
         {
-            string key = GetKeyDialog();
-            if (key != null)
+            KEYCOMBO key = GetKeyDialog();
+            if (key.valid)
             {
                 ActivationKey = key;
-                tbActivationButton.Text = key.ToString();
+                tbActivationButton.Text = key.keyString;
             }
         }
 
         private void DeactivationButton_Click(object sender, EventArgs e)
         {
-            string key = GetKeyDialog();
-            if (key != null)
+            KEYCOMBO key = GetKeyDialog();
+            if (key.valid)
             {
                 DeactivationKey = key;
-                tbDeactivationButton.Text = key.ToString();
+                tbDeactivationButton.Text = key.keyString;
             }
         }
 
         private void AutoclickButton_Click(object sender, EventArgs e)
         {
-            string key = GetKeyDialog();
-            if (key != null)
+            KEYCOMBO key = GetKeyDialog();
+            if (key.valid)
             {
                 AutoclickKey = key;
-                tbAutoclickButton.Text = key.ToString();
+                tbAutoclickButton.Text = key.keyString;
             }
         }
 
