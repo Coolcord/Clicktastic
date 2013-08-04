@@ -786,17 +786,42 @@ namespace Clicktastic
                 MessageBox.Show("Keyboard combos are not supported with the mouse!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (Hold && key.isKeyboard)
+            if (key.isKeyboard)
             {
-                DialogResult result = DialogResult.Yes;
-                result = MessageBox.Show("Keyboard keys are not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                if (result == DialogResult.Yes)
+                if (Hold && ddbTurboMode.SelectedIndex != 0) //hold and turbo are on
                 {
-                    ddbActivationMode.SelectedIndex = 0;
-                    return true;
+                    DialogResult result = DialogResult.Yes;
+                    result = MessageBox.Show("Keyboard keys are not supported in hold mode and turbo mode! Would you like to switch back to toggle mode and turn off turbo mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (result == DialogResult.Yes)
+                    {
+                        ddbActivationMode.SelectedIndex = 0;
+                        ddbTurboMode.SelectedIndex = 0;
+                    }
+                    else
+                        return false;
                 }
-                else
-                    return false;
+                else if (ddbTurboMode.SelectedIndex != 0) //turbo is on
+                {
+                    DialogResult result = DialogResult.Yes;
+                    result = MessageBox.Show("Keyboard keys are not supported in turbo mode!\nWould you like to turn off turbo mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (result == DialogResult.Yes)
+                    {
+                        ddbTurboMode.SelectedIndex = 0;
+                    }
+                    else
+                        return false;
+                }
+                else if (Hold) //hold is on
+                {
+                    DialogResult result = DialogResult.Yes;
+                    result = MessageBox.Show("Keyboard keys are not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (result == DialogResult.Yes)
+                    {
+                        ddbActivationMode.SelectedIndex = 0;
+                    }
+                    else
+                        return false;
+                }
             }
             if (Hold && key.wheel != 0)
             {
@@ -805,7 +830,6 @@ namespace Clicktastic
                 if (result == DialogResult.Yes)
                 {
                     ddbActivationMode.SelectedIndex = 0;
-                    return true;
                 }
                 else
                     return false;
@@ -819,6 +843,17 @@ namespace Clicktastic
                 return false;
             }
             return true;
+        }
+
+        private void CheckTurboModeSettings()
+        {
+            if (ddbTurboMode.SelectedIndex == 0)
+                return; //turbo is off which is always fine
+            if (AutoclickKey.isKeyboard)
+            {
+                MessageBox.Show("Keyboard keys are not supported in turbo mode!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ddbTurboMode.SelectedIndex = 0; //fall back to trigger mode
+            }
         }
 
         private void CheckActivationModeSettings()
@@ -935,6 +970,20 @@ namespace Clicktastic
 
         private void tbAutoclickButton_TextChanged(object sender, EventArgs e)
         {
+            if (AutoclickKey.isKeyboard)
+            {
+                lblActivationMode.Enabled = false;
+                ddbActivationMode.Enabled = false;
+                lblTurboMode.Enabled = false;
+                ddbTurboMode.Enabled = false;
+            }
+            else
+            {
+                lblActivationMode.Enabled = true;
+                ddbActivationMode.Enabled = true;
+                lblTurboMode.Enabled = true;
+                ddbTurboMode.Enabled = true;
+            }
             setInstructions();
         }
 
@@ -961,6 +1010,7 @@ namespace Clicktastic
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
         {
+            CheckTurboModeSettings();
             turbo = ddbTurboMode.SelectedIndex + 1;
         }
 
