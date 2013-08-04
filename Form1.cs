@@ -336,10 +336,19 @@ namespace Clicktastic
                 timer.Stop();
 
                 //Determine the key pressed
-                KeysConverter converter = new KeysConverter();
-                strKey = converter.ConvertToString(e.KeyCode);
-                if (strKey == "Oemtilde")
-                    strKey = "` (~)";
+                if (e.KeyCode == Keys.Menu)
+                    strKey = "Alt";
+                else if (e.KeyCode == Keys.ShiftKey)
+                    strKey = "Shift";
+                else if (e.KeyCode == Keys.ControlKey)
+                    strKey = "Ctrl";
+                else
+                {
+                    KeysConverter converter = new KeysConverter();
+                    strKey = converter.ConvertToString(e.KeyCode);
+                    if (strKey == "Oemtilde")
+                        strKey = "` (~)";
+                }
 
                 //Determine key modifiers
                 if (e.Alt && e.KeyCode != Keys.Menu)
@@ -372,7 +381,7 @@ namespace Clicktastic
                 else if (e.Button == MouseButtons.Middle)
                     strKey = "MiddleClick";
                 else
-                    strKey = e.Button.ToString();
+                    return; //button not recognized
                 string lastKey = lblKey.Text.Split(' ').Last();
                 if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
                     strKey = lblKey.Text + " + " + strKey;
@@ -757,6 +766,14 @@ namespace Clicktastic
                 MessageBox.Show("Mouse buttons cannot be used as activator hotkeys!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+            if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
+                key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
+                key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
+                key.wheel == 0))
+            {
+                MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
             return true;
         }
 
@@ -792,6 +809,14 @@ namespace Clicktastic
                 }
                 else
                     return false;
+            }
+            if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
+                key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
+                key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
+                key.wheel == 0))
+            {
+                MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
             return true;
         }
