@@ -1065,5 +1065,25 @@ namespace Clicktastic
             aboutText.Dispose();
             aboutFont.Dispose();
         }
+
+        private void tcClicktastic_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tcClicktastic.SelectedIndex != 0)
+            {
+                //Stop the Autoclicker
+                AutoclickerEnabled = false;
+                AutoclickerActivated = false;
+                this.Invoke(new MethodInvoker(() =>
+                {
+                    pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                    lblAutoclickerEnabled.Text = "Disabled";
+                    lblAutoclickerEnabled.ForeColor = Color.Red;
+                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                    lblAutoclickerRunning.Text = "Waiting";
+                    lblAutoclickerRunning.ForeColor = Color.Red;
+                }));
+                AutoclickerWaiting = true;
+            }
+        }
     }
 }

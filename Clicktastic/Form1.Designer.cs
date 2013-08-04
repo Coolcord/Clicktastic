@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tcClicktastic = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.lblHoldInstructions = new System.Windows.Forms.Label();
             this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
             this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
@@ -39,7 +39,7 @@
             this.lblSpeedInstructions = new System.Windows.Forms.Label();
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tbPreferences = new System.Windows.Forms.TabPage();
             this.btnAbout = new System.Windows.Forms.Button();
             this.lblTurboMode = new System.Windows.Forms.Label();
             this.ddbTurboMode = new System.Windows.Forms.ComboBox();
@@ -68,41 +68,42 @@
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
             this.tcClicktastic.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tbAutoclicker.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
-            this.tabPage2.SuspendLayout();
+            this.tbPreferences.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // tcClicktastic
             // 
-            this.tcClicktastic.Controls.Add(this.tabPage1);
-            this.tcClicktastic.Controls.Add(this.tabPage2);
+            this.tcClicktastic.Controls.Add(this.tbAutoclicker);
+            this.tcClicktastic.Controls.Add(this.tbPreferences);
             this.tcClicktastic.Location = new System.Drawing.Point(-1, 0);
             this.tcClicktastic.Name = "tcClicktastic";
             this.tcClicktastic.SelectedIndex = 0;
             this.tcClicktastic.Size = new System.Drawing.Size(529, 341);
             this.tcClicktastic.TabIndex = 0;
+            this.tcClicktastic.SelectedIndexChanged += new System.EventHandler(tcClicktastic_SelectedIndexChanged);
             // 
-            // tabPage1
+            // tbAutoclicker
             // 
-            this.tabPage1.Controls.Add(this.lblHoldInstructions);
-            this.tabPage1.Controls.Add(this.pbAutoclickerRunning);
-            this.tabPage1.Controls.Add(this.pbAutoclickerEnabled);
-            this.tabPage1.Controls.Add(this.lblAutoclickerRunning);
-            this.tabPage1.Controls.Add(this.lblAutoclickerEnabled);
-            this.tabPage1.Controls.Add(this.lblSpeedInstructions);
-            this.tabPage1.Controls.Add(this.lblDeactivationInstructions);
-            this.tabPage1.Controls.Add(this.lblActivationInstructions);
-            this.tabPage1.Location = new System.Drawing.Point(4, 25);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(521, 312);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Autoclicker";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tbAutoclicker.Controls.Add(this.lblHoldInstructions);
+            this.tbAutoclicker.Controls.Add(this.pbAutoclickerRunning);
+            this.tbAutoclicker.Controls.Add(this.pbAutoclickerEnabled);
+            this.tbAutoclicker.Controls.Add(this.lblAutoclickerRunning);
+            this.tbAutoclicker.Controls.Add(this.lblAutoclickerEnabled);
+            this.tbAutoclicker.Controls.Add(this.lblSpeedInstructions);
+            this.tbAutoclicker.Controls.Add(this.lblDeactivationInstructions);
+            this.tbAutoclicker.Controls.Add(this.lblActivationInstructions);
+            this.tbAutoclicker.Location = new System.Drawing.Point(4, 25);
+            this.tbAutoclicker.Name = "tbAutoclicker";
+            this.tbAutoclicker.Padding = new System.Windows.Forms.Padding(3);
+            this.tbAutoclicker.Size = new System.Drawing.Size(521, 312);
+            this.tbAutoclicker.TabIndex = 0;
+            this.tbAutoclicker.Text = "Autoclicker";
+            this.tbAutoclicker.UseVisualStyleBackColor = true;
             // 
             // lblHoldInstructions
             // 
@@ -188,42 +189,42 @@
             this.lblActivationInstructions.Text = "Press ~ to activate Autoclicker on Left Click";
             this.lblActivationInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // tabPage2
+            // tbPreferences
             // 
-            this.tabPage2.Controls.Add(this.btnAbout);
-            this.tabPage2.Controls.Add(this.lblTurboMode);
-            this.tabPage2.Controls.Add(this.ddbTurboMode);
-            this.tabPage2.Controls.Add(this.btnAutoclickButton);
-            this.tabPage2.Controls.Add(this.btnDeactivationButton);
-            this.tabPage2.Controls.Add(this.btnActivationButton);
-            this.tabPage2.Controls.Add(this.btnManageProfiles);
-            this.tabPage2.Controls.Add(this.btnSave);
-            this.tabPage2.Controls.Add(this.ddbActivationMode);
-            this.tabPage2.Controls.Add(this.lblActivationMode);
-            this.tabPage2.Controls.Add(this.lblMaxDelay);
-            this.tabPage2.Controls.Add(this.lblMaxCPS);
-            this.tabPage2.Controls.Add(this.numMaxDelay);
-            this.tabPage2.Controls.Add(this.lblMinDelay);
-            this.tabPage2.Controls.Add(this.ddbSpeedMode);
-            this.tabPage2.Controls.Add(this.lblMinCPS);
-            this.tabPage2.Controls.Add(this.numMinDelay);
-            this.tabPage2.Controls.Add(this.label5);
-            this.tabPage2.Controls.Add(this.tbAutoclickButton);
-            this.tabPage2.Controls.Add(this.lblAutoclickButton);
-            this.tabPage2.Controls.Add(this.tbDeactivationButton);
-            this.tabPage2.Controls.Add(this.lblDeactivationButton);
-            this.tabPage2.Controls.Add(this.cbUseDeactivationButton);
-            this.tabPage2.Controls.Add(this.tbActivationButton);
-            this.tabPage2.Controls.Add(this.lblActivationButton);
-            this.tabPage2.Controls.Add(this.lblSelectProfile);
-            this.tabPage2.Controls.Add(this.ddbProfile);
-            this.tabPage2.Location = new System.Drawing.Point(4, 25);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(521, 312);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Preferences";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tbPreferences.Controls.Add(this.btnAbout);
+            this.tbPreferences.Controls.Add(this.lblTurboMode);
+            this.tbPreferences.Controls.Add(this.ddbTurboMode);
+            this.tbPreferences.Controls.Add(this.btnAutoclickButton);
+            this.tbPreferences.Controls.Add(this.btnDeactivationButton);
+            this.tbPreferences.Controls.Add(this.btnActivationButton);
+            this.tbPreferences.Controls.Add(this.btnManageProfiles);
+            this.tbPreferences.Controls.Add(this.btnSave);
+            this.tbPreferences.Controls.Add(this.ddbActivationMode);
+            this.tbPreferences.Controls.Add(this.lblActivationMode);
+            this.tbPreferences.Controls.Add(this.lblMaxDelay);
+            this.tbPreferences.Controls.Add(this.lblMaxCPS);
+            this.tbPreferences.Controls.Add(this.numMaxDelay);
+            this.tbPreferences.Controls.Add(this.lblMinDelay);
+            this.tbPreferences.Controls.Add(this.ddbSpeedMode);
+            this.tbPreferences.Controls.Add(this.lblMinCPS);
+            this.tbPreferences.Controls.Add(this.numMinDelay);
+            this.tbPreferences.Controls.Add(this.label5);
+            this.tbPreferences.Controls.Add(this.tbAutoclickButton);
+            this.tbPreferences.Controls.Add(this.lblAutoclickButton);
+            this.tbPreferences.Controls.Add(this.tbDeactivationButton);
+            this.tbPreferences.Controls.Add(this.lblDeactivationButton);
+            this.tbPreferences.Controls.Add(this.cbUseDeactivationButton);
+            this.tbPreferences.Controls.Add(this.tbActivationButton);
+            this.tbPreferences.Controls.Add(this.lblActivationButton);
+            this.tbPreferences.Controls.Add(this.lblSelectProfile);
+            this.tbPreferences.Controls.Add(this.ddbProfile);
+            this.tbPreferences.Location = new System.Drawing.Point(4, 25);
+            this.tbPreferences.Name = "tbPreferences";
+            this.tbPreferences.Padding = new System.Windows.Forms.Padding(3);
+            this.tbPreferences.Size = new System.Drawing.Size(521, 312);
+            this.tbPreferences.TabIndex = 1;
+            this.tbPreferences.Text = "Preferences";
+            this.tbPreferences.UseVisualStyleBackColor = true;
             // 
             // btnAbout
             // 
@@ -550,12 +551,12 @@
             this.Name = "Form1";
             this.Text = "Clicktastic";
             this.tcClicktastic.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.tbAutoclicker.ResumeLayout(false);
+            this.tbAutoclicker.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.tbPreferences.ResumeLayout(false);
+            this.tbPreferences.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).EndInit();
             this.ResumeLayout(false);
@@ -565,8 +566,8 @@
         #endregion
 
         private System.Windows.Forms.TabControl tcClicktastic;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tbAutoclicker;
+        private System.Windows.Forms.TabPage tbPreferences;
         private System.Windows.Forms.ComboBox ddbProfile;
         private System.Windows.Forms.ComboBox ddbSpeedMode;
         private System.Windows.Forms.Label lblMinCPS;
