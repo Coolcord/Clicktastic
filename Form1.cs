@@ -505,21 +505,15 @@ namespace Clicktastic
                     {
                         for (int i = 0; i < turbo; i++)
                         {
-
+                            mouse_event(MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0);
                         }
                     }
-                    else if (key.wheel > 0) //scroll up
+                    else //scroll
                     {
                         for (int i = 0; i < turbo; i++)
                         {
-
-                        }
-                    }
-                    else //scroll down
-                    {
-                        for (int i = 0; i < turbo; i++)
-                        {
-
+                            mouse_event(MOUSEEVENTF_WHEEL, 0, 0, key.wheel, 0);
                         }
                     }
                 }
@@ -555,21 +549,15 @@ namespace Clicktastic
                     {
                         for (int i = 0; i < turbo; i++)
                         {
-
+                            mouse_event(MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0);
+                            mouse_event(MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0);
                         }
                     }
-                    else if (key.wheel > 0) //scroll up
+                    else //scroll
                     {
                         for (int i = 0; i < turbo; i++)
                         {
-
-                        }
-                    }
-                    else //scroll down
-                    {
-                        for (int i = 0; i < turbo; i++)
-                        {
-
+                            mouse_event(MOUSEEVENTF_WHEEL, 0, 0, key.wheel, 0);
                         }
                     }
                 }
