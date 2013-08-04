@@ -125,7 +125,7 @@ namespace Clicktastic
         private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && tcClicktastic.SelectedIndex == 0)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
                 if ((Keys)vkCode == ActivationKey.key || (Keys)vkCode == DeactivationKey.key)

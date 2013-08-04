@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.lblHoldInstructions = new System.Windows.Forms.Label();
             this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
@@ -67,7 +67,7 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
-            this.tabControl1.SuspendLayout();
+            this.tcClicktastic.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
@@ -76,15 +76,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMinDelay)).BeginInit();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tcClicktastic
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(-1, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(529, 341);
-            this.tabControl1.TabIndex = 0;
+            this.tcClicktastic.Controls.Add(this.tabPage1);
+            this.tcClicktastic.Controls.Add(this.tabPage2);
+            this.tcClicktastic.Location = new System.Drawing.Point(-1, 0);
+            this.tcClicktastic.Name = "tcClicktastic";
+            this.tcClicktastic.SelectedIndex = 0;
+            this.tcClicktastic.Size = new System.Drawing.Size(529, 341);
+            this.tcClicktastic.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -543,13 +543,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(523, 334);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tcClicktastic);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Clicktastic";
-            this.tabControl1.ResumeLayout(false);
+            this.tcClicktastic.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
@@ -564,7 +564,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tcClicktastic;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ComboBox ddbProfile;
