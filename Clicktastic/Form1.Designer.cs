@@ -85,7 +85,7 @@
             this.tcClicktastic.SelectedIndex = 0;
             this.tcClicktastic.Size = new System.Drawing.Size(529, 341);
             this.tcClicktastic.TabIndex = 0;
-            this.tcClicktastic.SelectedIndexChanged += new System.EventHandler(tcClicktastic_SelectedIndexChanged);
+            this.tcClicktastic.SelectedIndexChanged += new System.EventHandler(this.tcClicktastic_SelectedIndexChanged);
             // 
             // tbAutoclicker
             // 
@@ -228,7 +228,7 @@
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(316, 28);
+            this.btnAbout.Location = new System.Drawing.Point(307, 28);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(152, 59);
             this.btnAbout.TabIndex = 28;
@@ -239,7 +239,7 @@
             // lblTurboMode
             // 
             this.lblTurboMode.AutoSize = true;
-            this.lblTurboMode.Location = new System.Drawing.Point(163, 208);
+            this.lblTurboMode.Location = new System.Drawing.Point(179, 208);
             this.lblTurboMode.Name = "lblTurboMode";
             this.lblTurboMode.Size = new System.Drawing.Size(89, 17);
             this.lblTurboMode.TabIndex = 27;
@@ -255,17 +255,17 @@
             "(3x) Hyperdrive",
             "(4x) Warp 10",
             "(5x) Ludicrous Speed!"});
-            this.ddbTurboMode.Location = new System.Drawing.Point(166, 228);
+            this.ddbTurboMode.Location = new System.Drawing.Point(182, 228);
             this.ddbTurboMode.MaxDropDownItems = 2;
             this.ddbTurboMode.Name = "ddbTurboMode";
             this.ddbTurboMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbTurboMode.Size = new System.Drawing.Size(157, 24);
+            this.ddbTurboMode.Size = new System.Drawing.Size(166, 24);
             this.ddbTurboMode.TabIndex = 26;
             this.ddbTurboMode.SelectedIndexChanged += new System.EventHandler(this.ddbTurboMode_SelectedIndexChanged);
             // 
             // btnAutoclickButton
             // 
-            this.btnAutoclickButton.Location = new System.Drawing.Point(108, 183);
+            this.btnAutoclickButton.Location = new System.Drawing.Point(182, 182);
             this.btnAutoclickButton.Name = "btnAutoclickButton";
             this.btnAutoclickButton.Size = new System.Drawing.Size(42, 23);
             this.btnAutoclickButton.TabIndex = 24;
@@ -276,7 +276,7 @@
             // btnDeactivationButton
             // 
             this.btnDeactivationButton.Enabled = false;
-            this.btnDeactivationButton.Location = new System.Drawing.Point(264, 182);
+            this.btnDeactivationButton.Location = new System.Drawing.Point(417, 182);
             this.btnDeactivationButton.Name = "btnDeactivationButton";
             this.btnDeactivationButton.Size = new System.Drawing.Size(42, 23);
             this.btnDeactivationButton.TabIndex = 23;
@@ -286,7 +286,7 @@
             // 
             // btnActivationButton
             // 
-            this.btnActivationButton.Location = new System.Drawing.Point(264, 111);
+            this.btnActivationButton.Location = new System.Drawing.Point(417, 112);
             this.btnActivationButton.Name = "btnActivationButton";
             this.btnActivationButton.Size = new System.Drawing.Size(42, 23);
             this.btnActivationButton.TabIndex = 22;
@@ -323,7 +323,7 @@
             this.ddbActivationMode.MaxDropDownItems = 2;
             this.ddbActivationMode.Name = "ddbActivationMode";
             this.ddbActivationMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbActivationMode.Size = new System.Drawing.Size(136, 24);
+            this.ddbActivationMode.Size = new System.Drawing.Size(167, 24);
             this.ddbActivationMode.TabIndex = 19;
             this.ddbActivationMode.SelectedIndexChanged += new System.EventHandler(this.ddbActivationMode_SelectedIndexChanged);
             // 
@@ -339,7 +339,7 @@
             // lblMaxDelay
             // 
             this.lblMaxDelay.AutoSize = true;
-            this.lblMaxDelay.Location = new System.Drawing.Point(168, 255);
+            this.lblMaxDelay.Location = new System.Drawing.Point(179, 255);
             this.lblMaxDelay.Name = "lblMaxDelay";
             this.lblMaxDelay.Size = new System.Drawing.Size(145, 17);
             this.lblMaxDelay.TabIndex = 17;
@@ -348,7 +348,7 @@
             // lblMaxCPS
             // 
             this.lblMaxCPS.AutoSize = true;
-            this.lblMaxCPS.Location = new System.Drawing.Point(297, 279);
+            this.lblMaxCPS.Location = new System.Drawing.Point(322, 282);
             this.lblMaxCPS.Name = "lblMaxCPS";
             this.lblMaxCPS.Size = new System.Drawing.Size(26, 17);
             this.lblMaxCPS.TabIndex = 16;
@@ -356,7 +356,7 @@
             // 
             // numMaxDelay
             // 
-            this.numMaxDelay.Location = new System.Drawing.Point(171, 278);
+            this.numMaxDelay.Location = new System.Drawing.Point(182, 277);
             this.numMaxDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -368,7 +368,7 @@
             0,
             0});
             this.numMaxDelay.Name = "numMaxDelay";
-            this.numMaxDelay.Size = new System.Drawing.Size(120, 22);
+            this.numMaxDelay.Size = new System.Drawing.Size(134, 22);
             this.numMaxDelay.TabIndex = 15;
             this.numMaxDelay.Value = new decimal(new int[] {
             1000,
@@ -397,14 +397,14 @@
             this.ddbSpeedMode.MaxDropDownItems = 2;
             this.ddbSpeedMode.Name = "ddbSpeedMode";
             this.ddbSpeedMode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbSpeedMode.Size = new System.Drawing.Size(135, 24);
+            this.ddbSpeedMode.Size = new System.Drawing.Size(166, 24);
             this.ddbSpeedMode.TabIndex = 13;
             this.ddbSpeedMode.SelectedIndexChanged += new System.EventHandler(this.ddbSpeedMode_SelectedIndexChanged);
             // 
             // lblMinCPS
             // 
             this.lblMinCPS.AutoSize = true;
-            this.lblMinCPS.Location = new System.Drawing.Point(136, 279);
+            this.lblMinCPS.Location = new System.Drawing.Point(150, 279);
             this.lblMinCPS.Name = "lblMinCPS";
             this.lblMinCPS.Size = new System.Drawing.Size(26, 17);
             this.lblMinCPS.TabIndex = 12;
@@ -424,7 +424,7 @@
             0,
             0});
             this.numMinDelay.Name = "numMinDelay";
-            this.numMinDelay.Size = new System.Drawing.Size(120, 22);
+            this.numMinDelay.Size = new System.Drawing.Size(134, 22);
             this.numMinDelay.TabIndex = 11;
             this.numMinDelay.Value = new decimal(new int[] {
             1,
@@ -436,7 +436,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 208);
+            this.label5.Location = new System.Drawing.Point(7, 208);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 17);
             this.label5.TabIndex = 10;
@@ -447,7 +447,7 @@
             this.tbAutoclickButton.Location = new System.Drawing.Point(10, 183);
             this.tbAutoclickButton.Name = "tbAutoclickButton";
             this.tbAutoclickButton.ReadOnly = true;
-            this.tbAutoclickButton.Size = new System.Drawing.Size(92, 22);
+            this.tbAutoclickButton.Size = new System.Drawing.Size(166, 22);
             this.tbAutoclickButton.TabIndex = 9;
             this.tbAutoclickButton.Text = "LeftClick";
             this.tbAutoclickButton.Click += new System.EventHandler(this.AutoclickButton_Click);
@@ -465,10 +465,10 @@
             // tbDeactivationButton
             // 
             this.tbDeactivationButton.Enabled = false;
-            this.tbDeactivationButton.Location = new System.Drawing.Point(166, 183);
+            this.tbDeactivationButton.Location = new System.Drawing.Point(245, 183);
             this.tbDeactivationButton.Name = "tbDeactivationButton";
             this.tbDeactivationButton.ReadOnly = true;
-            this.tbDeactivationButton.Size = new System.Drawing.Size(92, 22);
+            this.tbDeactivationButton.Size = new System.Drawing.Size(166, 22);
             this.tbDeactivationButton.TabIndex = 6;
             this.tbDeactivationButton.Text = "` (~)";
             this.tbDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
@@ -478,7 +478,7 @@
             // 
             this.lblDeactivationButton.AutoSize = true;
             this.lblDeactivationButton.Enabled = false;
-            this.lblDeactivationButton.Location = new System.Drawing.Point(163, 162);
+            this.lblDeactivationButton.Location = new System.Drawing.Point(242, 162);
             this.lblDeactivationButton.Name = "lblDeactivationButton";
             this.lblDeactivationButton.Size = new System.Drawing.Size(135, 17);
             this.lblDeactivationButton.TabIndex = 5;
@@ -487,7 +487,7 @@
             // cbUseDeactivationButton
             // 
             this.cbUseDeactivationButton.AutoSize = true;
-            this.cbUseDeactivationButton.Location = new System.Drawing.Point(166, 139);
+            this.cbUseDeactivationButton.Location = new System.Drawing.Point(245, 139);
             this.cbUseDeactivationButton.Name = "cbUseDeactivationButton";
             this.cbUseDeactivationButton.Size = new System.Drawing.Size(261, 21);
             this.cbUseDeactivationButton.TabIndex = 4;
@@ -497,10 +497,10 @@
             // 
             // tbActivationButton
             // 
-            this.tbActivationButton.Location = new System.Drawing.Point(166, 111);
+            this.tbActivationButton.Location = new System.Drawing.Point(245, 111);
             this.tbActivationButton.Name = "tbActivationButton";
             this.tbActivationButton.ReadOnly = true;
-            this.tbActivationButton.Size = new System.Drawing.Size(92, 22);
+            this.tbActivationButton.Size = new System.Drawing.Size(166, 22);
             this.tbActivationButton.TabIndex = 3;
             this.tbActivationButton.Text = "` (~)";
             this.tbActivationButton.Click += new System.EventHandler(this.ActivationButton_Click);
@@ -509,7 +509,7 @@
             // lblActivationButton
             // 
             this.lblActivationButton.AutoSize = true;
-            this.lblActivationButton.Location = new System.Drawing.Point(163, 91);
+            this.lblActivationButton.Location = new System.Drawing.Point(242, 91);
             this.lblActivationButton.Name = "lblActivationButton";
             this.lblActivationButton.Size = new System.Drawing.Size(118, 17);
             this.lblActivationButton.TabIndex = 2;

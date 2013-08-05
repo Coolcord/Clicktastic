@@ -280,6 +280,7 @@ namespace Clicktastic
         KEYCOMBO ActivationKey = new KEYCOMBO();
         KEYCOMBO DeactivationKey = new KEYCOMBO();
         KEYCOMBO AutoclickKey = new KEYCOMBO();
+        KeyStringConverter keyStringConverter = new KeyStringConverter();
         int turbo = 1;
         int MinDelay = 1;
         int MaxDelay = 1000;
@@ -329,6 +330,7 @@ namespace Clicktastic
                 }
             };
             KEYCOMBO key = new KEYCOMBO();
+            Keys lastKey = Keys.None;
             key.valid = false;
             string strKey = null;
             keyPrompt.PreviewKeyDown += (sender, e) =>
@@ -336,19 +338,7 @@ namespace Clicktastic
                 timer.Stop();
 
                 //Determine the key pressed
-                if (e.KeyCode == Keys.Menu)
-                    strKey = "Alt";
-                else if (e.KeyCode == Keys.ShiftKey)
-                    strKey = "Shift";
-                else if (e.KeyCode == Keys.ControlKey)
-                    strKey = "Ctrl";
-                else
-                {
-                    KeysConverter converter = new KeysConverter();
-                    strKey = converter.ConvertToString(e.KeyCode);
-                    if (strKey == "Oemtilde")
-                        strKey = "` (~)";
-                }
+                 strKey = keyStringConverter.KeyToString(e.KeyCode);
 
                 //Determine key modifiers
                 if (e.Alt && e.KeyCode != Keys.Menu)
@@ -359,6 +349,7 @@ namespace Clicktastic
                     strKey = "Ctrl + " + strKey;
 
                 lblKey.Text = strKey;
+                lastKey = e.KeyCode;
             };
             keyPrompt.KeyDown += (sender, e) =>
             {
@@ -382,10 +373,11 @@ namespace Clicktastic
                     strKey = "MiddleClick";
                 else
                     return; //button not recognized
-                string lastKey = lblKey.Text.Split(' ').Last();
-                if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
+                string strLastKey = lblKey.Text.Split(' ').Last();
+                if (strLastKey == "Ctrl" || strLastKey == "Shift" || strLastKey == "Alt")
                     strKey = lblKey.Text + " + " + strKey;
                 lblKey.Text = strKey;
+                lastKey = Keys.None;
                 keyPrompt.Close();
             };
             keyPrompt.MouseWheel += (sender, e) =>
@@ -395,20 +387,21 @@ namespace Clicktastic
                     strKey = "MouseWheelDown";
                 else //positive is up
                     strKey = "MouseWheelUp";
-                string lastKey = lblKey.Text.Split(' ').Last();
-                if (lastKey == "Ctrl" || lastKey == "Shift" || lastKey == "Alt")
+                string strLastKey = lblKey.Text.Split(' ').Last();
+                if (strLastKey == "Ctrl" || strLastKey == "Shift" || strLastKey == "Alt")
                     strKey = lblKey.Text + " + " + strKey;
                 lblKey.Text = strKey;
+                lastKey = Keys.None;
                 keyPrompt.Close();
             };
             keyPrompt.ShowDialog();
             keyPrompt.Dispose();
             lblKey.Dispose();
-            key = ParseKEYCOMBO(strKey);
+            key = ParseKEYCOMBO(strKey, lastKey);
             return key;
         }
 
-        private KEYCOMBO ParseKEYCOMBO(string strKey)
+        private KEYCOMBO ParseKEYCOMBO(string strKey, Keys lastKeyCode)
         {
             KEYCOMBO key = new KEYCOMBO();
             if (strKey == null)
@@ -425,26 +418,33 @@ namespace Clicktastic
             key.wheel = 0;
             key.key = Keys.None;
             string[] buttons = strKey.Split(' ');
+            string previous = null;
             string lastKey = buttons.Last();
             foreach(string button in buttons)
             {
-                if (button == "+" || button == "(~)")
+                if (button == "(~)" || (button == "+" && (button == previous || lastKey != button)))
+                {
+                    previous = button;
                     continue;
+                }
                 if (button != lastKey)
                 {
                     if (button == "Ctrl")
                     {
                         key.ctrl = true;
+                        previous = button;
                         continue;
                     }
                     else if (button == "Shift")
                     {
                         key.shift = true;
+                        previous = button;
                         continue;
                     }
                     else if (button == "Alt")
                     {
                         key.alt = true;
+                        previous = button;
                         continue;
                     }
                 }
@@ -456,12 +456,9 @@ namespace Clicktastic
                 else
                 {
                     key.isKeyboard = true;
-                    string value = button;
-                    if (value == "`")
-                        value = "Oemtilde";
-                    KeysConverter converter = new KeysConverter();
-                    key.key = (Keys)converter.ConvertFromString(value);
+                    key.key = lastKeyCode;
                 }
+                previous = button;
             }
             key.valid = true;
             return key;
@@ -479,9 +476,9 @@ namespace Clicktastic
             ddbTurboMode.SelectedIndex = 0;
             MinDelay = (int)numMinDelay.Value;
             MaxDelay = (int)numMaxDelay.Value;
-            ActivationKey = ParseKEYCOMBO("Oemtilde");
-            DeactivationKey = ParseKEYCOMBO("Oemtilde");
-            AutoclickKey = ParseKEYCOMBO("LeftClick");
+            ActivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
+            DeactivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
+            AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
 
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);
