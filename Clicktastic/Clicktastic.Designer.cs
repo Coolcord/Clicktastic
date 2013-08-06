@@ -40,6 +40,7 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tbPreferences = new System.Windows.Forms.TabPage();
+            this.cbEnter = new System.Windows.Forms.CheckBox();
             this.btnAbout = new System.Windows.Forms.Button();
             this.lblTurboMode = new System.Windows.Forms.Label();
             this.ddbTurboMode = new System.Windows.Forms.ComboBox();
@@ -191,6 +192,7 @@
             // 
             // tbPreferences
             // 
+            this.tbPreferences.Controls.Add(this.cbEnter);
             this.tbPreferences.Controls.Add(this.btnAbout);
             this.tbPreferences.Controls.Add(this.lblTurboMode);
             this.tbPreferences.Controls.Add(this.ddbTurboMode);
@@ -225,6 +227,18 @@
             this.tbPreferences.TabIndex = 1;
             this.tbPreferences.Text = "Preferences";
             this.tbPreferences.UseVisualStyleBackColor = true;
+            // 
+            // cbEnter
+            // 
+            this.cbEnter.AutoSize = true;
+            this.cbEnter.Enabled = false;
+            this.cbEnter.Location = new System.Drawing.Point(10, 184);
+            this.cbEnter.Name = "cbEnter";
+            this.cbEnter.Size = new System.Drawing.Size(230, 21);
+            this.cbEnter.TabIndex = 29;
+            this.cbEnter.Text = "Press enter after each autoclick";
+            this.cbEnter.UseVisualStyleBackColor = true;
+            this.cbEnter.CheckedChanged += new System.EventHandler(this.cbEnter_CheckedChanged);
             // 
             // btnAbout
             // 
@@ -265,7 +279,7 @@
             // 
             // btnAutoclickButton
             // 
-            this.btnAutoclickButton.Location = new System.Drawing.Point(182, 182);
+            this.btnAutoclickButton.Location = new System.Drawing.Point(182, 156);
             this.btnAutoclickButton.Name = "btnAutoclickButton";
             this.btnAutoclickButton.Size = new System.Drawing.Size(42, 23);
             this.btnAutoclickButton.TabIndex = 24;
@@ -444,7 +458,7 @@
             // 
             // tbAutoclickButton
             // 
-            this.tbAutoclickButton.Location = new System.Drawing.Point(10, 183);
+            this.tbAutoclickButton.Location = new System.Drawing.Point(10, 157);
             this.tbAutoclickButton.Name = "tbAutoclickButton";
             this.tbAutoclickButton.ReadOnly = true;
             this.tbAutoclickButton.Size = new System.Drawing.Size(166, 22);
@@ -456,7 +470,7 @@
             // lblAutoclickButton
             // 
             this.lblAutoclickButton.AutoSize = true;
-            this.lblAutoclickButton.Location = new System.Drawing.Point(7, 163);
+            this.lblAutoclickButton.Location = new System.Drawing.Point(7, 138);
             this.lblAutoclickButton.Name = "lblAutoclickButton";
             this.lblAutoclickButton.Size = new System.Drawing.Size(129, 17);
             this.lblAutoclickButton.TabIndex = 8;
@@ -603,6 +617,7 @@
         private System.Windows.Forms.Label lblTurboMode;
         private System.Windows.Forms.ComboBox ddbTurboMode;
         private System.Windows.Forms.Button btnAbout;
+        private System.Windows.Forms.CheckBox cbEnter;
     }
 }
 

@@ -53,9 +53,6 @@ namespace Clicktastic
             public Boolean valid;
             public string keyString;
             public Boolean isKeyboard;
-            //public Boolean ctrl;
-            //public Boolean shift;
-            //public Boolean alt;
             public Keys modifierKeys;
             public Keys key;
             public UInt32 mouseButton;
@@ -283,6 +280,7 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false; //this might need to be a mutex fo some kind
         Boolean Random = false;
         Boolean Hold = false;
+        Boolean pressEnter = false;
         //string ActivationKey = "~";
         //string DeactivationKey = "~";
         //string AutoclickKey = "a";
@@ -466,10 +464,13 @@ namespace Clicktastic
                 else
                 {
                     key.isKeyboard = true;
+                    key.key = lastKeyCode;
+                    /*
                     if (button == lastKey && (button == "Ctrl" || button == "Shift" || button == "Alt"))
                         key.key = Keys.None;
                     else
                         key.key = lastKeyCode;
+                     */
                 }
                 previous = button;
             }
@@ -557,9 +558,13 @@ namespace Clicktastic
             {
                 if (key.isKeyboard) //keyboard key
                 {
-                    for (int i = 0; i < turbo; i++)
+                    try
                     {
-                        SendKeys.SendWait("{ENTER}");
+                        SendKeys.SendWait(keyStringConverter.KeyToCmd(AutoclickKey.key, AutoclickKey.modifierKeys, pressEnter));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
                     }
                 }
                 else //is mouse
@@ -773,11 +778,38 @@ namespace Clicktastic
             setInstructions();
         }
 
+        private Boolean isKeyAcceptable(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Control:
+                case Keys.ControlKey:
+                case Keys.LControlKey:
+                case Keys.RControlKey:
+                case Keys.Shift:
+                case Keys.ShiftKey:
+                case Keys.LShiftKey:
+                case Keys.RShiftKey:
+                case Keys.Alt:
+                case Keys.Menu:
+                case Keys.LMenu:
+                case Keys.RMenu:
+                    return false; //these are not accepted
+                default:
+                    return true; //anything else is accepted
+            }
+        }
+
         private Boolean isActivationSettingsValid(KEYCOMBO key)
         {
             if (!key.valid)
                 return false;
             else if (key.isKeyboard && key.key == Keys.None)
+            {
+                MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else if (key.isKeyboard && !isKeyAcceptable(key.key))
             {
                 MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -1003,6 +1035,7 @@ namespace Clicktastic
                 ddbActivationMode.Enabled = false;
                 lblTurboMode.Enabled = false;
                 ddbTurboMode.Enabled = false;
+                cbEnter.Enabled = true;
             }
             else
             {
@@ -1010,6 +1043,9 @@ namespace Clicktastic
                 ddbActivationMode.Enabled = true;
                 lblTurboMode.Enabled = true;
                 ddbTurboMode.Enabled = true;
+                if (cbEnter.Enabled)
+                    cbEnter.Checked = false;
+                cbEnter.Enabled = false;
             }
             setInstructions();
         }
@@ -1102,6 +1138,14 @@ namespace Clicktastic
                 }));
                 AutoclickerWaiting = true;
             }
+        }
+
+        private void cbEnter_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbEnter.Checked)
+                pressEnter = true;
+            else
+                pressEnter = false;
         }
     }
 }

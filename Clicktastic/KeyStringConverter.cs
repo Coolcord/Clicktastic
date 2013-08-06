@@ -30,33 +30,28 @@ namespace Clicktastic
         {
             switch (key)
             {
-                case Keys.ControlKey:
-                    return "Ctrl";
                 case Keys.Control:
-                    return "Ctrl";
+                case Keys.ControlKey:
                 case Keys.LControlKey:
-                    return "Ctrl";
                 case Keys.RControlKey:
                     return "Ctrl";
+                case Keys.Alt:
                 case Keys.Menu:
-                    return "Alt";
                 case Keys.LMenu:
-                    return "Alt";
                 case Keys.RMenu:
                     return "Alt";
                 case Keys.Shift:
-                    return "Shift";
                 case Keys.ShiftKey:
-                    return "Shift";
                 case Keys.LShiftKey:
-                    return "Shift";
                 case Keys.RShiftKey:
                     return "Shift";
                 case Keys.Add:
                     return "NumPad+";
                 case Keys.Decimal:
+                case Keys.OemPeriod:
                     return ".";
                 case Keys.Divide:
+                case Keys.OemQuestion:
                     return "/";
                 case Keys.Multiply:
                     return "*";
@@ -65,15 +60,12 @@ namespace Clicktastic
                 case Keys.OemCloseBrackets:
                     return "]";
                 case Keys.OemMinus:
+                case Keys.Separator:
                     return "-";
                 case Keys.OemOpenBrackets:
                     return "[";
-                case Keys.OemPeriod:
-                    return ".";
                 case Keys.OemPipe:
                     return "|";
-                case Keys.OemQuestion:
-                    return "/";
                 case Keys.OemQuotes:
                     return "\"";
                 case Keys.OemSemicolon:
@@ -84,8 +76,6 @@ namespace Clicktastic
                     return "=";
                 case Keys.Oemtilde:
                     return "` (~)";
-                case Keys.Separator:
-                    return "-";
                 case Keys.Subtract:
                     return "NumPad-";
                 case Keys.D0:
@@ -225,6 +215,48 @@ namespace Clicktastic
                         return Keys.None;
                     }
             }
+        }
+
+        public string KeyToCmd(Keys key, Keys modifiers, Boolean enter)
+        {
+            string cmd = KeyToString(key);
+            if (cmd == null)
+                return null; //unable to get a string from the key
+            if (cmd.Length > 1)
+                cmd = cmd.ToUpper();
+            cmd = "{" + cmd + "}"; //build the command
+
+            switch (cmd)
+            {
+                case "{CTRL}":
+                    cmd = "^";
+                    break;
+                case "{SHIFT}":
+                    cmd = "+";
+                    break;
+                case "{ALT}":
+                    cmd = "%";
+                    break;
+                case "{PAGEUP}":
+                    cmd = "{PGUP}";
+                    break;
+                case "{PAGEDOWN}":
+                    cmd = "{PGDN}";
+                    break;
+            }
+
+            //Add any necessary modifiers
+            if ((modifiers & Keys.Control) > 0)
+                cmd = "^(" + cmd + ")";
+            if ((modifiers & Keys.Shift) > 0)
+                cmd = "+(" + cmd + ")";
+            if ((modifiers & Keys.Alt) > 0)
+                cmd = "%(" + cmd + ")";
+
+            if (enter)
+                cmd = cmd + "{ENTER}";
+
+            return cmd;
         }
     }
 }
