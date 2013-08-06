@@ -53,9 +53,10 @@ namespace Clicktastic
             public Boolean valid;
             public string keyString;
             public Boolean isKeyboard;
-            public Boolean ctrl;
-            public Boolean shift;
-            public Boolean alt;
+            //public Boolean ctrl;
+            //public Boolean shift;
+            //public Boolean alt;
+            public Keys modifierKeys;
             public Keys key;
             public UInt32 mouseButton;
             public int wheel;
@@ -122,13 +123,21 @@ namespace Clicktastic
             }
         }
 
+        private Boolean something(KEYCOMBO key)
+        {
+            if (key.modifierKeys == Control.ModifierKeys)
+                return true;
+            return true;
+        }
+
         private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && tcClicktastic.SelectedIndex == 0)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
-                if ((Keys)vkCode == ActivationKey.key || (Keys)vkCode == DeactivationKey.key)
+                if (((Keys)vkCode == ActivationKey.key && ActivationKey.modifierKeys == Control.ModifierKeys) ||
+                    ((Keys)vkCode == DeactivationKey.key && DeactivationKey.modifierKeys == Control.ModifierKeys))
                 {
                     if (Hold)
                     {
@@ -410,9 +419,10 @@ namespace Clicktastic
                 return key;
             }
             key.keyString = strKey;
-            key.ctrl = false;
-            key.shift = false;
-            key.alt = false;
+            Boolean ctrl = false;
+            Boolean shift = false;
+            Boolean alt = false;
+            key.modifierKeys = Keys.None;
             key.isKeyboard = false;
             key.mouseButton = 0;
             key.wheel = 0;
@@ -431,19 +441,19 @@ namespace Clicktastic
                 {
                     if (button == "Ctrl")
                     {
-                        key.ctrl = true;
+                        ctrl = true;
                         previous = button;
                         continue;
                     }
                     else if (button == "Shift")
                     {
-                        key.shift = true;
+                        shift = true;
                         previous = button;
                         continue;
                     }
                     else if (button == "Alt")
                     {
-                        key.alt = true;
+                        alt = true;
                         previous = button;
                         continue;
                     }
@@ -456,10 +466,19 @@ namespace Clicktastic
                 else
                 {
                     key.isKeyboard = true;
-                    key.key = lastKeyCode;
+                    if (button == lastKey && (button == "Ctrl" || button == "Shift" || button == "Alt"))
+                        key.key = Keys.None;
+                    else
+                        key.key = lastKeyCode;
                 }
                 previous = button;
             }
+            if (ctrl)
+                key.modifierKeys = key.modifierKeys | Keys.Control;
+            if (shift)
+                key.modifierKeys = key.modifierKeys | Keys.Shift;
+            if (alt)
+                key.modifierKeys = key.modifierKeys | Keys.Alt;
             key.valid = true;
             return key;
         }
@@ -797,7 +816,7 @@ namespace Clicktastic
                 MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            else if (!key.isKeyboard && (key.ctrl || key.shift || key.alt))
+            else if (!key.isKeyboard && (key.modifierKeys != Keys.None))
             {
                 MessageBox.Show("Keyboard combos are not supported with the mouse!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
