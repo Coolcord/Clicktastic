@@ -55,6 +55,7 @@ namespace Clicktastic
             public Boolean isKeyboard;
             public Keys modifierKeys;
             public Keys key;
+            public string cmd;
             public UInt32 mouseButton;
             public int wheel;
         }
@@ -480,6 +481,7 @@ namespace Clicktastic
                 key.modifierKeys = key.modifierKeys | Keys.Shift;
             if (alt)
                 key.modifierKeys = key.modifierKeys | Keys.Alt;
+            key.cmd = keyStringConverter.KeyToCmd(key.key, key.modifierKeys, pressEnter);
             key.valid = true;
             return key;
         }
@@ -560,7 +562,7 @@ namespace Clicktastic
                 {
                     try
                     {
-                        SendKeys.SendWait(keyStringConverter.KeyToCmd(AutoclickKey.key, AutoclickKey.modifierKeys, pressEnter));
+                        SendKeys.SendWait(AutoclickKey.cmd);
                     }
                     catch (Exception ex)
                     {
@@ -1143,9 +1145,15 @@ namespace Clicktastic
         private void cbEnter_CheckedChanged(object sender, EventArgs e)
         {
             if (cbEnter.Checked)
+            {
                 pressEnter = true;
+            }
             else
+            {
                 pressEnter = false;
+            }
+            //Fix the stored autoclick key command
+            AutoclickKey.cmd = keyStringConverter.KeyToCmd(AutoclickKey.key, AutoclickKey.modifierKeys, pressEnter);
         }
     }
 }
