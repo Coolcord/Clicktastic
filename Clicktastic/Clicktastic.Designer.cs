@@ -1,6 +1,6 @@
 ﻿namespace Clicktastic
 {
-    partial class Form1
+    partial class Clicktastic
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.lblHoldInstructions = new System.Windows.Forms.Label();

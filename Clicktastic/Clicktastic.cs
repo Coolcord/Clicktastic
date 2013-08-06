@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace Clicktastic
 {
-    public partial class Form1 : Form
+    public partial class Clicktastic : Form
     {
         private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
@@ -464,7 +464,7 @@ namespace Clicktastic
             return key;
         }
 
-        public Form1()
+        public Clicktastic()
         {
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
@@ -486,7 +486,7 @@ namespace Clicktastic
             setInstructions();
         }
 
-        ~Form1()
+        ~Clicktastic()
         {
             UnhookWindowsHookEx(_hookIDKey);
             UnhookWindowsHookEx(_hookIDMouse);
@@ -758,12 +758,12 @@ namespace Clicktastic
         {
             if (!key.valid)
                 return false;
-            if (!key.isKeyboard)
+            else if (key.isKeyboard && key.key == Keys.None)
             {
-                MessageBox.Show("Mouse buttons cannot be used as activator hotkeys!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
+            else if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
                 key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
                 key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
                 key.wheel == 0))
@@ -771,19 +771,38 @@ namespace Clicktastic
                 MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            return true;
+            else if (!key.isKeyboard)
+            {
+                MessageBox.Show("Mouse buttons cannot be used as activator hotkeys!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else
+                return true;
         }
 
         private Boolean isAutoclickKeySettingsValid(KEYCOMBO key)
         {
             if (!key.valid)
                 return false;
-            if (!key.isKeyboard && (key.ctrl || key.shift || key.alt))
+            else if (key.isKeyboard && key.key == Keys.None)
+            {
+                MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
+                key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
+                key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
+                key.wheel == 0))
+            {
+                MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else if (!key.isKeyboard && (key.ctrl || key.shift || key.alt))
             {
                 MessageBox.Show("Keyboard combos are not supported with the mouse!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (key.isKeyboard)
+            else if (key.isKeyboard)
             {
                 if (Hold && ddbTurboMode.SelectedIndex != 0) //hold and turbo are on
                 {
@@ -820,7 +839,7 @@ namespace Clicktastic
                         return false;
                 }
             }
-            if (Hold && key.wheel != 0)
+            else if (Hold && key.wheel != 0)
             {
                 DialogResult result = DialogResult.Yes;
                 result = MessageBox.Show("Mouse wheel is not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
@@ -830,14 +849,6 @@ namespace Clicktastic
                 }
                 else
                     return false;
-            }
-            if (!key.isKeyboard && (key.mouseButton != MOUSEEVENTF_LEFTDOWN &&
-                key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
-                key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
-                key.wheel == 0))
-            {
-                MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
             }
             return true;
         }
@@ -1011,21 +1022,6 @@ namespace Clicktastic
             turbo = ddbTurboMode.SelectedIndex + 1;
         }
 
-        private void PlayMarioTheme()
-        {
-            Console.Beep(659, 125);
-            Console.Beep(659, 125);
-            Thread.Sleep(125);
-            Console.Beep(659, 125);
-            Thread.Sleep(167);
-            Console.Beep(523, 125);
-            Console.Beep(659, 125);
-            Thread.Sleep(125);
-            Console.Beep(784, 125);
-            Thread.Sleep(375);
-            Console.Beep(392, 125);
-        }
-
         private void btnAbout_Click(object sender, EventArgs e)
         {
             Form aboutForm = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
@@ -1033,7 +1029,7 @@ namespace Clicktastic
             aboutForm.Width = 400;
             aboutForm.Height = 200;
             aboutForm.Text = "About Clicktastic";
-            aboutForm.Icon = Clicktastic.Properties.Resources.clicktastic;
+            aboutForm.Icon = Properties.Resources.clicktastic;
 
             //Get the version number
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -1056,6 +1052,12 @@ namespace Clicktastic
             btnOk.Click += (btnSender, btnE) => aboutForm.Close(); //click ok to close
             aboutForm.Controls.Add(aboutText);
             aboutForm.Controls.Add(btnOk);
+
+            //Easter Egg =D
+            aboutForm.KeyPreview = true;
+            CheatCode cheatCode = new CheatCode();
+            aboutForm.KeyDown += new KeyEventHandler(cheatCode.GetCheatCode);
+
             aboutForm.ShowDialog();
             aboutForm.Dispose();
             btnOk.Dispose();
