@@ -310,18 +310,19 @@
             // 
             // btnManageProfiles
             // 
-            this.btnManageProfiles.Location = new System.Drawing.Point(91, 58);
+            this.btnManageProfiles.Location = new System.Drawing.Point(96, 57);
             this.btnManageProfiles.Name = "btnManageProfiles";
-            this.btnManageProfiles.Size = new System.Drawing.Size(133, 30);
+            this.btnManageProfiles.Size = new System.Drawing.Size(144, 30);
             this.btnManageProfiles.TabIndex = 21;
             this.btnManageProfiles.Text = "Manage Profiles";
             this.btnManageProfiles.UseVisualStyleBackColor = true;
+            this.btnManageProfiles.Click += new System.EventHandler(this.btnManageProfiles_Click);
             // 
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(10, 58);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 30);
+            this.btnSave.Size = new System.Drawing.Size(80, 30);
             this.btnSave.TabIndex = 20;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -548,7 +549,7 @@
             this.ddbProfile.MaxDropDownItems = 100;
             this.ddbProfile.Name = "ddbProfile";
             this.ddbProfile.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ddbProfile.Size = new System.Drawing.Size(215, 24);
+            this.ddbProfile.Size = new System.Drawing.Size(231, 24);
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 

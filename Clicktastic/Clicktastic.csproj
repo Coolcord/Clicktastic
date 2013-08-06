@@ -57,10 +57,19 @@
       <DependentUpon>Clicktastic.cs</DependentUpon>
     </Compile>
     <Compile Include="KeyStringConverter.cs" />
+    <Compile Include="ProfileManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProfileManager.Designer.cs">
+      <DependentUpon>ProfileManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Clicktastic.resx">
       <DependentUpon>Clicktastic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileManager.resx">
+      <DependentUpon>ProfileManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

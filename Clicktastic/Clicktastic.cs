@@ -56,6 +56,7 @@ namespace Clicktastic
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
 
+        [Serializable]
         [StructLayout(LayoutKind.Sequential)]
         public struct ProfileData
         {
@@ -71,6 +72,7 @@ namespace Clicktastic
             public int MaxDelay;
         }
 
+        [Serializable]
         [StructLayout(LayoutKind.Sequential)]
         public struct KEYCOMBO
         {
@@ -1161,6 +1163,14 @@ namespace Clicktastic
             }
             //Fix the stored autoclick key command
             profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter);
+        }
+
+        private void btnManageProfiles_Click(object sender, EventArgs e)
+        {
+            ProfileManager profileManager = new ProfileManager();
+            profileManager.StartPosition = FormStartPosition.CenterParent;
+            profileManager.ShowDialog();
+            profileManager.Dispose();
         }
     }
 }
