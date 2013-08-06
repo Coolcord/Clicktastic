@@ -538,7 +538,7 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
-            // Form1
+            // Clicktastic
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -548,7 +548,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "Clicktastic";
             this.Text = "Clicktastic";
             this.tcClicktastic.ResumeLayout(false);
             this.tbAutoclicker.ResumeLayout(false);
