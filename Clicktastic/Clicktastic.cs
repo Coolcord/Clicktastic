@@ -161,92 +161,107 @@ namespace Clicktastic
                 if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
                     ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
                 {
-                    if (profileData.Hold)
+                    ToggleAutoClicker((Keys)vkCode);
+                }
+            }
+            else if (nCode >= 0 && tcClicktastic.SelectedIndex == 0 &&
+                ((profileData.ActivationKey.modifierKeys == Control.ModifierKeys &&
+                profileData.ActivationKey.key == Keys.None) ||
+                (profileData.DeactivationKey.modifierKeys == Control.ModifierKeys &&
+                profileData.DeactivationKey.key == Keys.None))) //Ctrl, Shift, or Alt only
+            {
+                int vkCode = Marshal.ReadInt32(lParam);
+                ToggleAutoClicker(Keys.None);
+            }
+
+            return CallNextHookEx(_hookIDKey, nCode, wParam, lParam);
+        }
+
+        private void ToggleAutoClicker(Keys key)
+        {
+            if (profileData.Hold)
+            {
+                if (AutoclickerEnabled && key == profileData.DeactivationKey.key)
+                {
+                    AutoclickerEnabled = false;
+                    AutoclickerActivated = false;
+                    this.Invoke(new MethodInvoker(() =>
                     {
-                        if (AutoclickerEnabled && (Keys)vkCode == profileData.DeactivationKey.key)
+                        pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                        lblAutoclickerEnabled.Text = "Disabled";
+                        lblAutoclickerEnabled.ForeColor = Color.Red;
+                        pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                        lblAutoclickerRunning.Text = "Waiting";
+                        lblAutoclickerRunning.ForeColor = Color.Red;
+                    }));
+                    AutoclickerWaiting = true;
+                }
+                else if (!AutoclickerEnabled && key == profileData.ActivationKey.key)
+                {
+                    AutoclickerEnabled = true;
+                    AutoclickerActivated = true;
+                    this.Invoke(new MethodInvoker(() =>
+                    {
+                        pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                        lblAutoclickerEnabled.Text = "Enabled";
+                        lblAutoclickerEnabled.ForeColor = Color.Lime;
+                    }));
+                    Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
+                    if (ButtonHeld && AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
                         {
-                            AutoclickerEnabled = false;
-                            AutoclickerActivated = false;
-                            this.Invoke(new MethodInvoker(() =>
-                            {
-                                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
-                                lblAutoclickerEnabled.Text = "Disabled";
-                                lblAutoclickerEnabled.ForeColor = Color.Red;
-                                pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                                lblAutoclickerRunning.Text = "Waiting";
-                                lblAutoclickerRunning.ForeColor = Color.Red;
-                            }));
-                            AutoclickerWaiting = true;
-                        }
-                        else if (!AutoclickerEnabled && (Keys)vkCode == profileData.ActivationKey.key)
-                        {
-                            AutoclickerEnabled = true;
-                            AutoclickerActivated = true;
-                            this.Invoke(new MethodInvoker(() =>
-                            {
-                                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                                lblAutoclickerEnabled.Text = "Enabled";
-                                lblAutoclickerEnabled.ForeColor = Color.Lime;
-                            }));
-                            Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
-                            if (ButtonHeld && AutoclickerWaiting)
-                            {
-                                this.Invoke(new MethodInvoker(() =>
-                                {
-                                    pbAutoclickerRunning.Image = Properties.Resources.green_circle;
-                                    lblAutoclickerRunning.Text = "Running";
-                                    lblAutoclickerRunning.ForeColor = Color.Lime;
-                                }));
-                                AutoclickerWaiting = false;
-                            }
-                            else
-                            {
-                                this.Invoke(new MethodInvoker(() =>
-                                {
-                                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                                    lblAutoclickerRunning.Text = "Waiting";
-                                    lblAutoclickerRunning.ForeColor = Color.Red;
-                                }));
-                                AutoclickerWaiting = true;
-                            }
-                            AutoClick();
-                        }
+                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            lblAutoclickerRunning.Text = "Running";
+                            lblAutoclickerRunning.ForeColor = Color.Lime;
+                        }));
+                        AutoclickerWaiting = false;
                     }
                     else
                     {
-                        if (AutoclickerActivated && (Keys)vkCode == profileData.DeactivationKey.key)
+                        this.Invoke(new MethodInvoker(() =>
                         {
-                            AutoclickerActivated = false;
-                            if (!AutoclickerWaiting)
-                            {
-                                this.Invoke(new MethodInvoker(() =>
-                                {
-                                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
-                                    lblAutoclickerRunning.Text = "Waiting";
-                                    lblAutoclickerRunning.ForeColor = Color.Red;
-                                }));
-                                AutoclickerWaiting = true;
-                            }
-                        }
-                        else if (!AutoclickerActivated && (Keys)vkCode == profileData.ActivationKey.key)
-                        {
-                            AutoclickerActivated = true;
-                            if (AutoclickerWaiting)
-                            {
-                                this.Invoke(new MethodInvoker(() =>
-                                {
-                                    pbAutoclickerRunning.Image = Properties.Resources.green_circle;
-                                    lblAutoclickerRunning.Text = "Running";
-                                    lblAutoclickerRunning.ForeColor = Color.Lime;
-                                }));
-                                AutoclickerWaiting = false;
-                            }
-                            AutoClick();
-                        }
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                        }));
+                        AutoclickerWaiting = true;
                     }
+                    AutoClick();
                 }
             }
-            return CallNextHookEx(_hookIDKey, nCode, wParam, lParam);
+            else
+            {
+                if (AutoclickerActivated && key == profileData.DeactivationKey.key)
+                {
+                    AutoclickerActivated = false;
+                    if (!AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            lblAutoclickerRunning.Text = "Waiting";
+                            lblAutoclickerRunning.ForeColor = Color.Red;
+                        }));
+                        AutoclickerWaiting = true;
+                    }
+                }
+                else if (!AutoclickerActivated && key == profileData.ActivationKey.key)
+                {
+                    AutoclickerActivated = true;
+                    if (AutoclickerWaiting)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            lblAutoclickerRunning.Text = "Running";
+                            lblAutoclickerRunning.ForeColor = Color.Lime;
+                        }));
+                        AutoclickerWaiting = false;
+                    }
+                    AutoClick();
+                }
+            }
         }
 
         private static IntPtr SetHookMouse(LowLevelMouseProc proc)
@@ -338,10 +353,7 @@ namespace Clicktastic
                     }));
                     textState = (textState + 1) % 4;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                catch (Exception ex) { Console.WriteLine(ex); }
             };
             KEYCOMBO key = new KEYCOMBO();
             Keys lastKey = Keys.None;
@@ -471,13 +483,18 @@ namespace Clicktastic
                 else
                 {
                     key.isKeyboard = true;
-                    key.key = lastKeyCode;
-                    /*
-                    if (button == lastKey && (button == "Ctrl" || button == "Shift" || button == "Alt"))
-                        key.key = Keys.None;
+
+                    if (button == "Ctrl") ctrl = true;
+                    else if (button == "Shift") shift = true;
+                    else if (button == "Alt") alt = true;
+
+                    if (!isKeyAcceptable(lastKeyCode))
+                    {
+                        Console.WriteLine("Triggered");
+                        key.key = Keys.None; //allow only Ctrl, Shift, or Alt by themselves
+                    }
                     else
-                        key.key = lastKeyCode;
-                     */
+                        key.key = lastKeyCode; //store the key code
                 }
                 previous = button;
             }
@@ -507,18 +524,19 @@ namespace Clicktastic
                 {
                     Directory.CreateDirectory(currentDirectory);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                catch (Exception ex) { Console.WriteLine(ex); }
             }
             previousProfile = Properties.Settings.Default.DefaultProfile;
 
-            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            try
             {
-                ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+                foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+                {
+                    ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+                }
+                ddbProfile.SelectedItem = previousProfile;
             }
-            ddbProfile.SelectedItem = previousProfile;
+            catch (Exception ex) { Console.WriteLine(ex); }
             AttemptLoad();
             Startup = false;
             setInstructions();
@@ -580,10 +598,7 @@ namespace Clicktastic
                     {
                         SendKeys.SendWait(profileData.AutoclickKey.cmd);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    catch (Exception ex) { Console.WriteLine(ex); }
                 }
                 else //is mouse
                 {
@@ -642,10 +657,7 @@ namespace Clicktastic
                         timer.Interval = randomNumber.Next(profileData.MinDelay, profileData.MaxDelay);
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            catch (Exception ex) { Console.WriteLine(ex); }
             if (!AutoclickerActivated) //stop the autoclicker
             {
                 timer.Stop();
@@ -814,6 +826,7 @@ namespace Clicktastic
                 case Keys.Menu:
                 case Keys.LMenu:
                 case Keys.RMenu:
+                case Keys.None:
                     return false; //these are not accepted
                 default:
                     return true; //anything else is accepted
@@ -824,12 +837,7 @@ namespace Clicktastic
         {
             if (!key.valid)
                 return false;
-            else if (key.isKeyboard && key.key == Keys.None)
-            {
-                MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            else if (key.isKeyboard && !isKeyAcceptable(key.key))
+            else if (key.isKeyboard && key.key == Keys.None && key.modifierKeys == Keys.None)
             {
                 MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -855,6 +863,8 @@ namespace Clicktastic
         {
             if (!key.valid)
                 return false;
+            //Debug code. Uncomment this line to fix autoclick individual modifier bug
+            //else if (key.isKeyboard && key.key == Keys.None && key.modifierKeys == Keys.None)
             else if (key.isKeyboard && key.key == Keys.None)
             {
                 MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1138,10 +1148,7 @@ namespace Clicktastic
                     {
                         Directory.CreateDirectory(currentDirectory);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    catch (Exception ex) { Console.WriteLine(ex); }
                 }
                 if (!Startup && RetryAttempts == 0) //only show the error message one time
                     MessageBox.Show("Unable to load profile!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1282,18 +1289,19 @@ namespace Clicktastic
 
         private void CreateDefaultProfile()
         {
-            if (!Directory.Exists(currentDirectory)) //make sure the profile folder exists
+            try
             {
-                try
+                if (!Directory.Exists(currentDirectory)) //make sure the profile folder exists
                 {
                     Directory.CreateDirectory(currentDirectory);
                 }
-                catch (Exception ex)
+                if (File.Exists(currentDirectory + "\\Default.clk")) //the file exists already
                 {
-                    Console.WriteLine(ex);
+                    File.SetAttributes(currentDirectory + "\\Default.clk", FileAttributes.Normal);
+                    File.Delete(currentDirectory + "\\Default.clk"); //delete it
                 }
             }
-
+            catch (Exception ex) { Console.WriteLine(ex); }
             profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
             profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
             profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
@@ -1308,12 +1316,16 @@ namespace Clicktastic
             profileData.MaxDelay = 1000;
             ddbActivationMode.SelectedIndex = 0;
             profile.Save("Default", ref profileData); //create a new one
-            ddbProfile.Items.Clear();
-            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            try
             {
-                ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+                ddbProfile.Items.Clear();
+                foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+                {
+                    ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+                }
+                ddbProfile.SelectedItem = "Default";
             }
-            ddbProfile.SelectedItem = "Default";
+            catch (Exception ex) { Console.WriteLine(ex); }
             AttemptLoad(); //load the profile
         }
 
