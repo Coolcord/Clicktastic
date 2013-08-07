@@ -493,32 +493,50 @@ namespace Clicktastic
         {
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
+            _hookIDKey = SetHookKey(_procKey);
+            _hookIDMouse = SetHookMouse(_procMouse);
 
             InitializeComponent();
+
+            if (!Directory.Exists(currentDirectory))
+            {
+                try
+                {
+                    Directory.CreateDirectory(currentDirectory);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
             foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
             {
                 ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
             }
-
-            //Defaults
-            profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
-            profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
-            profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
-            profileData.Random = false;
-            profileData.Hold = false;
-            profileData.pressEnter = false;
-            profileData.useDeactivationKey = false;
-            ddbSpeedMode.SelectedIndex = 0;
-            ddbTurboMode.SelectedIndex = 0;
-            profileData.turbo = 1;
-            profileData.MinDelay = 1;
-            profileData.MaxDelay = 1000;
-            ddbActivationMode.SelectedIndex = 0;
-
-            ddbProfile.SelectedItem = "Default";
-
-            _hookIDKey = SetHookKey(_procKey);
-            _hookIDMouse = SetHookMouse(_procMouse);
+            if (ddbProfile.Items.Count == 0) //no profiles found, so load defaults
+            {
+                profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
+                profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
+                profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
+                profileData.Random = false;
+                profileData.Hold = false;
+                profileData.pressEnter = false;
+                profileData.useDeactivationKey = false;
+                ddbSpeedMode.SelectedIndex = 0;
+                ddbTurboMode.SelectedIndex = 0;
+                profileData.turbo = 1;
+                profileData.MinDelay = 1;
+                profileData.MaxDelay = 1000;
+                ddbActivationMode.SelectedIndex = 0;
+                profile.Save("Default", ref profileData); //create a new one
+                ddbProfile.Items.Add("Default");
+                ddbProfile.SelectedIndex = 0; //load the profile
+            }
+            else if (ddbProfile.Items.Contains(Properties.Settings.Default.DefaultProfile)) //previous profile was found
+                ddbProfile.SelectedItem = Properties.Settings.Default.DefaultProfile; //load the profile
+            else //there are profiles, but the previously used profile does not exist
+                ddbProfile.SelectedIndex = 0; //load the first profile in the list
 
             setInstructions();
         }
@@ -1118,6 +1136,8 @@ namespace Clicktastic
             {
                 profileData = loadProfileData;
                 UpdatePreferences();
+                Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
+                Properties.Settings.Default.Save();
                 setInstructions();
             }
             else

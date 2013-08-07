@@ -8,3 +8,4 @@ e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\Debug\Click
 e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x86\Debug\Clicktastic.exe
 e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x86\Debug\Clicktastic.pdb
 e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x86\Debug\Clicktastic.ProfileManager.resources
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\Debug\Clicktastic.exe.config
