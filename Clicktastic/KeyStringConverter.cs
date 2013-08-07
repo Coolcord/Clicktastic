@@ -217,44 +217,83 @@ namespace Clicktastic
             }
         }
 
-        public string KeyToCmd(Keys key, Keys modifiers, Boolean enter)
+        public string KeyToCmd(Keys key, Keys modifiers, Boolean enter, int turbo)
         {
             string cmd = KeyToString(key);
             if (cmd == null)
                 return null; //unable to get a string from the key
             if (cmd.Length > 1)
                 cmd = cmd.ToUpper();
-            cmd = "{" + cmd + "}"; //build the command
 
             switch (cmd)
             {
-                case "{CTRL}":
+                case "CTRL":
                     cmd = "^";
                     break;
-                case "{SHIFT}":
+                case "SHIFT":
                     cmd = "+";
                     break;
-                case "{ALT}":
+                case "ALT":
                     cmd = "%";
                     break;
-                case "{PAGEUP}":
-                    cmd = "{PGUP}";
+                case "PAGEUP":
+                    cmd = "PGUP";
                     break;
-                case "{PAGEDOWN}":
-                    cmd = "{PGDN}";
+                case "PAGEDOWN":
+                    cmd = "PGDN";
                     break;
+                case "` (~)":
+                    cmd = "`";
+                    break;
+            }
+
+            if (cmd == "NONE")
+            {
+                if (turbo > 1)
+                    cmd = turbo.ToString();
+                else
+                    cmd = null;
+            }
+            else if (cmd == "^" || cmd == "+" || cmd == "%")
+            {
+                if (turbo > 1)
+                    cmd = cmd + " " + turbo; //build the command with turbo
+            }
+            else
+            {
+                if (turbo > 1)
+                    cmd = "{" + cmd + " " + turbo + "}"; //build the command with turbo
+                else
+                    cmd = "{" + cmd + "}"; //build the command
             }
 
             //Add any necessary modifiers
             if ((modifiers & Keys.Control) > 0)
-                cmd = "^(" + cmd + ")";
+            {
+                if (cmd == null)
+                    cmd = "^";
+                else
+                    cmd = "^(" + cmd + ")";
+            }
             if ((modifiers & Keys.Shift) > 0)
-                cmd = "+(" + cmd + ")";
+            {
+                if (cmd == null)
+                    cmd = "+";
+                else
+                    cmd = "+(" + cmd + ")";
+            }
             if ((modifiers & Keys.Alt) > 0)
-                cmd = "%(" + cmd + ")";
+            {
+                if (cmd == null)
+                    cmd = "%";
+                else
+                    cmd = "%(" + cmd + ")";
+            }
 
             if (enter)
                 cmd = cmd + "{ENTER}";
+
+            Console.WriteLine(cmd);
 
             return cmd;
         }

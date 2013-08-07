@@ -5,5 +5,8 @@
     <Setting Name="DefaultProfile" Type="System.String" Scope="User">
       <Value Profile="(Default)">Default</Value>
     </Setting>
+    <Setting Name="KeySize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">164</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

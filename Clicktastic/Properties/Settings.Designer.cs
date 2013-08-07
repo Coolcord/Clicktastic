@@ -34,5 +34,17 @@ namespace Clicktastic.Properties {
                 this["DefaultProfile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("164")]
+        public int KeySize {
+            get {
+                return ((int)(this["KeySize"]));
+            }
+            set {
+                this["KeySize"] = value;
+            }
+        }
     }
 }

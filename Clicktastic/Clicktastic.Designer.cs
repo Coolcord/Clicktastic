@@ -40,6 +40,7 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tbPreferences = new System.Windows.Forms.TabPage();
+            this.cbSuppressHotkeys = new System.Windows.Forms.CheckBox();
             this.cbEnter = new System.Windows.Forms.CheckBox();
             this.btnAbout = new System.Windows.Forms.Button();
             this.lblTurboMode = new System.Windows.Forms.Label();
@@ -192,6 +193,7 @@
             // 
             // tbPreferences
             // 
+            this.tbPreferences.Controls.Add(this.cbSuppressHotkeys);
             this.tbPreferences.Controls.Add(this.cbEnter);
             this.tbPreferences.Controls.Add(this.btnAbout);
             this.tbPreferences.Controls.Add(this.lblTurboMode);
@@ -228,6 +230,16 @@
             this.tbPreferences.Text = "Preferences";
             this.tbPreferences.UseVisualStyleBackColor = true;
             // 
+            // cbSuppressHotkeys
+            // 
+            this.cbSuppressHotkeys.AutoSize = true;
+            this.cbSuppressHotkeys.Location = new System.Drawing.Point(245, 67);
+            this.cbSuppressHotkeys.Name = "cbSuppressHotkeys";
+            this.cbSuppressHotkeys.Size = new System.Drawing.Size(145, 21);
+            this.cbSuppressHotkeys.TabIndex = 30;
+            this.cbSuppressHotkeys.Text = "Suppress Hotkeys";
+            this.cbSuppressHotkeys.UseVisualStyleBackColor = true;
+            // 
             // cbEnter
             // 
             this.cbEnter.AutoSize = true;
@@ -242,9 +254,9 @@
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(307, 28);
+            this.btnAbout.Location = new System.Drawing.Point(354, 228);
             this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(152, 59);
+            this.btnAbout.Size = new System.Drawing.Size(154, 71);
             this.btnAbout.TabIndex = 28;
             this.btnAbout.Text = "About Clicktastic";
             this.btnAbout.UseVisualStyleBackColor = true;
@@ -496,18 +508,18 @@
             this.lblDeactivationButton.Enabled = false;
             this.lblDeactivationButton.Location = new System.Drawing.Point(242, 162);
             this.lblDeactivationButton.Name = "lblDeactivationButton";
-            this.lblDeactivationButton.Size = new System.Drawing.Size(135, 17);
+            this.lblDeactivationButton.Size = new System.Drawing.Size(132, 17);
             this.lblDeactivationButton.TabIndex = 5;
-            this.lblDeactivationButton.Text = "Deactivation Button:";
+            this.lblDeactivationButton.Text = "Deactivator Hotkey:";
             // 
             // cbUseDeactivationButton
             // 
             this.cbUseDeactivationButton.AutoSize = true;
             this.cbUseDeactivationButton.Location = new System.Drawing.Point(245, 139);
             this.cbUseDeactivationButton.Name = "cbUseDeactivationButton";
-            this.cbUseDeactivationButton.Size = new System.Drawing.Size(261, 21);
+            this.cbUseDeactivationButton.Size = new System.Drawing.Size(264, 21);
             this.cbUseDeactivationButton.TabIndex = 4;
-            this.cbUseDeactivationButton.Text = "Use Different Button for Deactivation";
+            this.cbUseDeactivationButton.Text = "Use Different Hotkey for Deactivation";
             this.cbUseDeactivationButton.UseVisualStyleBackColor = true;
             this.cbUseDeactivationButton.CheckedChanged += new System.EventHandler(this.cbUseDeactivationButton_CheckedChanged);
             // 
@@ -527,9 +539,9 @@
             this.lblActivationButton.AutoSize = true;
             this.lblActivationButton.Location = new System.Drawing.Point(242, 91);
             this.lblActivationButton.Name = "lblActivationButton";
-            this.lblActivationButton.Size = new System.Drawing.Size(118, 17);
+            this.lblActivationButton.Size = new System.Drawing.Size(115, 17);
             this.lblActivationButton.TabIndex = 2;
-            this.lblActivationButton.Text = "Activation Button:";
+            this.lblActivationButton.Text = "Activator Hotkey:";
             // 
             // lblSelectProfile
             // 
@@ -618,6 +630,7 @@
         private System.Windows.Forms.ComboBox ddbTurboMode;
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.CheckBox cbEnter;
+        private System.Windows.Forms.CheckBox cbSuppressHotkeys;
     }
 }
 

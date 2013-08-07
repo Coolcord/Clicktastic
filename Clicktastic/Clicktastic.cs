@@ -137,6 +137,7 @@ namespace Clicktastic
         private const int WM_KEYDOWN = 0x0100;
         private LowLevelKeyboardProc _procKey = null;
         private static IntPtr _hookIDKey = IntPtr.Zero;
+
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static LowLevelMouseProc _procMouse = null;
@@ -147,14 +148,22 @@ namespace Clicktastic
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
             {
+                //return SetWindowsHookEx(WH_KEYBOARD_LL, hookProcDelegate,
+                    //GetModuleHandle(curModule.ModuleName), 0);
+                //return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+                    //GetModuleHandle(curModule.ModuleName), 0);
                 return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
                     GetModuleHandle(curModule.ModuleName), 0);
             }
         }
 
+        private const Int32 dummy = 0x0000;
+
         private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
+            if (Control.ModifierKeys == Keys.Control)
+                Console.WriteLine("You pressed control!");
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && tcClicktastic.SelectedIndex == 0)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
@@ -504,7 +513,7 @@ namespace Clicktastic
                 key.modifierKeys = key.modifierKeys | Keys.Shift;
             if (alt)
                 key.modifierKeys = key.modifierKeys | Keys.Alt;
-            key.cmd = keyStringConverter.KeyToCmd(key.key, key.modifierKeys, profileData.pressEnter);
+            key.cmd = keyStringConverter.KeyToCmd(key.key, key.modifierKeys, profileData.pressEnter, profileData.turbo);
             key.valid = true;
             return key;
         }
@@ -863,9 +872,7 @@ namespace Clicktastic
         {
             if (!key.valid)
                 return false;
-            //Debug code. Uncomment this line to fix autoclick individual modifier bug
-            //else if (key.isKeyboard && key.key == Keys.None && key.modifierKeys == Keys.None)
-            else if (key.isKeyboard && key.key == Keys.None)
+            else if (key.isKeyboard && !isKeyAcceptable(key.key))
             {
                 MessageBox.Show("That key is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -878,13 +885,14 @@ namespace Clicktastic
                 MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            else if (!key.isKeyboard && (key.modifierKeys != Keys.None))
+            else if (!key.isKeyboard && key.modifierKeys != Keys.None)
             {
                 MessageBox.Show("Keyboard combos are not supported with the mouse!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             else if (key.isKeyboard)
             {
+                /*
                 if (profileData.Hold && ddbTurboMode.SelectedIndex != 0) //hold and turbo are on
                 {
                     DialogResult result = DialogResult.Yes;
@@ -908,7 +916,8 @@ namespace Clicktastic
                     else
                         return false;
                 }
-                else if (profileData.Hold) //hold is on
+                 * */
+                if (profileData.Hold) //hold is on
                 {
                     DialogResult result = DialogResult.Yes;
                     result = MessageBox.Show("Keyboard keys are not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
@@ -934,8 +943,9 @@ namespace Clicktastic
             return true;
         }
 
-        private void CheckTurboModeSettings()
+        private void SetTurbo()
         {
+            /*
             if (ddbTurboMode.SelectedIndex == 0)
                 return; //turbo is off which is always fine
             if (profileData.AutoclickKey.isKeyboard)
@@ -943,6 +953,44 @@ namespace Clicktastic
                 MessageBox.Show("Keyboard keys are not supported in turbo mode!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ddbTurboMode.SelectedIndex = 0; //fall back to trigger mode
             }
+             * */
+            if (profileData.pressEnter && (ddbTurboMode.SelectedIndex + 1) > 1)
+            {
+                DialogResult result = DialogResult.Yes;
+                result = MessageBox.Show("Pressing enter after autoclick is not supported in turbo mode! Would you like disable pressing enter after autoclick?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (result != DialogResult.Yes)
+                {
+                    ddbTurboMode.SelectedIndex = 0;
+                    return;
+                }
+            }
+            profileData.turbo = ddbTurboMode.SelectedIndex + 1;
+            if (profileData.AutoclickKey.isKeyboard)
+            {
+                if (profileData.turbo > 1)
+                {
+                    cbEnter.Checked = false;
+                    cbEnter.Enabled = false;
+                    profileData.pressEnter = false; //make sure that it is saved
+                    profileData.turbo = profileData.turbo * 12;
+                }
+                else
+                    cbEnter.Enabled = true;
+            }
+            else
+            {
+                if (profileData.turbo > 1)
+                {
+                    //cbEnter.Checked = false;
+                    //cbEnter.Enabled = false;
+                    //profileData.pressEnter = false; //make sure that it is saved
+                    profileData.turbo = profileData.turbo * 6;
+                }
+                //else if (profileData.AutoclickKey.isKeyboard)
+                    //cbEnter.Enabled = true;
+            }
+            //Fix the stored autoclick key command
+            profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter, profileData.turbo);
         }
 
         private void CheckActivationModeSettings()
@@ -976,6 +1024,11 @@ namespace Clicktastic
             KEYCOMBO key = GetKeyDialog("Press any key");
             if (isActivationSettingsValid(key))
             {
+                if (key.keyString == tbAutoclickButton.Text)
+                {
+                    MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 profileData.ActivationKey = key;
                 if (!cbUseDeactivationButton.Checked)
                     profileData.DeactivationKey = key;
@@ -988,6 +1041,11 @@ namespace Clicktastic
             KEYCOMBO key = GetKeyDialog("Press any key");
             if (isActivationSettingsValid(key))
             {
+                if (key.keyString == tbAutoclickButton.Text)
+                {
+                    MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 profileData.DeactivationKey = key;
                 tbDeactivationButton.Text = key.keyString;
             }
@@ -998,6 +1056,11 @@ namespace Clicktastic
             KEYCOMBO key = GetKeyDialog("Press any key or click here");
             if (isAutoclickKeySettingsValid(key))
             {
+                if (key.keyString == tbActivationButton.Text || key.keyString == tbDeactivationButton.Text)
+                {
+                    MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 profileData.AutoclickKey = key;
                 tbAutoclickButton.Text = key.keyString;
             }
@@ -1063,20 +1126,19 @@ namespace Clicktastic
             {
                 lblActivationMode.Enabled = false;
                 ddbActivationMode.Enabled = false;
-                lblTurboMode.Enabled = false;
-                ddbTurboMode.Enabled = false;
-                cbEnter.Enabled = true;
             }
             else
             {
                 lblActivationMode.Enabled = true;
                 ddbActivationMode.Enabled = true;
-                lblTurboMode.Enabled = true;
-                ddbTurboMode.Enabled = true;
                 if (cbEnter.Enabled)
+                {
                     cbEnter.Checked = false;
+                    profileData.pressEnter = false; //make sure it saves
+                }
                 cbEnter.Enabled = false;
             }
+            SetTurbo();
             setInstructions();
         }
 
@@ -1181,8 +1243,7 @@ namespace Clicktastic
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CheckTurboModeSettings();
-            profileData.turbo = ddbTurboMode.SelectedIndex + 1;
+            SetTurbo();
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -1260,7 +1321,7 @@ namespace Clicktastic
                 profileData.pressEnter = false;
             }
             //Fix the stored autoclick key command
-            profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter);
+            profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter, profileData.turbo);
         }
 
         private void btnManageProfiles_Click(object sender, EventArgs e)

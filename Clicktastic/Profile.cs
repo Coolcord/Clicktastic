@@ -29,13 +29,16 @@ namespace Clicktastic
     class Profile
     {
         public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
+        public static int KeySize = Properties.Settings.Default.KeySize;
 
         private static byte[] GetBytes(Keys key)
         {
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
-            byte[] bytes = new byte[sizeof(Keys)];
             binaryFormatter.Serialize(ms, key);
+            KeySize = ms.ToArray().Count();
+            Properties.Settings.Default.KeySize = KeySize;
+            Properties.Settings.Default.Save();
             return ms.ToArray();
         }
 
@@ -156,7 +159,7 @@ namespace Clicktastic
                 if (!key.valid)
                     throw new Exception("KEYCOMBO is not valid!");
                 key.isKeyboard = b.ReadBoolean();
-                const int SERIALIZATIONSPACE = 160;
+                int SERIALIZATIONSPACE = 160;
                 key.modifierKeys = GetKey(b.ReadBytes(sizeof(Keys) + SERIALIZATIONSPACE));
                 key.key = GetKey(b.ReadBytes(sizeof(Keys) + SERIALIZATIONSPACE));
                 key.keyString = b.ReadString();
