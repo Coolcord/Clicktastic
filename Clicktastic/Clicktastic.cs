@@ -54,9 +54,12 @@ namespace Clicktastic
         Boolean AutoclickerActivated = false;
         Boolean AutoclickerWaiting = true;
         Boolean SimulatingClicksOnHold = false;
+        Boolean Startup = true;
+        int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
         Profile profile = new Profile();
+        string previousProfile = "Default";
 
         [Serializable]
         [StructLayout(LayoutKind.Sequential)]
@@ -509,35 +512,15 @@ namespace Clicktastic
                     Console.WriteLine(ex);
                 }
             }
+            previousProfile = Properties.Settings.Default.DefaultProfile;
 
             foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
             {
                 ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
             }
-            if (ddbProfile.Items.Count == 0) //no profiles found, so load defaults
-            {
-                profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
-                profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
-                profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
-                profileData.Random = false;
-                profileData.Hold = false;
-                profileData.pressEnter = false;
-                profileData.useDeactivationKey = false;
-                ddbSpeedMode.SelectedIndex = 0;
-                ddbTurboMode.SelectedIndex = 0;
-                profileData.turbo = 1;
-                profileData.MinDelay = 1;
-                profileData.MaxDelay = 1000;
-                ddbActivationMode.SelectedIndex = 0;
-                profile.Save("Default", ref profileData); //create a new one
-                ddbProfile.Items.Add("Default");
-                ddbProfile.SelectedIndex = 0; //load the profile
-            }
-            else if (ddbProfile.Items.Contains(Properties.Settings.Default.DefaultProfile)) //previous profile was found
-                ddbProfile.SelectedItem = Properties.Settings.Default.DefaultProfile; //load the profile
-            else //there are profiles, but the previously used profile does not exist
-                ddbProfile.SelectedIndex = 0; //load the first profile in the list
-
+            ddbProfile.SelectedItem = previousProfile;
+            AttemptLoad();
+            Startup = false;
             setInstructions();
         }
 
@@ -1131,17 +1114,62 @@ namespace Clicktastic
 
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
+            AttemptLoad();
+        }
+
+        private void AttemptLoad()
+        {
             ProfileData loadProfileData = new ProfileData();
             if (profile.Load(ddbProfile.Text, ref loadProfileData))
             {
                 profileData = loadProfileData;
                 UpdatePreferences();
+                previousProfile = ddbProfile.Text;
+                RetryAttempts = 0;
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
                 Properties.Settings.Default.Save();
                 setInstructions();
             }
             else
-                MessageBox.Show("Unable to load profile!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            {
+                if (!Directory.Exists(currentDirectory)) //make sure the profile folder exists
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(currentDirectory);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+                if (!Startup && RetryAttempts == 0) //only show the error message one time
+                    MessageBox.Show("Unable to load profile!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (RetryAttempts == 0 && ddbProfile.Items.Contains(previousProfile))
+                {
+                    RetryAttempts++;
+                    ddbProfile.SelectedItem = previousProfile; //revert back to previous profile
+                    AttemptLoad();
+                }
+                else if (RetryAttempts < 2 && ddbProfile.Items.Count > 0)
+                {
+                    RetryAttempts++;
+                    ddbProfile.SelectedIndex = 0; //attempt to revert to the first profile in the list
+                    AttemptLoad();
+                }
+                else if (RetryAttempts < 3 && ddbProfile.Items.Contains("Default"))
+                {
+                    RetryAttempts++;
+                    ddbProfile.SelectedItem = "Default"; //attempt to fall back to the default profile
+                    AttemptLoad();
+                }
+                else //give up
+                {
+                    RetryAttempts = 0;
+                    CreateDefaultProfile(); //recreate default profile
+                    AttemptLoad();
+                }
+            }
         }
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -1231,7 +1259,6 @@ namespace Clicktastic
         private void btnManageProfiles_Click(object sender, EventArgs e)
         {
             ProfileManager profileManager = new ProfileManager(ref profileData);
-            string selectedProfile = ddbProfile.GetItemText(ddbProfile.SelectedItem);
             profileManager.StartPosition = FormStartPosition.CenterParent;
             profileManager.ShowDialog();
 
@@ -1241,18 +1268,53 @@ namespace Clicktastic
                 ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
             }
 
-            if (selectedProfile != null && ddbProfile.Items.Contains(selectedProfile))
-                ddbProfile.SelectedItem = selectedProfile; //select the proper profile again
+            if (previousProfile != null && ddbProfile.Items.Contains(previousProfile))
+                ddbProfile.SelectedItem = previousProfile; //select the proper profile again
             else if (ddbProfile.Items.Count > 0)
                 ddbProfile.SelectedIndex = 0; //profile was deleted, so use the top one
             else //the user deleted every profile
             {
-                profile.Save("Default", ref profileData); //create a new one
-                ddbProfile.Items.Add("Default");
-                ddbProfile.SelectedIndex = 0; //select the profile again
+                CreateDefaultProfile();
             }
 
             profileManager.Dispose();
+        }
+
+        private void CreateDefaultProfile()
+        {
+            if (!Directory.Exists(currentDirectory)) //make sure the profile folder exists
+            {
+                try
+                {
+                    Directory.CreateDirectory(currentDirectory);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
+            profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
+            profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
+            profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
+            profileData.Random = false;
+            profileData.Hold = false;
+            profileData.pressEnter = false;
+            profileData.useDeactivationKey = false;
+            ddbSpeedMode.SelectedIndex = 0;
+            ddbTurboMode.SelectedIndex = 0;
+            profileData.turbo = 1;
+            profileData.MinDelay = 1;
+            profileData.MaxDelay = 1000;
+            ddbActivationMode.SelectedIndex = 0;
+            profile.Save("Default", ref profileData); //create a new one
+            ddbProfile.Items.Clear();
+            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            {
+                ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+            }
+            ddbProfile.SelectedItem = "Default";
+            AttemptLoad(); //load the profile
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -1261,6 +1323,8 @@ namespace Clicktastic
                 MessageBox.Show(ddbProfile.Text + " saved successfully!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show("Unable to save " + ddbProfile.Text + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
+            Properties.Settings.Default.Save();
         }
     }
 }
