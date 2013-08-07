@@ -26,9 +26,10 @@ using System.IO.Compression;
 
 namespace Clicktastic
 {
-
     class Profile
     {
+        public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
+
         private static byte[] GetBytes(Keys key)
         {
             BinaryFormatter binaryFormatter = new BinaryFormatter();
@@ -95,7 +96,9 @@ namespace Clicktastic
             BinaryWriter b = null;
             try
             {
-                b = new BinaryWriter(File.Open("C:\\Users\\Cord\\Desktop\\TestFiles\\file.clk", FileMode.OpenOrCreate));
+                if (!Directory.Exists(currentDirectory))
+                    Directory.CreateDirectory(currentDirectory);
+                b = new BinaryWriter(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.OpenOrCreate));
 
                 b.Write("Clicktastic Profile");
 
@@ -117,10 +120,10 @@ namespace Clicktastic
                 b.Close();
 
                 /*
-                string checksum = GetChecksum("C:\\Users\\Cord\\Desktop\\TestFiles\\file.clk");
+                string checksum = GetChecksum(currentDirectory + "\\" + name + ".clk");
 
                 //Append checksum
-                using (var fileStream = new FileStream("C:\\Users\\Cord\\Desktop\\TestFiles\\file.clk", FileMode.Append, FileAccess.Write, FileShare.None))
+                using (var fileStream = new FileStream(currentDirectory + "\\" + name + ".clk", FileMode.Append, FileAccess.Write, FileShare.None))
                 using (var bw = new BinaryWriter(fileStream))
                 {
                     bw.Write(checksum);
@@ -175,7 +178,7 @@ namespace Clicktastic
             BinaryReader b = null;
             try
             {
-                b = new BinaryReader(File.Open("C:\\Users\\Cord\\Desktop\\TestFiles\\file.clk", FileMode.Open));
+                b = new BinaryReader(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.Open));
 
                 if (b.ReadString() != "Clicktastic Profile")
                     throw new Exception("File is not a Clicktastic profile!");

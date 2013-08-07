@@ -40,9 +40,6 @@
             this.lbProfiles.FormattingEnabled = true;
             this.lbProfiles.HorizontalScrollbar = true;
             this.lbProfiles.ItemHeight = 16;
-            this.lbProfiles.Items.AddRange(new object[] {
-            "Mass Paste",
-            "Speedy Click"});
             this.lbProfiles.Location = new System.Drawing.Point(13, 12);
             this.lbProfiles.Name = "lbProfiles";
             this.lbProfiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;

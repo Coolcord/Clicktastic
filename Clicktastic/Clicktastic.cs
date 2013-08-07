@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -31,6 +32,8 @@ namespace Clicktastic
 {
     public partial class Clicktastic : Form
     {
+        public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
+
         private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
         private const UInt32 MOUSEEVENTF_MIDDLEDOWN = 0x0020;
@@ -492,10 +495,14 @@ namespace Clicktastic
             _procMouse = HookCallbackMouse;
 
             InitializeComponent();
+            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            {
+                ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+            }
 
             //Defaults
-            profileData.ActivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
-            profileData.DeactivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
+            profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
+            profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
             profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
             profileData.Random = false;
             profileData.Hold = false;
@@ -508,7 +515,7 @@ namespace Clicktastic
             profileData.MaxDelay = 1000;
             ddbActivationMode.SelectedIndex = 0;
 
-            ddbProfile.SelectedIndex = 0;
+            ddbProfile.SelectedItem = "Default";
 
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);
@@ -1084,6 +1091,7 @@ namespace Clicktastic
                 ddbActivationMode.SelectedIndex = 1;
             else
                 ddbActivationMode.SelectedIndex = 0;
+            int MinDelay = profileData.MinDelay; //store the min delay to prevent losing the value
             int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
             if (profileData.Random)
                 ddbSpeedMode.SelectedIndex = 1;
@@ -1092,7 +1100,7 @@ namespace Clicktastic
 
             ddbTurboMode.SelectedIndex = profileData.turbo - 1;
 
-            numMinDelay.Value = profileData.MinDelay;
+            numMinDelay.Value = MinDelay;
             numMaxDelay.Value = MaxDelay;
 
             cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
@@ -1150,6 +1158,7 @@ namespace Clicktastic
             aboutText.Font = aboutFont;
             Button btnOk = new Button() { Width = 100, Height = 30, Text = "OK", Location = new Point(150, 130), ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter };
             btnOk.Click += (btnSender, btnE) => aboutForm.Close(); //click ok to close
+            aboutForm.AcceptButton = btnOk;
             aboutForm.Controls.Add(aboutText);
             aboutForm.Controls.Add(btnOk);
 
@@ -1201,9 +1210,22 @@ namespace Clicktastic
 
         private void btnManageProfiles_Click(object sender, EventArgs e)
         {
-            ProfileManager profileManager = new ProfileManager();
+            ProfileManager profileManager = new ProfileManager(ref profileData);
+            string selectedProfile = ddbProfile.GetItemText(ddbProfile.SelectedItem);
             profileManager.StartPosition = FormStartPosition.CenterParent;
             profileManager.ShowDialog();
+
+            ddbProfile.Items.Clear();
+            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            {
+                ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
+            }
+
+            if (selectedProfile != null && ddbProfile.Items.Contains(selectedProfile))
+                ddbProfile.SelectedItem = selectedProfile; //select the proper profile again
+            else if (ddbProfile.Items.Count > 0)
+                ddbProfile.SelectedIndex = 0; //profile was deleted, so use the top one
+
             profileManager.Dispose();
         }
 

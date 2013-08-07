@@ -28,11 +28,18 @@ namespace Clicktastic
 {
     public partial class ProfileManager : Form
     {
+        public Clicktastic.ProfileData data;
         Profile profile = new Profile();
+        public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
 
-        public ProfileManager()
+        public ProfileManager(ref Clicktastic.ProfileData profileData)
         {
+            data = profileData;
             InitializeComponent();
+            foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
+            {
+                lbProfiles.Items.Add(Path.GetFileNameWithoutExtension(file));
+            }
         }
 
         private string GetName(string text, string oldName)
@@ -108,11 +115,21 @@ namespace Clicktastic
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            string name = GetName("Enter a name:", "");
+            string name = null;
+            while (true)
+            {
+                name = GetName("Enter a new name:", "");
+                if (name != null && lbProfiles.Items.Contains(name))
+                    MessageBox.Show(name + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    break;
+            }
             if (name != null)
             {
-                //create file here
-                lbProfiles.Items.Add(name);
+                if (profile.Save(name, ref data))
+                    lbProfiles.Items.Add(name);
+                else
+                    MessageBox.Show("Unable to save " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -131,10 +148,19 @@ namespace Clicktastic
                 {
                     try
                     {
-                        string newName = GetName("Enter a new name:", name);
+                        string newName = null;
+                        while (true)
+                        {
+                            newName = GetName("Enter a new name:", name);
+                            if (newName != null && lbProfiles.Items.Contains(newName))
+                                MessageBox.Show(newName + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            else
+                                break;
+                        }
                         if (newName != null)
                         {
-                            //rename file here
+                            //Rename the file
+                            File.Move(currentDirectory + "\\" + name + ".clk", currentDirectory + "\\" + newName + ".clk");
                             lbProfiles.Items.Remove(name);
                             lbProfiles.Items.Add(newName);
                         }
@@ -179,9 +205,9 @@ namespace Clicktastic
                     {
                         try
                         {
-                            //delete file here
-                            //File.SetAttributes(name, FileAttributes.Normal);
-                            //File.Delete(name);
+                            //Delete the file
+                            File.SetAttributes(currentDirectory + "\\" + name + ".clk", FileAttributes.Normal);
+                            File.Delete(currentDirectory + "\\" + name + ".clk");
                             lbProfiles.Items.Remove(name);
                         }
                         catch (Exception ex)

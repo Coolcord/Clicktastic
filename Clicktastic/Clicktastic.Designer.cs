@@ -544,8 +544,6 @@
             // 
             this.ddbProfile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ddbProfile.FormattingEnabled = true;
-            this.ddbProfile.Items.AddRange(new object[] {
-            "Default"});
             this.ddbProfile.Location = new System.Drawing.Point(9, 28);
             this.ddbProfile.MaxDropDownItems = 100;
             this.ddbProfile.Name = "ddbProfile";
