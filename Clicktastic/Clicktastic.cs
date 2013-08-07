@@ -1225,6 +1225,12 @@ namespace Clicktastic
                 ddbProfile.SelectedItem = selectedProfile; //select the proper profile again
             else if (ddbProfile.Items.Count > 0)
                 ddbProfile.SelectedIndex = 0; //profile was deleted, so use the top one
+            else //the user deleted every profile
+            {
+                profile.Save("Default", ref profileData); //create a new one
+                ddbProfile.Items.Add("Default");
+                ddbProfile.SelectedIndex = 0; //select the profile again
+            }
 
             profileManager.Dispose();
         }
