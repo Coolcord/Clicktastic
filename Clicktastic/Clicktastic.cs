@@ -14,8 +14,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//By zadeveloper.com
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -55,6 +53,7 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
+        Profile profile = new Profile();
 
         [Serializable]
         [StructLayout(LayoutKind.Sequential)]
@@ -77,12 +76,12 @@ namespace Clicktastic
         public struct KEYCOMBO
         {
             public Boolean valid;
-            public string keyString;
             public Boolean isKeyboard;
             public Keys modifierKeys;
             public Keys key;
+            public string keyString;
             public string cmd;
-            public UInt32 mouseButton;
+            public uint mouseButton;
             public int wheel;
         }
 
@@ -494,11 +493,6 @@ namespace Clicktastic
 
             InitializeComponent();
 
-            ddbProfile.SelectedIndex = 0;
-            ddbActivationMode.SelectedIndex = 0;
-            ddbSpeedMode.SelectedIndex = 0;
-            ddbTurboMode.SelectedIndex = 0;
-
             //Defaults
             profileData.ActivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
             profileData.DeactivationKey = ParseKEYCOMBO("Oemtilde", Keys.Oemtilde);
@@ -507,9 +501,14 @@ namespace Clicktastic
             profileData.Hold = false;
             profileData.pressEnter = false;
             profileData.useDeactivationKey = false;
+            ddbSpeedMode.SelectedIndex = 0;
+            ddbTurboMode.SelectedIndex = 0;
             profileData.turbo = 1;
             profileData.MinDelay = 1;
             profileData.MaxDelay = 1000;
+            ddbActivationMode.SelectedIndex = 0;
+
+            ddbProfile.SelectedIndex = 0;
 
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);
@@ -777,6 +776,7 @@ namespace Clicktastic
                 lblDeactivationButton.Enabled = true;
                 tbDeactivationButton.Enabled = true;
                 btnDeactivationButton.Enabled = true;
+                profileData.useDeactivationKey = true;
             }
             else
             {
@@ -785,6 +785,7 @@ namespace Clicktastic
                 tbDeactivationButton.Text = tbActivationButton.Text;
                 tbDeactivationButton.Enabled = false;
                 btnDeactivationButton.Enabled = false;
+                profileData.useDeactivationKey = false;
             }
             setInstructions();
         }
@@ -1077,9 +1078,42 @@ namespace Clicktastic
             setInstructions();
         }
 
+        private void UpdatePreferences()
+        {
+            if (profileData.Hold)
+                ddbActivationMode.SelectedIndex = 1;
+            else
+                ddbActivationMode.SelectedIndex = 0;
+            int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
+            if (profileData.Random)
+                ddbSpeedMode.SelectedIndex = 1;
+            else
+                ddbSpeedMode.SelectedIndex = 0;
+
+            ddbTurboMode.SelectedIndex = profileData.turbo - 1;
+
+            numMinDelay.Value = profileData.MinDelay;
+            numMaxDelay.Value = MaxDelay;
+
+            cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
+            cbEnter.Checked = profileData.pressEnter;
+
+            tbActivationButton.Text = profileData.ActivationKey.keyString;
+            tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
+            tbAutoclickButton.Text = profileData.AutoclickKey.keyString;
+        }
+
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
-            setInstructions();
+            ProfileData loadProfileData = new ProfileData();
+            if (profile.Load(ddbProfile.Text, ref loadProfileData))
+            {
+                profileData = loadProfileData;
+                UpdatePreferences();
+                setInstructions();
+            }
+            else
+                MessageBox.Show("Unable to load profile!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -1171,6 +1205,14 @@ namespace Clicktastic
             profileManager.StartPosition = FormStartPosition.CenterParent;
             profileManager.ShowDialog();
             profileManager.Dispose();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (profile.Save(ddbProfile.Text, ref profileData))
+                MessageBox.Show(ddbProfile.Text + " saved successfully!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("Unable to save " + ddbProfile.Text + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }
