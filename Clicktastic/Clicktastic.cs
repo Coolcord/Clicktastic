@@ -28,6 +28,8 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
+using AxWMPLib;
+
 namespace Clicktastic
 {
     public partial class Clicktastic : Form
@@ -58,12 +60,14 @@ namespace Clicktastic
         Boolean Loading = false;
         Boolean ready = false;
         Semaphore soundSemaphore = new Semaphore(1, 1);
+        Semaphore mediaSemaphore = new Semaphore(1, 1);
+        SpinLock mediaLock = new SpinLock();
         int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
         Profile profile = new Profile();
         string previousProfile = "Default";
-        //SoundEffects soundEffects = null;
+        SoundEffects soundEffects = null;
         Thread soundThread = null;
         System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start1.wav");
 
@@ -222,7 +226,7 @@ namespace Clicktastic
                     {
                         if (!profileData.mute)
                         {
-                            Stop();
+                            soundEffects.Stop();
                         }
                     }
                 }
@@ -235,10 +239,10 @@ namespace Clicktastic
                         if (!profileData.mute)
                         {
                             soundSemaphore.WaitOne();
-                            PlayLoop();
+                            soundEffects.PlayLoop();
                         }
                     }
-                    soundSemaphore.WaitOne();
+                    //soundSemaphore.WaitOne();
                     this.Invoke(new MethodInvoker(() =>
                     {
                         pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
@@ -266,7 +270,8 @@ namespace Clicktastic
                         }));
                         AutoclickerWaiting = true;
                     }
-                    AutoClick();
+                    //AutoClick();
+                    AutoClicker.RunWorkerAsync();
                 }
             }
             else
@@ -287,7 +292,7 @@ namespace Clicktastic
                         {
                             if (!profileData.mute)
                             {
-                                Stop();
+                                soundEffects.Stop();
                             }
                         }
                     }
@@ -299,10 +304,10 @@ namespace Clicktastic
                         if (!profileData.mute)
                         {
                             soundSemaphore.WaitOne();
-                            PlayLoop();
+                            soundEffects.PlayLoop();
                         }
                     }
-                    soundSemaphore.WaitOne();
+                    //soundSemaphore.WaitOne();
                     AutoclickerActivated = true;
                     if (AutoclickerWaiting)
                     {
@@ -314,7 +319,8 @@ namespace Clicktastic
                         }));
                         AutoclickerWaiting = false;
                     }
-                    AutoClick();
+                    //AutoClick();
+                    AutoClicker.RunWorkerAsync();
                 }
             }
         }
@@ -567,7 +573,7 @@ namespace Clicktastic
         public Clicktastic()
         {
             InitializeComponent();
-            //soundEffects = new SoundEffects(ref soundSemaphore);
+            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore, ref AutoclickerActivated);
 
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
@@ -708,7 +714,11 @@ namespace Clicktastic
                 {
                     if (!AutoclickerActivated) //stop the autoclicker
                     {
-                        soundSemaphore.Release();
+                        try
+                        {
+                            soundSemaphore.Release();
+                        }
+                        catch (Exception ex) { Console.WriteLine(ex); }
                         timer.Stop();
                         timer.Dispose();
                         return;
@@ -723,7 +733,11 @@ namespace Clicktastic
             catch (Exception ex) { Console.WriteLine(ex); }
             if (!AutoclickerActivated) //stop the autoclicker
             {
-                soundSemaphore.Release();
+                try
+                {
+                    soundSemaphore.Release();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
                 timer.Stop();
                 timer.Dispose();
                 return;
@@ -1370,8 +1384,7 @@ namespace Clicktastic
             {
                 //Stop the Autoclicker
                 if (AutoclickerActivated)
-                    Stop();
-                soundSemaphore.Release();
+                    soundEffects.Stop();
                 AutoclickerEnabled = false;
                 AutoclickerActivated = false;
                 this.Invoke(new MethodInvoker(() =>
@@ -1488,65 +1501,46 @@ namespace Clicktastic
             profileData.mute = cbMute.Checked;
         }
 
-
-
-
-
-
-
-
-        public void PlayEffect()
+        private void axMedia_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)
         {
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Prepare Ship.wav";
-            sound.Play();
-        }
-
-        public void PlayLoop()
-        {
-            if (soundThread == null)
-                soundThread = new Thread(() => RunLoop());
-            else
+            if (axMedia.playState == WMPLib.WMPPlayState.wmppsStopped)
             {
-                soundThread.Abort();
-                soundThread = new Thread(() => RunLoop());
+                try
+                {
+                    Console.WriteLine("Releasing Media Semaphore!");
+                    mediaSemaphore.Release();
+                    //mediaLock.Exit();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
             }
-            soundThread.Start();
         }
 
-        private void RunLoop()
+        private void AutoClicker_DoWork(object sender, DoWorkEventArgs e)
         {
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start1.wav";
-            sound.PlaySync();
-            soundSemaphore.Release();
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start2.wav";
-            sound.PlaySync();
-            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
-            sound.PlayLooping();
+            soundSemaphore.WaitOne();
+            AutoClick();
         }
-
-        public void Stop()
-        {
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
-            sound.Play();
-        }
-
-
-
     }
 
 
-    /*
     class SoundEffects
     {
         System.Media.SoundPlayer sound = null;
         Thread soundThread = null;
         Semaphore soundSemaphore = null;
+        Semaphore mediaSemaphore = null;
+        SpinLock mediaLock;
+        AxWindowsMediaPlayer media = null;
+        Boolean AutoclickerActivated = false;
 
-
-        public SoundEffects(ref Semaphore sem)
+        public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem, ref Boolean autoclickActivated)
         {
-            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start1.wav");
-            soundSemaphore = sem;
+            soundSemaphore = soundSem;
+            mediaSemaphore = mediaSem;
+            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
+            media = axMedia;
+            media.settings.setMode("loop", false);
+            AutoclickerActivated = autoclickActivated;
         }
 
         public void PlayEffect()
@@ -1569,21 +1563,39 @@ namespace Clicktastic
 
         private void RunLoop()
         {
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start1.wav";
-            sound.PlaySync();
-            //soundSemaphore.Release();
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start2.wav";
-            sound.PlaySync();
-            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
+            mediaSemaphore.WaitOne();
+            media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
+            media.Ctlcontrols.play();
+
+            //if (!AutoclickerActivated)
+                //return;
+            mediaSemaphore.WaitOne();
+            try
+            {
+                soundSemaphore.Release();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+            media.URL = "C:\\Users\\Cord\\Desktop\\Start2.wav";
+            media.Ctlcontrols.play();
+
+            //if (!AutoclickerActivated)
+                //return;
+            mediaSemaphore.WaitOne();
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Loop.wav";
             sound.PlayLooping();
         }
 
         public void Stop()
         {
-            sound.Stop();
+            try
+            {
+                Console.WriteLine("Releasing Media Semaphore!");
+                mediaSemaphore.Release();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+            media.Ctlcontrols.stop();
             sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
             sound.Play();
         }
     }
-     * */
 }

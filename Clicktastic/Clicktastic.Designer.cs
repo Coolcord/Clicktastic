@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
+            this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();
             this.lblHoldInstructions = new System.Windows.Forms.Label();
             this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
             this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
@@ -70,8 +71,10 @@
             this.lblActivationButton = new System.Windows.Forms.Label();
             this.lblSelectProfile = new System.Windows.Forms.Label();
             this.ddbProfile = new System.Windows.Forms.ComboBox();
+            this.AutoClicker = new System.ComponentModel.BackgroundWorker();
             this.tcClicktastic.SuspendLayout();
             this.tbAutoclicker.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.axMedia)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).BeginInit();
             this.tbPreferences.SuspendLayout();
@@ -92,6 +95,7 @@
             // 
             // tbAutoclicker
             // 
+            this.tbAutoclicker.Controls.Add(this.axMedia);
             this.tbAutoclicker.Controls.Add(this.lblHoldInstructions);
             this.tbAutoclicker.Controls.Add(this.pbAutoclickerRunning);
             this.tbAutoclicker.Controls.Add(this.pbAutoclickerEnabled);
@@ -107,6 +111,17 @@
             this.tbAutoclicker.TabIndex = 0;
             this.tbAutoclicker.Text = "Autoclicker";
             this.tbAutoclicker.UseVisualStyleBackColor = true;
+            // 
+            // axMedia
+            // 
+            this.axMedia.Enabled = true;
+            this.axMedia.Location = new System.Drawing.Point(514, 301);
+            this.axMedia.Name = "axMedia";
+            this.axMedia.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMedia.OcxState")));
+            this.axMedia.Size = new System.Drawing.Size(10, 10);
+            this.axMedia.TabIndex = 8;
+            this.axMedia.Visible = false;
+            this.axMedia.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axMedia_PlayStateChange);
             // 
             // lblHoldInstructions
             // 
@@ -584,6 +599,10 @@
             this.ddbProfile.TabIndex = 0;
             this.ddbProfile.SelectedIndexChanged += new System.EventHandler(this.ddbProfile_SelectedIndexChanged);
             // 
+            // AutoClicker
+            // 
+            this.AutoClicker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AutoClicker_DoWork);
+            // 
             // Clicktastic
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -599,6 +618,7 @@
             this.tcClicktastic.ResumeLayout(false);
             this.tbAutoclicker.ResumeLayout(false);
             this.tbAutoclicker.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.axMedia)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerRunning)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAutoclickerEnabled)).EndInit();
             this.tbPreferences.ResumeLayout(false);
@@ -652,6 +672,8 @@
         private System.Windows.Forms.CheckBox cbEnter;
         private System.Windows.Forms.CheckBox cbSuppressHotkeys;
         private System.Windows.Forms.CheckBox cbMute;
+        private AxWMPLib.AxWindowsMediaPlayer axMedia;
+        private System.ComponentModel.BackgroundWorker AutoClicker;
     }
 }
 
