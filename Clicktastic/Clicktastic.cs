@@ -82,6 +82,8 @@ namespace Clicktastic
             public Boolean useDeactivationKey;
             public Boolean suppressHotkeys;
             public Boolean mute;
+            public Boolean loadSound;
+            public Boolean alwaysPlay;
             public int turbo;
             public int MinDelay;
             public int MaxDelay;
@@ -220,7 +222,7 @@ namespace Clicktastic
                         lblAutoclickerRunning.ForeColor = Color.Red;
                     }));
                     AutoclickerWaiting = true;
-                    if (ddbTurboMode.SelectedIndex == 10)
+                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
                     {
                         if (!profileData.mute)
                         {
@@ -232,7 +234,7 @@ namespace Clicktastic
                 {
                     AutoclickerEnabled = true;
                     AutoclickerActivated = true;
-                    if (ddbTurboMode.SelectedIndex == 10)
+                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
                     {
                         if (!profileData.mute)
                         {
@@ -286,7 +288,7 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
                         AutoclickerWaiting = true;
-                        if (ddbTurboMode.SelectedIndex == 10)
+                        if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
                         {
                             if (!profileData.mute)
                             {
@@ -297,7 +299,7 @@ namespace Clicktastic
                 }
                 else if (!AutoclickerActivated && key == profileData.ActivationKey.key)
                 {
-                    if (ddbTurboMode.SelectedIndex == 10)
+                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
                     {
                         if (!profileData.mute)
                         {
@@ -1252,35 +1254,45 @@ namespace Clicktastic
 
         private void UpdatePreferences()
         {
-            if (profileData.Hold)
-                ddbActivationMode.SelectedIndex = 1;
-            else
-                ddbActivationMode.SelectedIndex = 0;
-            int MinDelay = profileData.MinDelay; //store the min delay to prevent losing the value
-            int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
-            if (profileData.Random)
-                ddbSpeedMode.SelectedIndex = 1;
-            else
-                ddbSpeedMode.SelectedIndex = 0;
+            try
+            {
+                if (profileData.Hold)
+                    ddbActivationMode.SelectedIndex = 1;
+                else
+                    ddbActivationMode.SelectedIndex = 0;
+                int MinDelay = profileData.MinDelay; //store the min delay to prevent losing the value
+                int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
+                if (profileData.Random)
+                    ddbSpeedMode.SelectedIndex = 1;
+                else
+                    ddbSpeedMode.SelectedIndex = 0;
 
-            if (profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
-                ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
-            else if (!profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
-                ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
-            else
-                ddbTurboMode.SelectedIndex = profileData.turbo - 1;
+                if (profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
+                    ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
+                else if (!profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
+                    ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
+                else
+                    ddbTurboMode.SelectedIndex = profileData.turbo - 1;
 
-            numMinDelay.Value = MinDelay;
-            numMaxDelay.Value = MaxDelay;
+                numMinDelay.Value = MinDelay;
+                numMaxDelay.Value = MaxDelay;
 
-            cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
-            cbEnter.Checked = profileData.pressEnter;
-            cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
-            cbMute.Checked = profileData.mute;
+                cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
+                cbEnter.Checked = profileData.pressEnter;
+                cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
+                cbMute.Checked = profileData.mute;
+                cbLoadSound.Checked = profileData.loadSound;
+                cbAlwaysPlay.Checked = profileData.alwaysPlay;
 
-            tbActivationButton.Text = profileData.ActivationKey.keyString;
-            tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
-            tbAutoclickButton.Text = profileData.AutoclickKey.keyString;
+                tbActivationButton.Text = profileData.ActivationKey.keyString;
+                tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
+                tbAutoclickButton.Text = profileData.AutoclickKey.keyString;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                CreateDefaultProfile();
+            }
         }
 
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
@@ -1309,6 +1321,10 @@ namespace Clicktastic
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
                 Properties.Settings.Default.Save();
                 setInstructions();
+                if (Startup && profileData.alwaysPlay)
+                {
+                    soundEffects.PlayEffect(); //play the prepare ship sound effect
+                }
                 return true;
             }
             else
@@ -1351,12 +1367,11 @@ namespace Clicktastic
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetTurbo();
-            if (ddbTurboMode.SelectedIndex == 10 && !Startup)
+            if (ddbTurboMode.SelectedIndex == 10 && (!Startup || profileData.loadSound))
             {
                 if (!profileData.mute)
                 {
-                    System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
-                    sound.Play();  //Plays the sound in a new thread
+                    soundEffects.PlayEffect();
                 }
             }
         }
@@ -1410,7 +1425,7 @@ namespace Clicktastic
             if (tcClicktastic.SelectedIndex != 0)
             {
                 //Stop the Autoclicker
-                if (AutoclickerActivated)
+                if (AutoclickerActivated && !profileData.mute)
                     soundEffects.Stop();
                 AutoclickerEnabled = false;
                 AutoclickerActivated = false;
@@ -1489,6 +1504,8 @@ namespace Clicktastic
             profileData.useDeactivationKey = false;
             profileData.suppressHotkeys = false;
             profileData.mute = false;
+            profileData.loadSound = false;
+            profileData.alwaysPlay = false;
             ddbSpeedMode.SelectedIndex = 0;
             ddbTurboMode.SelectedIndex = 0;
             profileData.turbo = 1;
@@ -1526,6 +1543,17 @@ namespace Clicktastic
         private void cbMute_CheckedChanged(object sender, EventArgs e)
         {
             profileData.mute = cbMute.Checked;
+            if (cbMute.Checked)
+            {
+                cbLoadSound.Checked = false;
+                cbAlwaysPlay.Checked = false;
+                cbLoadSound.Enabled = false;
+                cbAlwaysPlay.Enabled = false;
+            }
+            else
+            {
+                cbLoadSound.Enabled = true;
+            }
         }
 
         private void axMedia_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)
@@ -1546,6 +1574,25 @@ namespace Clicktastic
         {
             soundSemaphore.WaitOne();
             AutoClick();
+        }
+
+        private void cbLoadSound_CheckedChanged(object sender, EventArgs e)
+        {
+            profileData.loadSound = cbLoadSound.Checked;
+            if (cbLoadSound.Checked)
+            {
+                cbAlwaysPlay.Enabled = true;
+            }
+            else
+            {
+                cbAlwaysPlay.Checked = false;
+                cbAlwaysPlay.Enabled = false;
+            }
+        }
+
+        private void cbAlwaysPlay_CheckedChanged(object sender, EventArgs e)
+        {
+            profileData.alwaysPlay = cbAlwaysPlay.Checked;
         }
     }
 

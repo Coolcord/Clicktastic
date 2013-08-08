@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(Clicktastic_FormClosing);
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();
@@ -42,6 +41,8 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tbPreferences = new System.Windows.Forms.TabPage();
+            this.cbLoadSound = new System.Windows.Forms.CheckBox();
+            this.cbAlwaysPlay = new System.Windows.Forms.CheckBox();
             this.cbMute = new System.Windows.Forms.CheckBox();
             this.cbSuppressHotkeys = new System.Windows.Forms.CheckBox();
             this.cbEnter = new System.Windows.Forms.CheckBox();
@@ -210,6 +211,8 @@
             // 
             // tbPreferences
             // 
+            this.tbPreferences.Controls.Add(this.cbLoadSound);
+            this.tbPreferences.Controls.Add(this.cbAlwaysPlay);
             this.tbPreferences.Controls.Add(this.cbMute);
             this.tbPreferences.Controls.Add(this.cbSuppressHotkeys);
             this.tbPreferences.Controls.Add(this.cbEnter);
@@ -248,10 +251,33 @@
             this.tbPreferences.Text = "Preferences";
             this.tbPreferences.UseVisualStyleBackColor = true;
             // 
+            // cbLoadSound
+            // 
+            this.cbLoadSound.AutoSize = true;
+            this.cbLoadSound.Location = new System.Drawing.Point(354, 248);
+            this.cbLoadSound.Name = "cbLoadSound";
+            this.cbLoadSound.Size = new System.Drawing.Size(134, 21);
+            this.cbLoadSound.TabIndex = 33;
+            this.cbLoadSound.Text = "Sounds on Load";
+            this.cbLoadSound.UseVisualStyleBackColor = true;
+            this.cbLoadSound.CheckedChanged += new System.EventHandler(this.cbLoadSound_CheckedChanged);
+            // 
+            // cbAlwaysPlay
+            // 
+            this.cbAlwaysPlay.AutoSize = true;
+            this.cbAlwaysPlay.Enabled = false;
+            this.cbAlwaysPlay.Location = new System.Drawing.Point(354, 275);
+            this.cbAlwaysPlay.Name = "cbAlwaysPlay";
+            this.cbAlwaysPlay.Size = new System.Drawing.Size(156, 21);
+            this.cbAlwaysPlay.TabIndex = 32;
+            this.cbAlwaysPlay.Text = "Always Play Sounds";
+            this.cbAlwaysPlay.UseVisualStyleBackColor = true;
+            this.cbAlwaysPlay.CheckedChanged += new System.EventHandler(this.cbAlwaysPlay_CheckedChanged);
+            // 
             // cbMute
             // 
             this.cbMute.AutoSize = true;
-            this.cbMute.Location = new System.Drawing.Point(354, 231);
+            this.cbMute.Location = new System.Drawing.Point(354, 221);
             this.cbMute.Name = "cbMute";
             this.cbMute.Size = new System.Drawing.Size(153, 21);
             this.cbMute.TabIndex = 31;
@@ -616,6 +642,7 @@
             this.MaximizeBox = false;
             this.Name = "Clicktastic";
             this.Text = "Clicktastic";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Clicktastic_FormClosing);
             this.tcClicktastic.ResumeLayout(false);
             this.tbAutoclicker.ResumeLayout(false);
             this.tbAutoclicker.PerformLayout();
@@ -675,6 +702,8 @@
         private System.Windows.Forms.CheckBox cbMute;
         private AxWMPLib.AxWindowsMediaPlayer axMedia;
         private System.ComponentModel.BackgroundWorker AutoClicker;
+        private System.Windows.Forms.CheckBox cbLoadSound;
+        private System.Windows.Forms.CheckBox cbAlwaysPlay;
     }
 }
 

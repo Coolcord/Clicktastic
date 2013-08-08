@@ -227,5 +227,10 @@ namespace Clicktastic
                 MessageBox.Show("No profile is selected!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
