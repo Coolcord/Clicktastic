@@ -117,6 +117,7 @@ namespace Clicktastic
                 b.Write(profile.pressEnter);
                 b.Write(profile.useDeactivationKey);
                 b.Write(profile.suppressHotkeys);
+                b.Write(profile.mute);
                 b.Write(profile.turbo);
                 b.Write(profile.MinDelay);
                 b.Write(profile.MaxDelay);
@@ -210,6 +211,7 @@ namespace Clicktastic
                 profile.pressEnter = b.ReadBoolean();
                 profile.useDeactivationKey = b.ReadBoolean();
                 profile.suppressHotkeys = b.ReadBoolean();
+                profile.mute = b.ReadBoolean();
                 profile.turbo = b.ReadInt32();
                 profile.MinDelay = b.ReadInt32();
                 profile.MaxDelay = b.ReadInt32();

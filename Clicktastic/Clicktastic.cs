@@ -56,11 +56,16 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
         Boolean Loading = false;
+        Boolean ready = false;
+        Semaphore soundSemaphore = new Semaphore(1, 1);
         int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
         Profile profile = new Profile();
         string previousProfile = "Default";
+        //SoundEffects soundEffects = null;
+        Thread soundThread = null;
+        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start1.wav");
 
         [Serializable]
         [StructLayout(LayoutKind.Sequential)]
@@ -74,6 +79,7 @@ namespace Clicktastic
             public Boolean pressEnter;
             public Boolean useDeactivationKey;
             public Boolean suppressHotkeys;
+            public Boolean mute;
             public int turbo;
             public int MinDelay;
             public int MaxDelay;
@@ -214,14 +220,25 @@ namespace Clicktastic
                     AutoclickerWaiting = true;
                     if (ddbTurboMode.SelectedIndex == 10)
                     {
-                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Stop.wav");
-                        sound.Play();  //Plays the sound in a new thread
+                        if (!profileData.mute)
+                        {
+                            Stop();
+                        }
                     }
                 }
                 else if (!AutoclickerEnabled && key == profileData.ActivationKey.key)
                 {
                     AutoclickerEnabled = true;
                     AutoclickerActivated = true;
+                    if (ddbTurboMode.SelectedIndex == 10)
+                    {
+                        if (!profileData.mute)
+                        {
+                            soundSemaphore.WaitOne();
+                            PlayLoop();
+                        }
+                    }
+                    soundSemaphore.WaitOne();
                     this.Invoke(new MethodInvoker(() =>
                     {
                         pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
@@ -249,13 +266,6 @@ namespace Clicktastic
                         }));
                         AutoclickerWaiting = true;
                     }
-                    if (ddbTurboMode.SelectedIndex == 10)
-                    {
-                        //System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start.wav");
-                        //sound.Play();  //Plays the sound in a new thread
-                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
-                        sound.PlayLooping();
-                    }
                     AutoClick();
                 }
             }
@@ -275,13 +285,24 @@ namespace Clicktastic
                         AutoclickerWaiting = true;
                         if (ddbTurboMode.SelectedIndex == 10)
                         {
-                            System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Stop.wav");
-                            sound.Play();  //Plays the sound in a new thread
+                            if (!profileData.mute)
+                            {
+                                Stop();
+                            }
                         }
                     }
                 }
                 else if (!AutoclickerActivated && key == profileData.ActivationKey.key)
                 {
+                    if (ddbTurboMode.SelectedIndex == 10)
+                    {
+                        if (!profileData.mute)
+                        {
+                            soundSemaphore.WaitOne();
+                            PlayLoop();
+                        }
+                    }
+                    soundSemaphore.WaitOne();
                     AutoclickerActivated = true;
                     if (AutoclickerWaiting)
                     {
@@ -292,13 +313,6 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
                         AutoclickerWaiting = false;
-                    }
-                    if (ddbTurboMode.SelectedIndex == 10)
-                    {
-                        //System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start.wav");
-                        //sound.Play();  //Plays the sound in a new thread
-                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
-                        sound.PlayLooping();
                     }
                     AutoClick();
                 }
@@ -553,13 +567,12 @@ namespace Clicktastic
         public Clicktastic()
         {
             InitializeComponent();
+            //soundEffects = new SoundEffects(ref soundSemaphore);
 
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);
-
-            //CreateDefaultProfile();
 
             if (!Directory.Exists(currentDirectory))
             {
@@ -586,8 +599,6 @@ namespace Clicktastic
             while (!loaded)
             {
                 loaded = AttemptLoad();
-                //CreateDefaultProfile();
-                //loaded = true;
             }
             Startup = false;
             setInstructions();
@@ -693,10 +704,11 @@ namespace Clicktastic
             try
             {
                 Boolean KeyHeld = ((Control.MouseButtons & MouseButtons.Left) != 0);
-                if (!profileData.Hold || (AutoclickerEnabled && KeyHeld))
+                if ((!profileData.Hold || (AutoclickerEnabled && KeyHeld)))
                 {
                     if (!AutoclickerActivated) //stop the autoclicker
                     {
+                        soundSemaphore.Release();
                         timer.Stop();
                         timer.Dispose();
                         return;
@@ -711,6 +723,7 @@ namespace Clicktastic
             catch (Exception ex) { Console.WriteLine(ex); }
             if (!AutoclickerActivated) //stop the autoclicker
             {
+                soundSemaphore.Release();
                 timer.Stop();
                 timer.Dispose();
                 return;
@@ -1007,6 +1020,7 @@ namespace Clicktastic
                 }
             }
             profileData.turbo = ddbTurboMode.SelectedIndex + 1;
+
             if (profileData.AutoclickKey.isKeyboard)
             {
                 if (profileData.turbo > 1)
@@ -1014,7 +1028,7 @@ namespace Clicktastic
                     cbEnter.Checked = false;
                     cbEnter.Enabled = false;
                     profileData.pressEnter = false; //make sure that it is saved
-                    profileData.turbo = (profileData.turbo - 1) * 6;
+                    profileData.turbo = (profileData.turbo - 1) * 3;
                 }
                 else
                     cbEnter.Enabled = true;
@@ -1023,13 +1037,8 @@ namespace Clicktastic
             {
                 if (profileData.turbo > 1)
                 {
-                    //cbEnter.Checked = false;
-                    //cbEnter.Enabled = false;
-                    //profileData.pressEnter = false; //make sure that it is saved
                     profileData.turbo = (profileData.turbo - 1) * 3;
                 }
-                //else if (profileData.AutoclickKey.isKeyboard)
-                    //cbEnter.Enabled = true;
             }
             //Fix the stored autoclick key command
             profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter, profileData.turbo);
@@ -1214,7 +1223,7 @@ namespace Clicktastic
                 ddbSpeedMode.SelectedIndex = 0;
 
             if (profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
-                ddbTurboMode.SelectedIndex = (profileData.turbo / 6);
+                ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
             else if (!profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
                 ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
             else
@@ -1226,6 +1235,7 @@ namespace Clicktastic
             cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
             cbEnter.Checked = profileData.pressEnter;
             cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
+            cbMute.Checked = profileData.mute;
 
             tbActivationButton.Text = profileData.ActivationKey.keyString;
             tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
@@ -1302,8 +1312,11 @@ namespace Clicktastic
             SetTurbo();
             if (ddbTurboMode.SelectedIndex == 10 && !Startup)
             {
-                System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
-                sound.Play();  //Plays the sound in a new thread
+                if (!profileData.mute)
+                {
+                    System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
+                    sound.Play();  //Plays the sound in a new thread
+                }
             }
         }
 
@@ -1356,6 +1369,9 @@ namespace Clicktastic
             if (tcClicktastic.SelectedIndex != 0)
             {
                 //Stop the Autoclicker
+                if (AutoclickerActivated)
+                    Stop();
+                soundSemaphore.Release();
                 AutoclickerEnabled = false;
                 AutoclickerActivated = false;
                 this.Invoke(new MethodInvoker(() =>
@@ -1432,6 +1448,7 @@ namespace Clicktastic
             profileData.pressEnter = false;
             profileData.useDeactivationKey = false;
             profileData.suppressHotkeys = false;
+            profileData.mute = false;
             ddbSpeedMode.SelectedIndex = 0;
             ddbTurboMode.SelectedIndex = 0;
             profileData.turbo = 1;
@@ -1465,5 +1482,108 @@ namespace Clicktastic
         {
             profileData.suppressHotkeys = cbSuppressHotkeys.Checked;
         }
+
+        private void cbMute_CheckedChanged(object sender, EventArgs e)
+        {
+            profileData.mute = cbMute.Checked;
+        }
+
+
+
+
+
+
+
+
+        public void PlayEffect()
+        {
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Prepare Ship.wav";
+            sound.Play();
+        }
+
+        public void PlayLoop()
+        {
+            if (soundThread == null)
+                soundThread = new Thread(() => RunLoop());
+            else
+            {
+                soundThread.Abort();
+                soundThread = new Thread(() => RunLoop());
+            }
+            soundThread.Start();
+        }
+
+        private void RunLoop()
+        {
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start1.wav";
+            sound.PlaySync();
+            soundSemaphore.Release();
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start2.wav";
+            sound.PlaySync();
+            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
+            sound.PlayLooping();
+        }
+
+        public void Stop()
+        {
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
+            sound.Play();
+        }
+
+
+
     }
+
+
+    /*
+    class SoundEffects
+    {
+        System.Media.SoundPlayer sound = null;
+        Thread soundThread = null;
+        Semaphore soundSemaphore = null;
+
+
+        public SoundEffects(ref Semaphore sem)
+        {
+            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start1.wav");
+            soundSemaphore = sem;
+        }
+
+        public void PlayEffect()
+        {
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Prepare Ship.wav";
+            sound.Play();
+        }
+
+        public void PlayLoop()
+        {
+            if (soundThread == null)
+                soundThread = new Thread(() => RunLoop());
+            else
+            {
+                soundThread.Abort();
+                soundThread = new Thread(() => RunLoop());
+            }
+            soundThread.Start();
+        }
+
+        private void RunLoop()
+        {
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start1.wav";
+            sound.PlaySync();
+            //soundSemaphore.Release();
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Start2.wav";
+            sound.PlaySync();
+            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
+            sound.PlayLooping();
+        }
+
+        public void Stop()
+        {
+            sound.Stop();
+            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
+            sound.Play();
+        }
+    }
+     * */
 }

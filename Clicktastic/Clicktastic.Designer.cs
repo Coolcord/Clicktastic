@@ -40,6 +40,7 @@
             this.lblDeactivationInstructions = new System.Windows.Forms.Label();
             this.lblActivationInstructions = new System.Windows.Forms.Label();
             this.tbPreferences = new System.Windows.Forms.TabPage();
+            this.cbMute = new System.Windows.Forms.CheckBox();
             this.cbSuppressHotkeys = new System.Windows.Forms.CheckBox();
             this.cbEnter = new System.Windows.Forms.CheckBox();
             this.btnAbout = new System.Windows.Forms.Button();
@@ -193,6 +194,7 @@
             // 
             // tbPreferences
             // 
+            this.tbPreferences.Controls.Add(this.cbMute);
             this.tbPreferences.Controls.Add(this.cbSuppressHotkeys);
             this.tbPreferences.Controls.Add(this.cbEnter);
             this.tbPreferences.Controls.Add(this.btnAbout);
@@ -230,6 +232,17 @@
             this.tbPreferences.Text = "Preferences";
             this.tbPreferences.UseVisualStyleBackColor = true;
             // 
+            // cbMute
+            // 
+            this.cbMute.AutoSize = true;
+            this.cbMute.Location = new System.Drawing.Point(354, 231);
+            this.cbMute.Name = "cbMute";
+            this.cbMute.Size = new System.Drawing.Size(153, 21);
+            this.cbMute.TabIndex = 31;
+            this.cbMute.Text = "Mute Sound Effects";
+            this.cbMute.UseVisualStyleBackColor = true;
+            this.cbMute.CheckedChanged += new System.EventHandler(this.cbMute_CheckedChanged);
+            // 
             // cbSuppressHotkeys
             // 
             this.cbSuppressHotkeys.AutoSize = true;
@@ -255,9 +268,9 @@
             // 
             // btnAbout
             // 
-            this.btnAbout.Location = new System.Drawing.Point(354, 228);
+            this.btnAbout.Location = new System.Drawing.Point(355, 8);
             this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(154, 71);
+            this.btnAbout.Size = new System.Drawing.Size(154, 57);
             this.btnAbout.TabIndex = 28;
             this.btnAbout.Text = "About Clicktastic";
             this.btnAbout.UseVisualStyleBackColor = true;
@@ -638,6 +651,7 @@
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.CheckBox cbEnter;
         private System.Windows.Forms.CheckBox cbSuppressHotkeys;
+        private System.Windows.Forms.CheckBox cbMute;
     }
 }
 
