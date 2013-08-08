@@ -58,6 +58,7 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
         Boolean Loading = false;
+        Boolean stopped = true;
         Semaphore soundSemaphore = new Semaphore(1, 1);
         Semaphore mediaSemaphore = new Semaphore(1, 1);
         int RetryAttempts = 0;
@@ -570,7 +571,7 @@ namespace Clicktastic
         public Clicktastic()
         {
             InitializeComponent();
-            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore);
+            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore, ref stopped);
 
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
@@ -1529,13 +1530,14 @@ namespace Clicktastic
         AxWindowsMediaPlayer media = null;
         Boolean stopped = true;
 
-        public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem)
+        public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem, ref Boolean stop)
         {
             soundSemaphore = soundSem;
             mediaSemaphore = mediaSem;
             sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
             media = axMedia;
             media.settings.setMode("loop", false);
+            stopped = stop;
         }
 
         public void PlayEffect()
@@ -1546,30 +1548,66 @@ namespace Clicktastic
 
         public void PlayLoop()
         {
+            stopped = false;
             if (soundThread == null)
                 soundThread = new Thread(() => RunLoop());
             else
             {
-                soundThread.Abort();
+                try
+                {
+                    soundThread.Abort();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
                 soundThread = new Thread(() => RunLoop());
             }
-            soundThread.Start();
+            if (stopped)
+            {
+                try
+                {
+                    soundSemaphore.Release();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
+                return;
+            }
+            try
+            {
+                soundThread.Start();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
         }
 
         private void RunLoop()
         {
             try
             {
-                stopped = false;
+                if (stopped)
+                {
+                    try
+                    {
+                        soundSemaphore.Release();
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex); }
+                    return;
+                }
                 mediaSemaphore.WaitOne();
                 media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
                 media.Ctlcontrols.play();
-
                 if (stopped)
                 {
+                    try
+                    {
+                        soundSemaphore.Release();
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex); }
+                    try
+                    {
+                        mediaSemaphore.Release(); //make sure that the media semaphore gets released as well in case of a race condition
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex); }
                     media.Ctlcontrols.stop();
                     return;
                 }
+
                 mediaSemaphore.WaitOne();
                 try
                 {
@@ -1578,17 +1616,30 @@ namespace Clicktastic
                 catch (Exception ex) { Console.WriteLine(ex); }
                 media.URL = "C:\\Users\\Cord\\Desktop\\Start2.wav";
                 media.Ctlcontrols.play();
-
                 if (stopped)
                 {
                     media.Ctlcontrols.stop();
                     return;
                 }
+
                 mediaSemaphore.WaitOne();
                 sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Loop.wav";
                 sound.PlayLooping();
             }
-            catch (Exception ex) { Console.WriteLine(ex); }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                try
+                {
+                    soundSemaphore.Release();
+                }
+                catch (Exception ex1) { Console.WriteLine(ex1); }
+                try
+                {
+                    mediaSemaphore.Release(); //make sure that the media semaphore gets released as well in case of a race condition
+                }
+                catch (Exception ex2) { Console.WriteLine(ex2); }
+            }
         }
 
         public void Stop()
@@ -1602,6 +1653,8 @@ namespace Clicktastic
             catch (Exception ex) { Console.WriteLine(ex); }
             media.Ctlcontrols.stop();
             sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
+            if (!stopped)
+                return;
             sound.Play();
         }
     }
