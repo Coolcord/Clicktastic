@@ -116,6 +116,7 @@ namespace Clicktastic
                 b.Write(profile.Hold);
                 b.Write(profile.pressEnter);
                 b.Write(profile.useDeactivationKey);
+                b.Write(profile.suppressHotkeys);
                 b.Write(profile.turbo);
                 b.Write(profile.MinDelay);
                 b.Write(profile.MaxDelay);
@@ -138,6 +139,7 @@ namespace Clicktastic
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.WriteLine("Save Failed!");
                 success = false;
             }
             finally
@@ -159,9 +161,8 @@ namespace Clicktastic
                 if (!key.valid)
                     throw new Exception("KEYCOMBO is not valid!");
                 key.isKeyboard = b.ReadBoolean();
-                int SERIALIZATIONSPACE = 160;
-                key.modifierKeys = GetKey(b.ReadBytes(sizeof(Keys) + SERIALIZATIONSPACE));
-                key.key = GetKey(b.ReadBytes(sizeof(Keys) + SERIALIZATIONSPACE));
+                key.modifierKeys = GetKey(b.ReadBytes(KeySize));
+                key.key = GetKey(b.ReadBytes(KeySize));
                 key.keyString = b.ReadString();
                 key.cmd = b.ReadString();
                 key.mouseButton = b.ReadUInt32();
@@ -184,18 +185,31 @@ namespace Clicktastic
                 b = new BinaryReader(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.Open));
 
                 if (b.ReadString() != "Clicktastic Profile")
+                {
+                    success = false;
                     throw new Exception("File is not a Clicktastic profile!");
+                }
                 if (!LoadKEYCOMBO(b, ref profile.ActivationKey))
+                {
+                    success = false;
                     throw new Exception("ActivationKey could not be loaded!");
+                }
                 if (!LoadKEYCOMBO(b, ref profile.DeactivationKey))
+                {
+                    success = false;
                     throw new Exception("DeactivationKey could not be loaded!");
+                }
                 if (!LoadKEYCOMBO(b, ref profile.AutoclickKey))
+                {
+                    success = false;
                     throw new Exception("AutoclickKey could not be loaded!");
+                }
 
                 profile.Random = b.ReadBoolean();
                 profile.Hold = b.ReadBoolean();
                 profile.pressEnter = b.ReadBoolean();
                 profile.useDeactivationKey = b.ReadBoolean();
+                profile.suppressHotkeys = b.ReadBoolean();
                 profile.turbo = b.ReadInt32();
                 profile.MinDelay = b.ReadInt32();
                 profile.MaxDelay = b.ReadInt32();
@@ -207,6 +221,7 @@ namespace Clicktastic
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.WriteLine("Load Failed!");
                 success = false;
             }
             finally
@@ -217,6 +232,7 @@ namespace Clicktastic
                     b.Dispose();
                 }
             }
+            Console.WriteLine("Load Success!");
             return success;
         }
     }

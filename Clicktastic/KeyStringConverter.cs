@@ -252,7 +252,7 @@ namespace Clicktastic
                 if (turbo > 1)
                     cmd = turbo.ToString();
                 else
-                    cmd = null;
+                    cmd = "";
             }
             else if (cmd == "^" || cmd == "+" || cmd == "%")
             {
@@ -270,21 +270,21 @@ namespace Clicktastic
             //Add any necessary modifiers
             if ((modifiers & Keys.Control) > 0)
             {
-                if (cmd == null)
+                if (cmd.Length == 0)
                     cmd = "^";
                 else
                     cmd = "^(" + cmd + ")";
             }
             if ((modifiers & Keys.Shift) > 0)
             {
-                if (cmd == null)
+                if (cmd.Length == 0)
                     cmd = "+";
                 else
                     cmd = "+(" + cmd + ")";
             }
             if ((modifiers & Keys.Alt) > 0)
             {
-                if (cmd == null)
+                if (cmd.Length == 0)
                     cmd = "%";
                 else
                     cmd = "%(" + cmd + ")";

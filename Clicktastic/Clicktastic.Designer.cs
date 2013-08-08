@@ -239,6 +239,7 @@
             this.cbSuppressHotkeys.TabIndex = 30;
             this.cbSuppressHotkeys.Text = "Suppress Hotkeys";
             this.cbSuppressHotkeys.UseVisualStyleBackColor = true;
+            this.cbSuppressHotkeys.CheckedChanged += new System.EventHandler(this.cbSuppressHotkeys_CheckedChanged);
             // 
             // cbEnter
             // 
@@ -276,11 +277,17 @@
             this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ddbTurboMode.FormattingEnabled = true;
             this.ddbTurboMode.Items.AddRange(new object[] {
-            "(1x) None",
-            "(2x) Afterburners",
-            "(3x) Hyperdrive",
-            "(4x) Warp 10",
-            "(5x) Ludicrous Speed!"});
+            "None",
+            "Mini Boost",
+            "Small Boost",
+            "Large Boost",
+            "Thrusters",
+            "Afterburners",
+            "Impulse",
+            "Light Speed",
+            "Hyperdrive",
+            "Warp 10",
+            "Ludicrous Speed!"});
             this.ddbTurboMode.Location = new System.Drawing.Point(182, 228);
             this.ddbTurboMode.MaxDropDownItems = 2;
             this.ddbTurboMode.Name = "ddbTurboMode";

@@ -55,6 +55,7 @@ namespace Clicktastic
         Boolean AutoclickerWaiting = true;
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
+        Boolean Loading = false;
         int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
@@ -72,6 +73,7 @@ namespace Clicktastic
             public Boolean Hold;
             public Boolean pressEnter;
             public Boolean useDeactivationKey;
+            public Boolean suppressHotkeys;
             public int turbo;
             public int MinDelay;
             public int MaxDelay;
@@ -162,8 +164,6 @@ namespace Clicktastic
         private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (Control.ModifierKeys == Keys.Control)
-                Console.WriteLine("You pressed control!");
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && tcClicktastic.SelectedIndex == 0)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
@@ -171,6 +171,10 @@ namespace Clicktastic
                     ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
                 {
                     ToggleAutoClicker((Keys)vkCode);
+                    if (cbSuppressHotkeys.Checked)
+                    {
+                        return (IntPtr)1; //dummy value
+                    }
                 }
             }
             else if (nCode >= 0 && tcClicktastic.SelectedIndex == 0 &&
@@ -181,6 +185,10 @@ namespace Clicktastic
             {
                 int vkCode = Marshal.ReadInt32(lParam);
                 ToggleAutoClicker(Keys.None);
+                if (cbSuppressHotkeys.Checked)
+                {
+                    return (IntPtr)1; //dummy value
+                }
             }
 
             return CallNextHookEx(_hookIDKey, nCode, wParam, lParam);
@@ -204,6 +212,11 @@ namespace Clicktastic
                         lblAutoclickerRunning.ForeColor = Color.Red;
                     }));
                     AutoclickerWaiting = true;
+                    if (ddbTurboMode.SelectedIndex == 10)
+                    {
+                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Stop.wav");
+                        sound.Play();  //Plays the sound in a new thread
+                    }
                 }
                 else if (!AutoclickerEnabled && key == profileData.ActivationKey.key)
                 {
@@ -236,6 +249,13 @@ namespace Clicktastic
                         }));
                         AutoclickerWaiting = true;
                     }
+                    if (ddbTurboMode.SelectedIndex == 10)
+                    {
+                        //System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start.wav");
+                        //sound.Play();  //Plays the sound in a new thread
+                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
+                        sound.PlayLooping();
+                    }
                     AutoClick();
                 }
             }
@@ -253,6 +273,11 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
                         AutoclickerWaiting = true;
+                        if (ddbTurboMode.SelectedIndex == 10)
+                        {
+                            System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Stop.wav");
+                            sound.Play();  //Plays the sound in a new thread
+                        }
                     }
                 }
                 else if (!AutoclickerActivated && key == profileData.ActivationKey.key)
@@ -267,6 +292,13 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
                         AutoclickerWaiting = false;
+                    }
+                    if (ddbTurboMode.SelectedIndex == 10)
+                    {
+                        //System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start.wav");
+                        //sound.Play();  //Plays the sound in a new thread
+                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Loop.wav");
+                        sound.PlayLooping();
                     }
                     AutoClick();
                 }
@@ -520,12 +552,14 @@ namespace Clicktastic
 
         public Clicktastic()
         {
+            InitializeComponent();
+
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
             _hookIDKey = SetHookKey(_procKey);
             _hookIDMouse = SetHookMouse(_procMouse);
 
-            InitializeComponent();
+            //CreateDefaultProfile();
 
             if (!Directory.Exists(currentDirectory))
             {
@@ -537,6 +571,7 @@ namespace Clicktastic
             }
             previousProfile = Properties.Settings.Default.DefaultProfile;
 
+            RetryAttempts = 0;
             try
             {
                 foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
@@ -546,7 +581,14 @@ namespace Clicktastic
                 ddbProfile.SelectedItem = previousProfile;
             }
             catch (Exception ex) { Console.WriteLine(ex); }
-            AttemptLoad();
+            Boolean loaded = false;
+            Loading = true;
+            while (!loaded)
+            {
+                loaded = AttemptLoad();
+                //CreateDefaultProfile();
+                //loaded = true;
+            }
             Startup = false;
             setInstructions();
         }
@@ -972,7 +1014,7 @@ namespace Clicktastic
                     cbEnter.Checked = false;
                     cbEnter.Enabled = false;
                     profileData.pressEnter = false; //make sure that it is saved
-                    profileData.turbo = profileData.turbo * 12;
+                    profileData.turbo = (profileData.turbo - 1) * 6;
                 }
                 else
                     cbEnter.Enabled = true;
@@ -984,7 +1026,7 @@ namespace Clicktastic
                     //cbEnter.Checked = false;
                     //cbEnter.Enabled = false;
                     //profileData.pressEnter = false; //make sure that it is saved
-                    profileData.turbo = profileData.turbo * 6;
+                    profileData.turbo = (profileData.turbo - 1) * 3;
                 }
                 //else if (profileData.AutoclickKey.isKeyboard)
                     //cbEnter.Enabled = true;
@@ -1171,13 +1213,19 @@ namespace Clicktastic
             else
                 ddbSpeedMode.SelectedIndex = 0;
 
-            ddbTurboMode.SelectedIndex = profileData.turbo - 1;
+            if (profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
+                ddbTurboMode.SelectedIndex = (profileData.turbo / 6);
+            else if (!profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
+                ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
+            else
+                ddbTurboMode.SelectedIndex = profileData.turbo - 1;
 
             numMinDelay.Value = MinDelay;
             numMaxDelay.Value = MaxDelay;
 
             cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
             cbEnter.Checked = profileData.pressEnter;
+            cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
 
             tbActivationButton.Text = profileData.ActivationKey.keyString;
             tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
@@ -1186,10 +1234,19 @@ namespace Clicktastic
 
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AttemptLoad();
+            if (Loading)
+            {
+                Boolean loaded = false;
+                while (!loaded)
+                {
+                    loaded = AttemptLoad();
+                }
+            }
+            else
+                Loading = false;
         }
 
-        private void AttemptLoad()
+        private Boolean AttemptLoad()
         {
             ProfileData loadProfileData = new ProfileData();
             if (profile.Load(ddbProfile.Text, ref loadProfileData))
@@ -1201,6 +1258,7 @@ namespace Clicktastic
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
                 Properties.Settings.Default.Save();
                 setInstructions();
+                return true;
             }
             else
             {
@@ -1218,32 +1276,35 @@ namespace Clicktastic
                 {
                     RetryAttempts++;
                     ddbProfile.SelectedItem = previousProfile; //revert back to previous profile
-                    AttemptLoad();
                 }
                 else if (RetryAttempts < 2 && ddbProfile.Items.Count > 0)
                 {
                     RetryAttempts++;
                     ddbProfile.SelectedIndex = 0; //attempt to revert to the first profile in the list
-                    AttemptLoad();
                 }
                 else if (RetryAttempts < 3 && ddbProfile.Items.Contains("Default"))
                 {
                     RetryAttempts++;
                     ddbProfile.SelectedItem = "Default"; //attempt to fall back to the default profile
-                    AttemptLoad();
                 }
                 else //give up
                 {
                     RetryAttempts = 0;
                     CreateDefaultProfile(); //recreate default profile
-                    AttemptLoad();
+                    return true;
                 }
+                return false;
             }
         }
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetTurbo();
+            if (ddbTurboMode.SelectedIndex == 10 && !Startup)
+            {
+                System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
+                sound.Play();  //Plays the sound in a new thread
+            }
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -1370,6 +1431,7 @@ namespace Clicktastic
             profileData.Hold = false;
             profileData.pressEnter = false;
             profileData.useDeactivationKey = false;
+            profileData.suppressHotkeys = false;
             ddbSpeedMode.SelectedIndex = 0;
             ddbTurboMode.SelectedIndex = 0;
             profileData.turbo = 1;
@@ -1387,7 +1449,6 @@ namespace Clicktastic
                 ddbProfile.SelectedItem = "Default";
             }
             catch (Exception ex) { Console.WriteLine(ex); }
-            AttemptLoad(); //load the profile
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -1398,6 +1459,11 @@ namespace Clicktastic
                 MessageBox.Show("Unable to save " + ddbProfile.Text + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
             Properties.Settings.Default.Save();
+        }
+
+        private void cbSuppressHotkeys_CheckedChanged(object sender, EventArgs e)
+        {
+            profileData.suppressHotkeys = cbSuppressHotkeys.Checked;
         }
     }
 }
