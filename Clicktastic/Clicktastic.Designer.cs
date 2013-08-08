@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(Clicktastic_FormClosing);
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();

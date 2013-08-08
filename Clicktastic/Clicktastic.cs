@@ -608,10 +608,39 @@ namespace Clicktastic
             setInstructions();
         }
 
-        ~Clicktastic()
+        private void Shutdown()
         {
+            axMedia.Ctlcontrols.stop();
+            stopped = true;
+            AutoclickerActivated = false;
+            AutoclickerEnabled = false;
             UnhookWindowsHookEx(_hookIDKey);
             UnhookWindowsHookEx(_hookIDMouse);
+            try
+            {
+                mediaSemaphore.Release();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+            try
+            {
+                soundSemaphore.Release();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+            try
+            {
+                mediaSemaphore.Dispose();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+            try
+            {
+                soundSemaphore.Dispose();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+        }
+
+        private void Clicktastic_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Shutdown();
         }
 
         private void PlayKeyCombo(KEYCOMBO key)
@@ -1560,6 +1589,7 @@ namespace Clicktastic
                 catch (Exception ex) { Console.WriteLine(ex); }
                 soundThread = new Thread(() => RunLoop());
             }
+            /*
             if (stopped)
             {
                 try
@@ -1569,6 +1599,7 @@ namespace Clicktastic
                 catch (Exception ex) { Console.WriteLine(ex); }
                 return;
             }
+            */
             try
             {
                 soundThread.Start();
@@ -1580,6 +1611,7 @@ namespace Clicktastic
         {
             try
             {
+                /*
                 if (stopped)
                 {
                     try
@@ -1589,7 +1621,8 @@ namespace Clicktastic
                     catch (Exception ex) { Console.WriteLine(ex); }
                     return;
                 }
-                mediaSemaphore.WaitOne();
+                */
+                mediaSemaphore.WaitOne(3000);
                 media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
                 media.Ctlcontrols.play();
                 if (stopped)
@@ -1628,17 +1661,20 @@ namespace Clicktastic
             }
             catch (Exception ex)
             {
+                //stopped = false;
                 Console.WriteLine(ex);
                 try
                 {
                     soundSemaphore.Release();
                 }
                 catch (Exception ex1) { Console.WriteLine(ex1); }
+                //stopped = false;
                 try
                 {
                     mediaSemaphore.Release(); //make sure that the media semaphore gets released as well in case of a race condition
                 }
                 catch (Exception ex2) { Console.WriteLine(ex2); }
+                //stopped = false;
             }
         }
 
@@ -1653,8 +1689,11 @@ namespace Clicktastic
             catch (Exception ex) { Console.WriteLine(ex); }
             media.Ctlcontrols.stop();
             sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
-            if (!stopped)
-                return;
+            if (!stopped) //another thread started playing before the stop sound could be played
+            {
+                //stopped = true;
+                return; //don't play the sound
+            }
             sound.Play();
         }
     }
