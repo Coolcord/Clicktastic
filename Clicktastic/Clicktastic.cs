@@ -58,17 +58,14 @@ namespace Clicktastic
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
         Boolean Loading = false;
-        Boolean ready = false;
         Semaphore soundSemaphore = new Semaphore(1, 1);
         Semaphore mediaSemaphore = new Semaphore(1, 1);
-        SpinLock mediaLock = new SpinLock();
         int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         public ProfileData profileData = new ProfileData();
         Profile profile = new Profile();
         string previousProfile = "Default";
         SoundEffects soundEffects = null;
-        Thread soundThread = null;
         System.Media.SoundPlayer sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Start1.wav");
 
         [Serializable]
@@ -573,7 +570,7 @@ namespace Clicktastic
         public Clicktastic()
         {
             InitializeComponent();
-            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore, ref AutoclickerActivated);
+            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore);
 
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
@@ -1529,18 +1526,16 @@ namespace Clicktastic
         Thread soundThread = null;
         Semaphore soundSemaphore = null;
         Semaphore mediaSemaphore = null;
-        SpinLock mediaLock;
         AxWindowsMediaPlayer media = null;
-        Boolean AutoclickerActivated = false;
+        Boolean stopped = true;
 
-        public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem, ref Boolean autoclickActivated)
+        public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem)
         {
             soundSemaphore = soundSem;
             mediaSemaphore = mediaSem;
             sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
             media = axMedia;
             media.settings.setMode("loop", false);
-            AutoclickerActivated = autoclickActivated;
         }
 
         public void PlayEffect()
@@ -1563,30 +1558,42 @@ namespace Clicktastic
 
         private void RunLoop()
         {
-            mediaSemaphore.WaitOne();
-            media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
-            media.Ctlcontrols.play();
-
-            //if (!AutoclickerActivated)
-                //return;
-            mediaSemaphore.WaitOne();
             try
             {
-                soundSemaphore.Release();
+                stopped = false;
+                mediaSemaphore.WaitOne();
+                media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
+                media.Ctlcontrols.play();
+
+                if (stopped)
+                {
+                    media.Ctlcontrols.stop();
+                    return;
+                }
+                mediaSemaphore.WaitOne();
+                try
+                {
+                    soundSemaphore.Release();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
+                media.URL = "C:\\Users\\Cord\\Desktop\\Start2.wav";
+                media.Ctlcontrols.play();
+
+                if (stopped)
+                {
+                    media.Ctlcontrols.stop();
+                    return;
+                }
+                mediaSemaphore.WaitOne();
+                sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Loop.wav";
+                sound.PlayLooping();
             }
             catch (Exception ex) { Console.WriteLine(ex); }
-            media.URL = "C:\\Users\\Cord\\Desktop\\Start2.wav";
-            media.Ctlcontrols.play();
-
-            //if (!AutoclickerActivated)
-                //return;
-            mediaSemaphore.WaitOne();
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Loop.wav";
-            sound.PlayLooping();
         }
 
         public void Stop()
         {
+            stopped = true;
             try
             {
                 Console.WriteLine("Releasing Media Semaphore!");
