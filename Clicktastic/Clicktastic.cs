@@ -55,6 +55,7 @@ namespace Clicktastic
         Boolean AutoclickerEnabled = true;
         Boolean AutoclickerActivated = false;
         Boolean AutoclickerWaiting = true;
+        Boolean AutoclickerCharging = false;
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
         Boolean Loading = false;
@@ -1673,7 +1674,7 @@ namespace Clicktastic
         {
             try
             {
-                mediaSemaphore.WaitOne(3000);
+                mediaSemaphore.WaitOne(100);
                 media.URL = currentDirectory + "\\Start1.wav";
                 try
                 {
