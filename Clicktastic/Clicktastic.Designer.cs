@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
+            this.KeyPreview = true;
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(Clicktastic_KeyDown);
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();

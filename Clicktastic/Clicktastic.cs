@@ -147,6 +147,9 @@ namespace Clicktastic
         private const int WH_KEYBOARD_LL = 13;
         private const int WH_MOUSE_LL = 14;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
+        private const int WM_SYSKEYDOWN = 0x0104;
+        private const int WM_SYSKEYUP = 0x0105;
         private LowLevelKeyboardProc _procKey = null;
         private static IntPtr _hookIDKey = IntPtr.Zero;
 
@@ -174,30 +177,33 @@ namespace Clicktastic
         private IntPtr HookCallbackKey(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && tcClicktastic.SelectedIndex == 0)
+            if (nCode >= 0)
             {
-                int vkCode = Marshal.ReadInt32(lParam);
-                if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
-                    ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
+                if ((wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN) && tcClicktastic.SelectedIndex == 0)
                 {
-                    ToggleAutoClicker((Keys)vkCode);
+                    int vkCode = Marshal.ReadInt32(lParam);
+                    if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
+                        ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
+                    {
+                        ToggleAutoClicker((Keys)vkCode);
+                        if (cbSuppressHotkeys.Checked)
+                        {
+                            return (IntPtr)1; //dummy value
+                        }
+                    }
+                }
+                else if (tcClicktastic.SelectedIndex == 0 &&
+                    ((profileData.ActivationKey.modifierKeys == Control.ModifierKeys &&
+                    profileData.ActivationKey.key == Keys.None) ||
+                    (profileData.DeactivationKey.modifierKeys == Control.ModifierKeys &&
+                    profileData.DeactivationKey.key == Keys.None))) //Ctrl, Shift, or Alt only
+                {
+                    int vkCode = Marshal.ReadInt32(lParam);
+                    ToggleAutoClicker(Keys.None);
                     if (cbSuppressHotkeys.Checked)
                     {
                         return (IntPtr)1; //dummy value
                     }
-                }
-            }
-            else if (nCode >= 0 && tcClicktastic.SelectedIndex == 0 &&
-                ((profileData.ActivationKey.modifierKeys == Control.ModifierKeys &&
-                profileData.ActivationKey.key == Keys.None) ||
-                (profileData.DeactivationKey.modifierKeys == Control.ModifierKeys &&
-                profileData.DeactivationKey.key == Keys.None))) //Ctrl, Shift, or Alt only
-            {
-                int vkCode = Marshal.ReadInt32(lParam);
-                ToggleAutoClicker(Keys.None);
-                if (cbSuppressHotkeys.Checked)
-                {
-                    return (IntPtr)1; //dummy value
                 }
             }
 
@@ -383,7 +389,9 @@ namespace Clicktastic
             keyPrompt.Height = 100;
             keyPrompt.Text = "Clicktastic";
             keyPrompt.KeyPreview = true;
-            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = message };
+            keyPrompt.Icon = Properties.Resources.clicktastic;
+            keyPrompt.BackColor = Color.Black;
+            Label lblKey = new Label() { Width = 250, Height = 65, ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter, Text = message, ForeColor = Color.White };
             lblKey.Font = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
             keyPrompt.Controls.Add(lblKey);
             System.Timers.Timer timer = new System.Timers.Timer(750);
@@ -486,6 +494,14 @@ namespace Clicktastic
             lblKey.Dispose();
             key = ParseKEYCOMBO(strKey, lastKey);
             return key;
+        }
+
+        public void Clicktastic_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Modifiers.Equals(Keys.Alt))
+            {
+                e.Handled = true; //don't open the menu with alt
+            }
         }
 
         private KEYCOMBO ParseKEYCOMBO(string strKey, Keys lastKeyCode)
@@ -887,6 +903,8 @@ namespace Clicktastic
                 case Keys.Menu:
                 case Keys.LMenu:
                 case Keys.RMenu:
+                case Keys.LWin:
+                case Keys.RWin:
                 case Keys.None:
                     return false; //these are not accepted
                 default:
@@ -1396,7 +1414,8 @@ namespace Clicktastic
             if (tcClicktastic.SelectedIndex != 0)
             {
                 //Stop the Autoclicker
-                if (AutoclickerActivated && !profileData.mute)
+                if (AutoclickerActivated && !profileData.mute &&
+                    (ddbTurboMode.SelectedIndex==10 || profileData.alwaysPlay))
                     soundEffects.Stop();
                 AutoclickerEnabled = false;
                 AutoclickerActivated = false;
