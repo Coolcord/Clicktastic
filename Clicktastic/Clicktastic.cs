@@ -245,9 +245,9 @@ namespace Clicktastic
                     //soundSemaphore.WaitOne();
                     this.Invoke(new MethodInvoker(() =>
                     {
-                        pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                        pbAutoclickerEnabled.Image = Properties.Resources.yellow_circle;
                         lblAutoclickerEnabled.Text = "Enabled";
-                        lblAutoclickerEnabled.ForeColor = Color.Lime;
+                        lblAutoclickerEnabled.ForeColor = Color.Yellow;
                     }));
                     Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
                     if (ButtonHeld && AutoclickerWaiting)
@@ -797,103 +797,51 @@ namespace Clicktastic
 
         private void setInstructions()
         {
-            if (cbUseDeactivationButton.Checked && ddbActivationMode.SelectedIndex == 0)
+            string instructions = "";
+            if (ddbActivationMode.SelectedIndex == 0)
             {
-                lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to activate Autoclicker on " + tbAutoclickButton.Text;
-                lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
-                lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to deactivate Autoclicker";
+                instructions = instructions + "Press " + tbActivationButton.Text + " to activate Autoclicker on " + tbAutoclickButton.Text;
+                if (tbActivationButton.Text != tbDeactivationButton.Text)
+                    instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to deactivate Autoclicker";
                 pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
-                lblHoldInstructions.Enabled = false;
-                lblHoldInstructions.Visible = false;
-                if (tbActivationButton.Text == tbDeactivationButton.Text)
-                {
-                    lblDeactivationInstructions.Enabled = false;
-                    lblDeactivationInstructions.Visible = false;
-                }
-                else
-                {
-                    lblDeactivationInstructions.Enabled = true;
-                    lblDeactivationInstructions.Visible = true;
-                }
                 lblAutoclickerEnabled.Enabled = false;
                 lblAutoclickerEnabled.Visible = false;
                 lblAutoclickerEnabled.Enabled = false;
                 lblAutoclickerEnabled.Visible = false;
                 pbAutoclickerEnabled.Enabled = false;
                 pbAutoclickerEnabled.Visible = false;
-            }
-            else if (!cbUseDeactivationButton.Checked && ddbActivationMode.SelectedIndex == 0)
-            {
-                lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to toggle Autoclicker on " + tbAutoclickButton.Text;
-                lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
-                lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to toggle Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
-                lblAutoclickerEnabled.Text = "Enabled";
-                lblAutoclickerEnabled.ForeColor = Color.Lime;
-                lblHoldInstructions.Enabled = false;
-                lblHoldInstructions.Visible = false;
-                lblDeactivationInstructions.Enabled = false;
-                lblDeactivationInstructions.Visible = false;
-                lblAutoclickerEnabled.Enabled = false;
-                lblAutoclickerEnabled.Visible = false;
-                pbAutoclickerEnabled.Enabled = false;
-                pbAutoclickerEnabled.Visible = false;
-            }
-            else if (cbUseDeactivationButton.Checked && ddbActivationMode.SelectedIndex == 1)
-            {
-                lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
-                lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
-                lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
-                lblAutoclickerEnabled.Text = "Disabled";
-                lblAutoclickerEnabled.ForeColor = Color.Red;
-                lblHoldInstructions.Enabled = true;
-                lblHoldInstructions.Visible = true;
-                if (tbActivationButton.Text == tbDeactivationButton.Text)
-                {
-                    lblDeactivationInstructions.Enabled = false;
-                    lblDeactivationInstructions.Visible = false;
-                }
-                else
-                {
-                    lblDeactivationInstructions.Enabled = true;
-                    lblDeactivationInstructions.Visible = true;
-                }
-                lblAutoclickerEnabled.Enabled = true;
-                lblAutoclickerEnabled.Visible = true;
-                pbAutoclickerEnabled.Enabled = true;
-                pbAutoclickerEnabled.Visible = true;
             }
             else
             {
-                lblActivationInstructions.Text = "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
-                lblHoldInstructions.Text = "Hold " + tbAutoclickButton.Text + " to autoclick";
-                lblDeactivationInstructions.Text = "Press " + tbDeactivationButton.Text + " to disable Autoclicker";
+                instructions = instructions + "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
+                instructions = instructions + "\nHold " + tbAutoclickButton.Text + " to autoclick";
+                if (tbActivationButton.Text != tbDeactivationButton.Text)
+                    instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to disable Autoclicker";
                 pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
                 lblAutoclickerEnabled.Text = "Disabled";
                 lblAutoclickerEnabled.ForeColor = Color.Red;
-                lblHoldInstructions.Enabled = true;
-                lblHoldInstructions.Visible = true;
-                lblDeactivationInstructions.Enabled = false;
-                lblDeactivationInstructions.Visible = false;
                 lblAutoclickerEnabled.Enabled = true;
                 lblAutoclickerEnabled.Visible = true;
                 pbAutoclickerEnabled.Enabled = true;
                 pbAutoclickerEnabled.Visible = true;
             }
+            instructions = instructions + "\n\n";
             if (ddbSpeedMode.SelectedIndex == 0)
             {
-                lblSpeedInstructions.Text = "Autoclicker will run with " + numMinDelay.Value + " ms delay";
+                instructions = instructions + "\nAutoclicker will run with " + numMinDelay.Value + " ms delay";
             }
             else
             {
                 if (numMinDelay.Value == numMaxDelay.Value)
-                    lblSpeedInstructions.Text = "Autoclicker will run with " + numMinDelay.Value + " ms delay";
+                    instructions = instructions + "\nAutoclicker will run with " + numMinDelay.Value + " ms delay";
                 else
-                    lblSpeedInstructions.Text = "Delay on Autoclicker will be between " + numMinDelay.Value + " ms and " + numMaxDelay.Value + " ms";
+                    instructions = instructions + "\nDelay on Autoclicker will be between " + numMinDelay.Value + " ms and " + numMaxDelay.Value + " ms";
             }
+            if (ddbTurboMode.SelectedIndex != 0)
+                instructions = instructions + "\n\nTurbo mode set to " + profileData.turbo + "x speed";
+            lblInstructions.Text = instructions;
         }
 
         private void cbUseDeactivationButton_CheckedChanged(object sender, EventArgs e)
@@ -903,15 +851,21 @@ namespace Clicktastic
                 lblDeactivationButton.Enabled = true;
                 tbDeactivationButton.Enabled = true;
                 btnDeactivationButton.Enabled = true;
+                lblDeactivationButton.Visible = true;
+                tbDeactivationButton.Visible = true;
+                btnDeactivationButton.Visible = true;
                 profileData.useDeactivationKey = true;
             }
             else
             {
                 lblDeactivationButton.Enabled = false;
+                lblDeactivationButton.Visible = false;
                 profileData.DeactivationKey = profileData.ActivationKey;
                 tbDeactivationButton.Text = tbActivationButton.Text;
                 tbDeactivationButton.Enabled = false;
                 btnDeactivationButton.Enabled = false;
+                tbDeactivationButton.Visible = false;
+                btnDeactivationButton.Visible = false;
                 profileData.useDeactivationKey = false;
             }
             setInstructions();
@@ -1070,11 +1024,15 @@ namespace Clicktastic
                 {
                     cbEnter.Checked = false;
                     cbEnter.Enabled = false;
+                    cbEnter.Visible = false;
                     profileData.pressEnter = false; //make sure that it is saved
                     profileData.turbo = (profileData.turbo - 1) * 3;
                 }
                 else
+                {
                     cbEnter.Enabled = true;
+                    cbEnter.Visible = true;
+                }
             }
             else
             {
@@ -1220,17 +1178,22 @@ namespace Clicktastic
             {
                 lblActivationMode.Enabled = false;
                 ddbActivationMode.Enabled = false;
+                lblActivationMode.Visible = false;
+                ddbActivationMode.Visible = false;
             }
             else
             {
                 lblActivationMode.Enabled = true;
                 ddbActivationMode.Enabled = true;
+                lblActivationMode.Visible = true;
+                ddbActivationMode.Visible = true;
                 if (cbEnter.Enabled)
                 {
                     cbEnter.Checked = false;
                     profileData.pressEnter = false; //make sure it saves
                 }
                 cbEnter.Enabled = false;
+                cbEnter.Visible = false;
             }
             SetTurbo();
             setInstructions();
@@ -1374,6 +1337,7 @@ namespace Clicktastic
                     soundEffects.PlayEffect();
                 }
             }
+            setInstructions();
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -1384,6 +1348,7 @@ namespace Clicktastic
             aboutForm.Height = 200;
             aboutForm.Text = "About Clicktastic";
             aboutForm.Icon = Properties.Resources.clicktastic;
+            aboutForm.BackColor = Color.Black;
 
             //Get the version number
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -1402,8 +1367,11 @@ namespace Clicktastic
             };
             Font aboutFont = new Font("Microsoft Sans Serif", 8, FontStyle.Bold);
             aboutText.Font = aboutFont;
+            aboutText.ForeColor = Color.White;
             Button btnOk = new Button() { Width = 100, Height = 30, Text = "OK", Location = new Point(150, 130), ImageAlign = ContentAlignment.MiddleCenter, TextAlign = ContentAlignment.MiddleCenter };
             btnOk.Click += (btnSender, btnE) => aboutForm.Close(); //click ok to close
+            btnOk.BackColor = SystemColors.ButtonFace;
+            btnOk.UseVisualStyleBackColor = true;
             aboutForm.AcceptButton = btnOk;
             aboutForm.Controls.Add(aboutText);
             aboutForm.Controls.Add(btnOk);
@@ -1549,10 +1517,13 @@ namespace Clicktastic
                 cbAlwaysPlay.Checked = false;
                 cbLoadSound.Enabled = false;
                 cbAlwaysPlay.Enabled = false;
+                cbLoadSound.Visible = false;
+                cbAlwaysPlay.Visible = false;
             }
             else
             {
                 cbLoadSound.Enabled = true;
+                cbLoadSound.Visible = true;
             }
         }
 
@@ -1582,11 +1553,13 @@ namespace Clicktastic
             if (cbLoadSound.Checked)
             {
                 cbAlwaysPlay.Enabled = true;
+                cbAlwaysPlay.Visible = true;
             }
             else
             {
                 cbAlwaysPlay.Checked = false;
                 cbAlwaysPlay.Enabled = false;
+                cbAlwaysPlay.Visible = false;
             }
         }
 

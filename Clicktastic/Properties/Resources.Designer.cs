@@ -80,5 +80,12 @@ namespace Clicktastic.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap yellow_circle {
+            get {
+                object obj = ResourceManager.GetObject("yellow_circle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

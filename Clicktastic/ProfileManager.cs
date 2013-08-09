@@ -51,13 +51,15 @@ namespace Clicktastic
             nameForm.Height = 110;
             nameForm.Text = "Clicktastic";
             nameForm.Icon = Properties.Resources.clicktastic;
+            nameForm.BackColor = Color.Black;
 
             Label lblName = new Label()
             {
                 Width = 190,
                 Height = 20,
                 Location = new Point(5, 2),
-                Text = text
+                Text = text,
+                ForeColor = Color.White
             };
 
             TextBox tbName = new TextBox()
@@ -75,7 +77,9 @@ namespace Clicktastic
                 Location = new Point(5, 48),
                 ImageAlign = ContentAlignment.MiddleCenter,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Text = "OK"
+                Text = "OK",
+                BackColor = SystemColors.ButtonFace,
+                UseVisualStyleBackColor = true
             };
             btnOK.Click += (btnOKSender, btnOKe) =>
             {
@@ -90,7 +94,9 @@ namespace Clicktastic
                 Location = new Point(98, 48),
                 ImageAlign = ContentAlignment.MiddleCenter,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Text = "Cancel"
+                Text = "Cancel",
+                BackColor = SystemColors.ButtonFace,
+                UseVisualStyleBackColor = true
             };
             btnCancel.Click += (btnCancelSender, btnCancele) =>
             {

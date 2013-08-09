@@ -32,14 +32,11 @@
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();
-            this.lblHoldInstructions = new System.Windows.Forms.Label();
             this.pbAutoclickerRunning = new System.Windows.Forms.PictureBox();
             this.pbAutoclickerEnabled = new System.Windows.Forms.PictureBox();
             this.lblAutoclickerRunning = new System.Windows.Forms.Label();
             this.lblAutoclickerEnabled = new System.Windows.Forms.Label();
-            this.lblSpeedInstructions = new System.Windows.Forms.Label();
-            this.lblDeactivationInstructions = new System.Windows.Forms.Label();
-            this.lblActivationInstructions = new System.Windows.Forms.Label();
+            this.lblInstructions = new System.Windows.Forms.Label();
             this.tbPreferences = new System.Windows.Forms.TabPage();
             this.cbLoadSound = new System.Windows.Forms.CheckBox();
             this.cbAlwaysPlay = new System.Windows.Forms.CheckBox();
@@ -97,22 +94,19 @@
             // 
             // tbAutoclicker
             // 
+            this.tbAutoclicker.BackColor = System.Drawing.Color.Black;
             this.tbAutoclicker.Controls.Add(this.axMedia);
-            this.tbAutoclicker.Controls.Add(this.lblHoldInstructions);
             this.tbAutoclicker.Controls.Add(this.pbAutoclickerRunning);
             this.tbAutoclicker.Controls.Add(this.pbAutoclickerEnabled);
             this.tbAutoclicker.Controls.Add(this.lblAutoclickerRunning);
             this.tbAutoclicker.Controls.Add(this.lblAutoclickerEnabled);
-            this.tbAutoclicker.Controls.Add(this.lblSpeedInstructions);
-            this.tbAutoclicker.Controls.Add(this.lblDeactivationInstructions);
-            this.tbAutoclicker.Controls.Add(this.lblActivationInstructions);
+            this.tbAutoclicker.Controls.Add(this.lblInstructions);
             this.tbAutoclicker.Location = new System.Drawing.Point(4, 25);
             this.tbAutoclicker.Name = "tbAutoclicker";
             this.tbAutoclicker.Padding = new System.Windows.Forms.Padding(3);
             this.tbAutoclicker.Size = new System.Drawing.Size(521, 312);
             this.tbAutoclicker.TabIndex = 0;
             this.tbAutoclicker.Text = "Autoclicker";
-            this.tbAutoclicker.UseVisualStyleBackColor = true;
             // 
             // axMedia
             // 
@@ -124,16 +118,6 @@
             this.axMedia.TabIndex = 8;
             this.axMedia.Visible = false;
             this.axMedia.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axMedia_PlayStateChange);
-            // 
-            // lblHoldInstructions
-            // 
-            this.lblHoldInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHoldInstructions.Location = new System.Drawing.Point(9, 55);
-            this.lblHoldInstructions.Name = "lblHoldInstructions";
-            this.lblHoldInstructions.Size = new System.Drawing.Size(499, 25);
-            this.lblHoldInstructions.TabIndex = 7;
-            this.lblHoldInstructions.Text = "Hold Left Click to autoclick";
-            this.lblHoldInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // pbAutoclickerRunning
             // 
@@ -179,38 +163,20 @@
             this.lblAutoclickerEnabled.TabIndex = 3;
             this.lblAutoclickerEnabled.Text = "Disabled";
             // 
-            // lblSpeedInstructions
+            // lblInstructions
             // 
-            this.lblSpeedInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSpeedInstructions.Location = new System.Drawing.Point(9, 141);
-            this.lblSpeedInstructions.Name = "lblSpeedInstructions";
-            this.lblSpeedInstructions.Size = new System.Drawing.Size(499, 25);
-            this.lblSpeedInstructions.TabIndex = 2;
-            this.lblSpeedInstructions.Text = "Delay on Autoclicker will be between 999 ms and 1000 ms";
-            this.lblSpeedInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // lblDeactivationInstructions
-            // 
-            this.lblDeactivationInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDeactivationInstructions.Location = new System.Drawing.Point(9, 93);
-            this.lblDeactivationInstructions.Name = "lblDeactivationInstructions";
-            this.lblDeactivationInstructions.Size = new System.Drawing.Size(499, 25);
-            this.lblDeactivationInstructions.TabIndex = 1;
-            this.lblDeactivationInstructions.Text = "Press ~ to deactivate Autoclicker on Left Click";
-            this.lblDeactivationInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // lblActivationInstructions
-            // 
-            this.lblActivationInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblActivationInstructions.Location = new System.Drawing.Point(9, 38);
-            this.lblActivationInstructions.Name = "lblActivationInstructions";
-            this.lblActivationInstructions.Size = new System.Drawing.Size(499, 25);
-            this.lblActivationInstructions.TabIndex = 0;
-            this.lblActivationInstructions.Text = "Press ~ to activate Autoclicker on Left Click";
-            this.lblActivationInstructions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblInstructions.ForeColor = System.Drawing.Color.White;
+            this.lblInstructions.Location = new System.Drawing.Point(9, 3);
+            this.lblInstructions.Name = "lblInstructions";
+            this.lblInstructions.Size = new System.Drawing.Size(499, 184);
+            this.lblInstructions.TabIndex = 0;
+            this.lblInstructions.Text = "Press ~ to activate Autoclicker on Left Click";
+            this.lblInstructions.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tbPreferences
             // 
+            this.tbPreferences.BackColor = System.Drawing.Color.Black;
             this.tbPreferences.Controls.Add(this.cbLoadSound);
             this.tbPreferences.Controls.Add(this.cbAlwaysPlay);
             this.tbPreferences.Controls.Add(this.cbMute);
@@ -249,11 +215,11 @@
             this.tbPreferences.Size = new System.Drawing.Size(521, 312);
             this.tbPreferences.TabIndex = 1;
             this.tbPreferences.Text = "Preferences";
-            this.tbPreferences.UseVisualStyleBackColor = true;
             // 
             // cbLoadSound
             // 
             this.cbLoadSound.AutoSize = true;
+            this.cbLoadSound.ForeColor = System.Drawing.Color.White;
             this.cbLoadSound.Location = new System.Drawing.Point(354, 248);
             this.cbLoadSound.Name = "cbLoadSound";
             this.cbLoadSound.Size = new System.Drawing.Size(134, 21);
@@ -266,17 +232,20 @@
             // 
             this.cbAlwaysPlay.AutoSize = true;
             this.cbAlwaysPlay.Enabled = false;
+            this.cbAlwaysPlay.ForeColor = System.Drawing.Color.White;
             this.cbAlwaysPlay.Location = new System.Drawing.Point(354, 275);
             this.cbAlwaysPlay.Name = "cbAlwaysPlay";
             this.cbAlwaysPlay.Size = new System.Drawing.Size(156, 21);
             this.cbAlwaysPlay.TabIndex = 32;
             this.cbAlwaysPlay.Text = "Always Play Sounds";
             this.cbAlwaysPlay.UseVisualStyleBackColor = true;
+            this.cbAlwaysPlay.Visible = false;
             this.cbAlwaysPlay.CheckedChanged += new System.EventHandler(this.cbAlwaysPlay_CheckedChanged);
             // 
             // cbMute
             // 
             this.cbMute.AutoSize = true;
+            this.cbMute.ForeColor = System.Drawing.Color.White;
             this.cbMute.Location = new System.Drawing.Point(354, 221);
             this.cbMute.Name = "cbMute";
             this.cbMute.Size = new System.Drawing.Size(153, 21);
@@ -288,6 +257,7 @@
             // cbSuppressHotkeys
             // 
             this.cbSuppressHotkeys.AutoSize = true;
+            this.cbSuppressHotkeys.ForeColor = System.Drawing.Color.White;
             this.cbSuppressHotkeys.Location = new System.Drawing.Point(245, 67);
             this.cbSuppressHotkeys.Name = "cbSuppressHotkeys";
             this.cbSuppressHotkeys.Size = new System.Drawing.Size(145, 21);
@@ -300,12 +270,14 @@
             // 
             this.cbEnter.AutoSize = true;
             this.cbEnter.Enabled = false;
+            this.cbEnter.ForeColor = System.Drawing.Color.White;
             this.cbEnter.Location = new System.Drawing.Point(10, 184);
             this.cbEnter.Name = "cbEnter";
             this.cbEnter.Size = new System.Drawing.Size(230, 21);
             this.cbEnter.TabIndex = 29;
             this.cbEnter.Text = "Press enter after each autoclick";
             this.cbEnter.UseVisualStyleBackColor = true;
+            this.cbEnter.Visible = false;
             this.cbEnter.CheckedChanged += new System.EventHandler(this.cbEnter_CheckedChanged);
             // 
             // btnAbout
@@ -321,6 +293,7 @@
             // lblTurboMode
             // 
             this.lblTurboMode.AutoSize = true;
+            this.lblTurboMode.ForeColor = System.Drawing.Color.White;
             this.lblTurboMode.Location = new System.Drawing.Point(179, 208);
             this.lblTurboMode.Name = "lblTurboMode";
             this.lblTurboMode.Size = new System.Drawing.Size(89, 17);
@@ -332,17 +305,17 @@
             this.ddbTurboMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ddbTurboMode.FormattingEnabled = true;
             this.ddbTurboMode.Items.AddRange(new object[] {
-            "None",
-            "Mini Boost",
-            "Small Boost",
-            "Large Boost",
-            "Thrusters",
-            "Afterburners",
-            "Impulse",
-            "Light Speed",
-            "Hyperdrive",
-            "Warp 10",
-            "Ludicrous Speed!"});
+            "(1x) None",
+            "(3x) Mini Boost",
+            "(6x) Small Boost",
+            "(9x) Large Boost",
+            "(12x) Thrusters",
+            "(15x) Afterburners",
+            "(18x) Impulse",
+            "(21x) Light Speed",
+            "(24x) Hyperdrive",
+            "(27x) Warp 10",
+            "(30x) Ludicrous Speed!"});
             this.ddbTurboMode.Location = new System.Drawing.Point(182, 228);
             this.ddbTurboMode.MaxDropDownItems = 2;
             this.ddbTurboMode.Name = "ddbTurboMode";
@@ -370,6 +343,7 @@
             this.btnDeactivationButton.TabIndex = 23;
             this.btnDeactivationButton.Text = "Set";
             this.btnDeactivationButton.UseVisualStyleBackColor = true;
+            this.btnDeactivationButton.Visible = false;
             this.btnDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
             // 
             // btnActivationButton
@@ -420,6 +394,7 @@
             // lblActivationMode
             // 
             this.lblActivationMode.AutoSize = true;
+            this.lblActivationMode.ForeColor = System.Drawing.Color.White;
             this.lblActivationMode.Location = new System.Drawing.Point(7, 91);
             this.lblActivationMode.Name = "lblActivationMode";
             this.lblActivationMode.Size = new System.Drawing.Size(112, 17);
@@ -429,20 +404,24 @@
             // lblMaxDelay
             // 
             this.lblMaxDelay.AutoSize = true;
+            this.lblMaxDelay.ForeColor = System.Drawing.Color.White;
             this.lblMaxDelay.Location = new System.Drawing.Point(179, 255);
             this.lblMaxDelay.Name = "lblMaxDelay";
             this.lblMaxDelay.Size = new System.Drawing.Size(145, 17);
             this.lblMaxDelay.TabIndex = 17;
             this.lblMaxDelay.Text = "Maximum Delay Time:";
+            this.lblMaxDelay.Visible = false;
             // 
             // lblMaxCPS
             // 
             this.lblMaxCPS.AutoSize = true;
+            this.lblMaxCPS.ForeColor = System.Drawing.Color.White;
             this.lblMaxCPS.Location = new System.Drawing.Point(322, 282);
             this.lblMaxCPS.Name = "lblMaxCPS";
             this.lblMaxCPS.Size = new System.Drawing.Size(26, 17);
             this.lblMaxCPS.TabIndex = 16;
             this.lblMaxCPS.Text = "ms";
+            this.lblMaxCPS.Visible = false;
             // 
             // numMaxDelay
             // 
@@ -465,11 +444,13 @@
             0,
             0,
             0});
+            this.numMaxDelay.Visible = false;
             this.numMaxDelay.ValueChanged += new System.EventHandler(this.numMaxDelay_ValueChanged);
             // 
             // lblMinDelay
             // 
             this.lblMinDelay.AutoSize = true;
+            this.lblMinDelay.ForeColor = System.Drawing.Color.White;
             this.lblMinDelay.Location = new System.Drawing.Point(7, 255);
             this.lblMinDelay.Name = "lblMinDelay";
             this.lblMinDelay.Size = new System.Drawing.Size(142, 17);
@@ -494,6 +475,7 @@
             // lblMinCPS
             // 
             this.lblMinCPS.AutoSize = true;
+            this.lblMinCPS.ForeColor = System.Drawing.Color.White;
             this.lblMinCPS.Location = new System.Drawing.Point(150, 279);
             this.lblMinCPS.Name = "lblMinCPS";
             this.lblMinCPS.Size = new System.Drawing.Size(26, 17);
@@ -526,6 +508,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.White;
             this.label5.Location = new System.Drawing.Point(7, 208);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 17);
@@ -546,6 +529,7 @@
             // lblAutoclickButton
             // 
             this.lblAutoclickButton.AutoSize = true;
+            this.lblAutoclickButton.ForeColor = System.Drawing.Color.White;
             this.lblAutoclickButton.Location = new System.Drawing.Point(7, 138);
             this.lblAutoclickButton.Name = "lblAutoclickButton";
             this.lblAutoclickButton.Size = new System.Drawing.Size(129, 17);
@@ -561,6 +545,7 @@
             this.tbDeactivationButton.Size = new System.Drawing.Size(166, 22);
             this.tbDeactivationButton.TabIndex = 6;
             this.tbDeactivationButton.Text = "` (~)";
+            this.tbDeactivationButton.Visible = false;
             this.tbDeactivationButton.Click += new System.EventHandler(this.DeactivationButton_Click);
             this.tbDeactivationButton.TextChanged += new System.EventHandler(this.tbDeactivationButton_TextChanged);
             // 
@@ -568,15 +553,18 @@
             // 
             this.lblDeactivationButton.AutoSize = true;
             this.lblDeactivationButton.Enabled = false;
+            this.lblDeactivationButton.ForeColor = System.Drawing.Color.White;
             this.lblDeactivationButton.Location = new System.Drawing.Point(242, 162);
             this.lblDeactivationButton.Name = "lblDeactivationButton";
             this.lblDeactivationButton.Size = new System.Drawing.Size(132, 17);
             this.lblDeactivationButton.TabIndex = 5;
             this.lblDeactivationButton.Text = "Deactivator Hotkey:";
+            this.lblDeactivationButton.Visible = false;
             // 
             // cbUseDeactivationButton
             // 
             this.cbUseDeactivationButton.AutoSize = true;
+            this.cbUseDeactivationButton.ForeColor = System.Drawing.Color.White;
             this.cbUseDeactivationButton.Location = new System.Drawing.Point(245, 139);
             this.cbUseDeactivationButton.Name = "cbUseDeactivationButton";
             this.cbUseDeactivationButton.Size = new System.Drawing.Size(264, 21);
@@ -599,6 +587,7 @@
             // lblActivationButton
             // 
             this.lblActivationButton.AutoSize = true;
+            this.lblActivationButton.ForeColor = System.Drawing.Color.White;
             this.lblActivationButton.Location = new System.Drawing.Point(242, 91);
             this.lblActivationButton.Name = "lblActivationButton";
             this.lblActivationButton.Size = new System.Drawing.Size(115, 17);
@@ -608,6 +597,7 @@
             // lblSelectProfile
             // 
             this.lblSelectProfile.AutoSize = true;
+            this.lblSelectProfile.ForeColor = System.Drawing.Color.White;
             this.lblSelectProfile.Location = new System.Drawing.Point(7, 8);
             this.lblSelectProfile.Name = "lblSelectProfile";
             this.lblSelectProfile.Size = new System.Drawing.Size(95, 17);
@@ -634,7 +624,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(523, 334);
             this.Controls.Add(this.tcClicktastic);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -683,14 +673,11 @@
         private System.Windows.Forms.Label lblMinDelay;
         private System.Windows.Forms.Button btnManageProfiles;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label lblActivationInstructions;
-        private System.Windows.Forms.Label lblDeactivationInstructions;
-        private System.Windows.Forms.Label lblSpeedInstructions;
+        private System.Windows.Forms.Label lblInstructions;
         private System.Windows.Forms.Label lblAutoclickerEnabled;
         private System.Windows.Forms.Label lblAutoclickerRunning;
         private System.Windows.Forms.PictureBox pbAutoclickerRunning;
         private System.Windows.Forms.PictureBox pbAutoclickerEnabled;
-        private System.Windows.Forms.Label lblHoldInstructions;
         private System.Windows.Forms.Button btnActivationButton;
         private System.Windows.Forms.Button btnAutoclickButton;
         private System.Windows.Forms.Button btnDeactivationButton;

@@ -97,6 +97,7 @@
     <Content Include="clicktastic.ico" />
     <Content Include="data\green_circle.png" />
     <Content Include="data\red_circle.png" />
+    <None Include="data\yellow_circle.png" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="AxWMPLib">
