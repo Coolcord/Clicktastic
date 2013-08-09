@@ -28,10 +28,12 @@ namespace Clicktastic
 {
     public partial class ProfileManager : Form
     {
+        //Define Global Variables
         public Clicktastic.ProfileData data;
         Profile profile = new Profile();
         public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
 
+        //Constructor
         public ProfileManager(ref Clicktastic.ProfileData profileData)
         {
             data = profileData;
@@ -42,8 +44,137 @@ namespace Clicktastic
             }
         }
 
+        #region Interface Event Handlers
+        //===========================================================================
+        //
+        // Interface Event Handlers
+        //
+        //===========================================================================
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close(); //close the profile manager form
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            int selected = lbProfiles.SelectedItems.Count;
+            string[] names = new string[selected];
+            int i = 0;
+            for (i = 0; i < selected; i++)
+            { //get selected files
+                names[i] = lbProfiles.GetItemText(lbProfiles.SelectedItems[i]);
+            }
+            if (selected > 0)
+            {
+                DialogResult result = DialogResult.No;
+                if (selected == 1)
+                    result = MessageBox.Show("Are you sure you want to delete " + names[0] + "?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                else //more than one item was selected
+                    result = MessageBox.Show("Are you sure you want to delete the selected profiles?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                if (result == DialogResult.Yes)
+                {
+                    foreach (string name in names) //delete all selected files
+                    {
+                        try
+                        {
+                            //Delete the file
+                            File.SetAttributes(currentDirectory + "\\" + name + ".clk", FileAttributes.Normal);
+                            File.Delete(currentDirectory + "\\" + name + ".clk");
+                            lbProfiles.Items.Remove(name);
+                        }
+                        catch
+                        { //unable to delete for some reason
+                            MessageBox.Show("Unable to delete " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            else //the user did not select anything
+            {
+                MessageBox.Show("No profile is selected!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            string name = null;
+            while (true) //keep requesting a name until the user enters a valid one or cancels
+            {
+                name = GetName("Enter a new name:", "");
+                if (name != null && lbProfiles.Items.Contains(name))
+                    MessageBox.Show(name + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    break; //user entered a valid name
+            }
+            if (name != null)
+            {
+                if (profile.Save(name, ref data))
+                    lbProfiles.Items.Add(name);
+                else //unable to save for some reason
+                    MessageBox.Show("Unable to save " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnRename_Click(object sender, EventArgs e)
+        {
+            int selected = lbProfiles.SelectedItems.Count;
+            string[] names = new string[selected];
+            int i = 0;
+            for (i = 0; i < selected; i++)
+            { //get selected files
+                names[i] = lbProfiles.GetItemText(lbProfiles.SelectedItems[i]);
+            }
+            if (selected > 0)
+            {
+                foreach (string name in names) //rename all selected files
+                {
+                    try
+                    {
+                        string newName = null;
+                        while (true) //keep renaming files until the user inputs a valid name or cancels
+                        {
+                            newName = GetName("Enter a new name:", name);
+                            if (newName != null && lbProfiles.Items.Contains(newName))
+                                MessageBox.Show(newName + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            else
+                                break; //valid name entered
+                        }
+                        if (newName != null)
+                        {
+                            //Rename the file
+                            File.Move(currentDirectory + "\\" + name + ".clk", currentDirectory + "\\" + newName + ".clk");
+                            lbProfiles.Items.Remove(name);
+                            lbProfiles.Items.Add(newName);
+                        }
+                    }
+                    catch
+                    { //unable to rename for some reason
+                        MessageBox.Show("Unable to rename " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else //the user did not select anything
+            {
+                MessageBox.Show("No profile is selected!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        #endregion
+
+        #region Functions
+        //===========================================================================
+        //
+        // Functions
+        //
+        //===========================================================================
+
+        //
+        // GetName(string text, string oldName)
+        // Opens the get name form, allowing the user to input a name
+        //
         private string GetName(string text, string oldName)
         {
+            //Construct the form
             string name = null;
             Form nameForm = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
             nameForm.StartPosition = FormStartPosition.CenterParent;
@@ -83,8 +214,8 @@ namespace Clicktastic
             };
             btnOK.Click += (btnOKSender, btnOKe) =>
             {
-                name = tbName.Text;
-                nameForm.Close();
+                name = tbName.Text; //save the name
+                nameForm.Close(); //close the form
             };
 
             Button btnCancel = new Button()
@@ -100,9 +231,10 @@ namespace Clicktastic
             };
             btnCancel.Click += (btnCancelSender, btnCancele) =>
             {
-                nameForm.Close();
+                nameForm.Close(); //close the form without saving
             };
 
+            //Build the form and show it
             nameForm.AcceptButton = btnOK;
             nameForm.CancelButton = btnCancel;
             nameForm.Controls.Add(lblName);
@@ -110,6 +242,8 @@ namespace Clicktastic
             nameForm.Controls.Add(btnOK);
             nameForm.Controls.Add(btnCancel);
             nameForm.ShowDialog();
+
+            //Dispose the form's elements
             btnCancel.Dispose();
             btnOK.Dispose();
             tbName.Dispose();
@@ -118,125 +252,6 @@ namespace Clicktastic
 
             return name;
         }
-
-        private void btnNew_Click(object sender, EventArgs e)
-        {
-            string name = null;
-            while (true)
-            {
-                name = GetName("Enter a new name:", "");
-                if (name != null && lbProfiles.Items.Contains(name))
-                    MessageBox.Show(name + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                else
-                    break;
-            }
-            if (name != null)
-            {
-                if (profile.Save(name, ref data))
-                    lbProfiles.Items.Add(name);
-                else
-                    MessageBox.Show("Unable to save " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnRename_Click(object sender, EventArgs e)
-        {
-            int selected = lbProfiles.SelectedItems.Count;
-            string[] names = new string[selected];
-            int i = 0;
-            for (i = 0; i < selected; i++)
-            {
-                names[i] = lbProfiles.GetItemText(lbProfiles.SelectedItems[i]);
-            }
-            if (selected > 0)
-            {
-                foreach (string name in names)
-                {
-                    try
-                    {
-                        string newName = null;
-                        while (true)
-                        {
-                            newName = GetName("Enter a new name:", name);
-                            if (newName != null && lbProfiles.Items.Contains(newName))
-                                MessageBox.Show(newName + " already exists!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            else
-                                break;
-                        }
-                        if (newName != null)
-                        {
-                            //Rename the file
-                            File.Move(currentDirectory + "\\" + name + ".clk", currentDirectory + "\\" + newName + ".clk");
-                            lbProfiles.Items.Remove(name);
-                            lbProfiles.Items.Add(newName);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        MessageBox.Show("Unable to rename " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        i++;
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("No profile is selected!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnDelete_Click(object sender, EventArgs e)
-        {
-            int selected = lbProfiles.SelectedItems.Count;
-            string[] names = new string[selected];
-            int i = 0;
-            for (i = 0; i < selected; i++)
-            {
-                names[i] = lbProfiles.GetItemText(lbProfiles.SelectedItems[i]);
-            }
-            if (selected > 0)
-            {
-                DialogResult result = DialogResult.No;
-                if (selected == 1)
-                    result = MessageBox.Show("Are you sure you want to delete " + names[0] + "?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                else
-                    result = MessageBox.Show("Are you sure you want to delete the selected profiles?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                if (result == DialogResult.Yes)
-                {
-                    i = 0;
-                    foreach (string name in names)
-                    {
-                        try
-                        {
-                            //Delete the file
-                            File.SetAttributes(currentDirectory + "\\" + name + ".clk", FileAttributes.Normal);
-                            File.Delete(currentDirectory + "\\" + name + ".clk");
-                            lbProfiles.Items.Remove(name);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                            MessageBox.Show("Unable to delete " + name + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        finally
-                        {
-                            i++;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("No profile is selected!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        #endregion
     }
 }

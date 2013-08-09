@@ -32,144 +32,34 @@ namespace Clicktastic
         public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
         public static int KeySize = Properties.Settings.Default.KeySize;
 
-        private static byte[] GetBytes(Keys key)
-        {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-            binaryFormatter.Serialize(ms, key);
-            KeySize = ms.ToArray().Count();
-            Properties.Settings.Default.KeySize = KeySize;
-            Properties.Settings.Default.Save();
-            return ms.ToArray();
-        }
+        #region Public Functions
+        //===========================================================================
+        //
+        // Public Functions
+        //
+        //===========================================================================
 
-        private static Keys GetKey(byte[] bytes)
-        {
-            MemoryStream memStream = new MemoryStream();
-            BinaryFormatter binForm = new BinaryFormatter();
-            memStream.Write(bytes, 0, bytes.Length);
-            memStream.Seek(0, SeekOrigin.Begin);
-            Object obj = (Object)binForm.Deserialize(memStream);
-            return (Keys)obj;
-        }
-
-        private Boolean SaveKEYCOMBO(BinaryWriter b, Clicktastic.KEYCOMBO key)
-        {
-            try
-            {
-                if (!key.valid)
-                    throw new Exception("KEYCOMBO is not valid!");
-                b.Write(key.valid);
-                b.Write(key.isKeyboard);
-                b.Write(GetBytes(key.modifierKeys));
-                b.Write(GetBytes(key.key));
-                b.Write(key.keyString);
-                b.Write(key.cmd);
-                b.Write(key.mouseButton);
-                b.Write(key.wheel);
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private static string GetChecksum(string file)
-        {
-            using (FileStream stream = File.OpenRead(file))
-            {
-                SHA256Managed sha = new SHA256Managed();
-                byte[] checksum = sha.ComputeHash(stream);
-                return BitConverter.ToString(checksum).Replace("-", String.Empty);
-            }
-        }
-
-        public Boolean Save(string name, ref Clicktastic.ProfileData profile)
-        {
-            Boolean success = false;
-            BinaryWriter b = null;
-            try
-            {
-                if (!Directory.Exists(currentDirectory))
-                    Directory.CreateDirectory(currentDirectory);
-                b = new BinaryWriter(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.OpenOrCreate));
-
-                b.Write("Clicktastic Profile");
-
-                if (!SaveKEYCOMBO(b, profile.ActivationKey))
-                    throw new Exception("ActivationKey could not be saved!");
-                if (!SaveKEYCOMBO(b, profile.DeactivationKey))
-                    throw new Exception("DeactivationKey could not be saved!");
-                if (!SaveKEYCOMBO(b, profile.AutoclickKey))
-                    throw new Exception("AutoclickKey could not be saved!");
-
-                b.Write(profile.Random);
-                b.Write(profile.Hold);
-                b.Write(profile.pressEnter);
-                b.Write(profile.useDeactivationKey);
-                b.Write(profile.suppressHotkeys);
-                b.Write(profile.mute);
-                b.Write(profile.loadSound);
-                b.Write(profile.alwaysPlay);
-                b.Write(profile.turbo);
-                b.Write(profile.MinDelay);
-                b.Write(profile.MaxDelay);
-
-                b.Close();
-
-                success = true;
-            }
-            catch
-            {
-                success = false;
-            }
-            finally
-            {
-                if (b != null)
-                {
-                    b.Close();
-                    b.Dispose();
-                }
-            }
-            return success;
-        }
-
-        private Boolean LoadKEYCOMBO(BinaryReader b, ref Clicktastic.KEYCOMBO key)
-        {
-            try
-            {
-                key.valid = b.ReadBoolean();
-                if (!key.valid)
-                    throw new Exception("KEYCOMBO is not valid!");
-                key.isKeyboard = b.ReadBoolean();
-                key.modifierKeys = GetKey(b.ReadBytes(KeySize));
-                key.key = GetKey(b.ReadBytes(KeySize));
-                key.keyString = b.ReadString();
-                key.cmd = b.ReadString();
-                key.mouseButton = b.ReadUInt32();
-                key.wheel = b.ReadInt32();
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        }
-
+        //
+        // Load(string name, ref Clicktastic.ProfileData profile)
+        // Attempts to load a profile from a file into a ProfileData structure
+        //
         public Boolean Load(string name, ref Clicktastic.ProfileData profile)
         {
             Boolean success = false;
             BinaryReader b = null;
             try
             {
+                //Open the file
                 b = new BinaryReader(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.Open));
 
+                //Check the header
                 if (b.ReadString() != "Clicktastic Profile")
                 {
-                    success = false;
+                    success = false; //header was invalid
                     throw new Exception("File is not a Clicktastic profile!");
                 }
+
+                //Load the KEYCOMBO structures
                 if (!LoadKEYCOMBO(b, ref profile.ActivationKey))
                 {
                     success = false;
@@ -186,6 +76,7 @@ namespace Clicktastic
                     throw new Exception("AutoclickKey could not be loaded!");
                 }
 
+                //Load all other profile data
                 profile.Random = b.ReadBoolean();
                 profile.Hold = b.ReadBoolean();
                 profile.pressEnter = b.ReadBoolean();
@@ -198,23 +89,168 @@ namespace Clicktastic
                 profile.MinDelay = b.ReadInt32();
                 profile.MaxDelay = b.ReadInt32();
 
-                b.Close();
-                 
                 success = true;
             }
             catch
-            {
+            { //something went wrong
                 success = false;
             }
             finally
             {
                 if (b != null)
                 {
-                    b.Close();
+                    b.Close(); //all done with the file
                     b.Dispose();
                 }
             }
             return success;
         }
+
+        //
+        // Save(string name, ref Clicktastic.ProfileData profile)
+        // Attempts to save a profile to a file from a ProfileData structure
+        //
+        public Boolean Save(string name, ref Clicktastic.ProfileData profile)
+        {
+            Boolean success = false;
+            BinaryWriter b = null;
+            try
+            {
+                if (!Directory.Exists(currentDirectory)) //make sure the profile directory exists
+                    Directory.CreateDirectory(currentDirectory); //if not, create it
+
+                //Open the file
+                b = new BinaryWriter(File.Open(currentDirectory + "\\" + name + ".clk", FileMode.OpenOrCreate));
+
+                //Write the header
+                b.Write("Clicktastic Profile");
+
+                //Save the KEYCOMBO structures
+                if (!SaveKEYCOMBO(b, profile.ActivationKey))
+                    throw new Exception("ActivationKey could not be saved!");
+                if (!SaveKEYCOMBO(b, profile.DeactivationKey))
+                    throw new Exception("DeactivationKey could not be saved!");
+                if (!SaveKEYCOMBO(b, profile.AutoclickKey))
+                    throw new Exception("AutoclickKey could not be saved!");
+
+                //Save all other profile data
+                b.Write(profile.Random);
+                b.Write(profile.Hold);
+                b.Write(profile.pressEnter);
+                b.Write(profile.useDeactivationKey);
+                b.Write(profile.suppressHotkeys);
+                b.Write(profile.mute);
+                b.Write(profile.loadSound);
+                b.Write(profile.alwaysPlay);
+                b.Write(profile.turbo);
+                b.Write(profile.MinDelay);
+                b.Write(profile.MaxDelay);
+
+                success = true;
+            }
+            catch
+            { //something went wrong
+                success = false;
+            }
+            finally
+            {
+                if (b != null)
+                {
+                    b.Close(); //all done with the file
+                    b.Dispose();
+                }
+            }
+            return success;
+        }
+        #endregion
+
+        #region Private Functions
+        //===========================================================================
+        //
+        // Private Functions
+        //
+        //===========================================================================
+
+        //
+        // GetBytes(Keys key)
+        // Converts a key to a byte array
+        //
+        private static byte[] GetBytes(Keys key)
+        {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            MemoryStream ms = new MemoryStream();
+            binaryFormatter.Serialize(ms, key);
+            KeySize = ms.ToArray().Count(); //get the key size
+            Properties.Settings.Default.KeySize = KeySize;
+            Properties.Settings.Default.Save(); //save it for when the next load occurs
+            return ms.ToArray();
+        }
+
+        //
+        // GetKey(byte[] bytes)
+        // Converts a byte array to a key
+        //
+        private static Keys GetKey(byte[] bytes)
+        {
+            MemoryStream memStream = new MemoryStream();
+            BinaryFormatter binForm = new BinaryFormatter();
+            memStream.Write(bytes, 0, bytes.Length);
+            memStream.Seek(0, SeekOrigin.Begin);
+            Object obj = (Object)binForm.Deserialize(memStream);
+            return (Keys)obj;
+        }
+
+        //
+        // LoadKEYCOMBO(BinaryReader b, ref Clicktastic.KEYCOMBO key)
+        // Attempts to load a KEYCOMBO structure from a file
+        //
+        private Boolean LoadKEYCOMBO(BinaryReader b, ref Clicktastic.KEYCOMBO key)
+        {
+            try
+            {
+                key.valid = b.ReadBoolean();
+                if (!key.valid) //key must be valid
+                    throw new Exception("KEYCOMBO is not valid!");
+                key.isKeyboard = b.ReadBoolean();
+                key.modifierKeys = GetKey(b.ReadBytes(KeySize));
+                key.key = GetKey(b.ReadBytes(KeySize));
+                key.keyString = b.ReadString();
+                key.cmd = b.ReadString();
+                key.mouseButton = b.ReadUInt32();
+                key.wheel = b.ReadInt32();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        //
+        // SaveKEYCOMBO(BinaryWriter b, Clicktastic.KEYCOMBO key)
+        // Attempts to save a KEYCOMBO structure to a file
+        //
+        private Boolean SaveKEYCOMBO(BinaryWriter b, Clicktastic.KEYCOMBO key)
+        {
+            try
+            {
+                if (!key.valid) //key must be valid
+                    throw new Exception("KEYCOMBO is not valid!");
+                b.Write(key.valid);
+                b.Write(key.isKeyboard);
+                b.Write(GetBytes(key.modifierKeys));
+                b.Write(GetBytes(key.key));
+                b.Write(key.keyString);
+                b.Write(key.cmd);
+                b.Write(key.mouseButton);
+                b.Write(key.wheel);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion
     }
 }
