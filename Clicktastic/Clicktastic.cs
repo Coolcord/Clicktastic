@@ -1215,47 +1215,49 @@ namespace Clicktastic
             setInstructions();
         }
 
-        private void UpdatePreferences()
+        private Boolean UpdatePreferences(ProfileData loadProfileData)
         {
             try
             {
-                if (profileData.Hold)
+                if (loadProfileData.Hold)
                     ddbActivationMode.SelectedIndex = 1;
                 else
                     ddbActivationMode.SelectedIndex = 0;
-                int MinDelay = profileData.MinDelay; //store the min delay to prevent losing the value
-                int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
-                if (profileData.Random)
+                int MinDelay = loadProfileData.MinDelay; //store the min delay to prevent losing the value
+                int MaxDelay = loadProfileData.MaxDelay; //store the max delay to prevent losing the value
+                if (loadProfileData.Random)
                     ddbSpeedMode.SelectedIndex = 1;
                 else
                     ddbSpeedMode.SelectedIndex = 0;
 
-                if (profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
-                    ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
-                else if (!profileData.AutoclickKey.isKeyboard && profileData.turbo > 1)
-                    ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
+                if (loadProfileData.AutoclickKey.isKeyboard && loadProfileData.turbo > 1)
+                    ddbTurboMode.SelectedIndex = (loadProfileData.turbo / 3);
+                else if (!loadProfileData.AutoclickKey.isKeyboard && loadProfileData.turbo > 1)
+                    ddbTurboMode.SelectedIndex = (loadProfileData.turbo / 3);
                 else
-                    ddbTurboMode.SelectedIndex = profileData.turbo - 1;
+                    ddbTurboMode.SelectedIndex = loadProfileData.turbo - 1;
 
                 numMinDelay.Value = MinDelay;
                 numMaxDelay.Value = MaxDelay;
 
-                cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
-                cbEnter.Checked = profileData.pressEnter;
-                cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
-                cbMute.Checked = profileData.mute;
-                cbLoadSound.Checked = profileData.loadSound;
-                cbAlwaysPlay.Checked = profileData.alwaysPlay;
+                cbUseDeactivationButton.Checked = loadProfileData.useDeactivationKey;
+                cbEnter.Checked = loadProfileData.pressEnter;
+                cbSuppressHotkeys.Checked = loadProfileData.suppressHotkeys;
+                cbMute.Checked = loadProfileData.mute;
+                cbLoadSound.Checked = loadProfileData.loadSound;
+                cbAlwaysPlay.Checked = loadProfileData.alwaysPlay;
 
-                tbActivationButton.Text = profileData.ActivationKey.keyString;
-                tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
-                tbAutoclickButton.Text = profileData.AutoclickKey.keyString;
+                tbActivationButton.Text = loadProfileData.ActivationKey.keyString;
+                tbDeactivationButton.Text = loadProfileData.DeactivationKey.keyString;
+                tbAutoclickButton.Text = loadProfileData.AutoclickKey.keyString;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                CreateDefaultProfile();
+                
+                return false;
             }
+            return true;
         }
 
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
@@ -1277,8 +1279,9 @@ namespace Clicktastic
             ProfileData loadProfileData = new ProfileData();
             if (profile.Load(ddbProfile.Text, ref loadProfileData))
             {
+                if (!UpdatePreferences(loadProfileData))
+                    return false;
                 profileData = loadProfileData;
-                UpdatePreferences();
                 previousProfile = ddbProfile.Text;
                 RetryAttempts = 0;
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
