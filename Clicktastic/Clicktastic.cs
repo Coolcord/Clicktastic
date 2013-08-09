@@ -220,10 +220,10 @@ namespace Clicktastic
                     AutoclickerActivated = false;
                     this.Invoke(new MethodInvoker(() =>
                     {
-                        pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                        pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                         lblAutoclickerEnabled.Text = "Disabled";
                         lblAutoclickerEnabled.ForeColor = Color.Red;
-                        pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                        pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                         lblAutoclickerRunning.Text = "Waiting";
                         lblAutoclickerRunning.ForeColor = Color.Red;
                     }));
@@ -251,16 +251,16 @@ namespace Clicktastic
                     //soundSemaphore.WaitOne();
                     this.Invoke(new MethodInvoker(() =>
                     {
-                        pbAutoclickerEnabled.Image = Properties.Resources.yellow_circle;
+                        pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
                         lblAutoclickerEnabled.Text = "Enabled";
-                        lblAutoclickerEnabled.ForeColor = Color.Yellow;
+                        lblAutoclickerEnabled.ForeColor = Color.Lime;
                     }));
                     Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
                     if (ButtonHeld && AutoclickerWaiting)
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
                             lblAutoclickerRunning.Text = "Running";
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
@@ -270,7 +270,7 @@ namespace Clicktastic
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                             lblAutoclickerRunning.Text = "Waiting";
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
@@ -289,7 +289,7 @@ namespace Clicktastic
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                             lblAutoclickerRunning.Text = "Waiting";
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
@@ -319,7 +319,7 @@ namespace Clicktastic
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
                             lblAutoclickerRunning.Text = "Running";
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
@@ -353,7 +353,7 @@ namespace Clicktastic
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.green_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
                             lblAutoclickerRunning.Text = "Running";
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
@@ -370,7 +370,7 @@ namespace Clicktastic
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                            pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                             lblAutoclickerRunning.Text = "Waiting";
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
@@ -819,7 +819,7 @@ namespace Clicktastic
                 instructions = instructions + "Press " + tbActivationButton.Text + " to activate Autoclicker on " + tbAutoclickButton.Text;
                 if (tbActivationButton.Text != tbDeactivationButton.Text)
                     instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to deactivate Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.green_circle;
+                pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
                 lblAutoclickerEnabled.Enabled = false;
@@ -835,7 +835,7 @@ namespace Clicktastic
                 instructions = instructions + "\nHold " + tbAutoclickButton.Text + " to autoclick";
                 if (tbActivationButton.Text != tbDeactivationButton.Text)
                     instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to disable Autoclicker";
-                pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                 lblAutoclickerEnabled.Text = "Disabled";
                 lblAutoclickerEnabled.ForeColor = Color.Red;
                 lblAutoclickerEnabled.Enabled = true;
@@ -1421,10 +1421,10 @@ namespace Clicktastic
                 AutoclickerActivated = false;
                 this.Invoke(new MethodInvoker(() =>
                 {
-                    pbAutoclickerEnabled.Image = Properties.Resources.red_circle;
+                    pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                     lblAutoclickerEnabled.Text = "Disabled";
                     lblAutoclickerEnabled.ForeColor = Color.Red;
-                    pbAutoclickerRunning.Image = Properties.Resources.red_circle;
+                    pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                     lblAutoclickerRunning.Text = "Waiting";
                     lblAutoclickerRunning.ForeColor = Color.Red;
                 }));
@@ -1557,7 +1557,6 @@ namespace Clicktastic
                 {
                     Console.WriteLine("Releasing Media Semaphore!");
                     mediaSemaphore.Release();
-                    //mediaLock.Exit();
                 }
                 catch (Exception ex) { Console.WriteLine(ex); }
             }
@@ -1594,27 +1593,59 @@ namespace Clicktastic
 
     class SoundEffects
     {
+        [DllImport("winmm.dll")]
+        private static extern uint mciSendString(
+            string command,
+            StringBuilder returnValue,
+            int returnLength,
+            IntPtr winHandle);
+
+        public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Sounds";
         System.Media.SoundPlayer sound = null;
         Thread soundThread = null;
         Semaphore soundSemaphore = null;
         Semaphore mediaSemaphore = null;
         AxWindowsMediaPlayer media = null;
         Boolean stopped = true;
+        int PrepareShipLength = 0;
+        int Start1Length = 0;
+        int Start2Length = 0;
+        int LoopLength = 0;
+        int StopLength = 0;
 
         public SoundEffects(ref AxWindowsMediaPlayer axMedia, ref Semaphore soundSem, ref Semaphore mediaSem, ref Boolean stop)
         {
             soundSemaphore = soundSem;
             mediaSemaphore = mediaSem;
-            sound = new System.Media.SoundPlayer("C:\\Users\\Cord\\Desktop\\Prepare Ship.wav");
             media = axMedia;
             media.settings.setMode("loop", false);
             stopped = stop;
+            if (!Directory.Exists(currentDirectory))
+            {
+                try
+                {
+                    Directory.CreateDirectory(currentDirectory);
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
+            }
+            PrepareShipLength = GetSoundLength(currentDirectory + "\\PrepareShip.wav") + 1000;
+            Start1Length = GetSoundLength(currentDirectory + "\\Start1.wav") + 1000;
+            Start2Length = GetSoundLength(currentDirectory + "\\Start2.wav") + 1000;
+            LoopLength = GetSoundLength(currentDirectory + "\\Loop.wav") + 1000;
+            StopLength = GetSoundLength(currentDirectory + "\\Stop.wav") + 1000;
+            sound = new System.Media.SoundPlayer(currentDirectory + "\\PrepareShip.wav");
         }
 
         public void PlayEffect()
         {
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Prepare Ship.wav";
-            sound.Play();
+            sound.SoundLocation = currentDirectory + "\\PrepareShip.wav";
+            try
+            {
+                if (!File.Exists(currentDirectory + "\\PrepareShip.wav"))
+                    throw new Exception("PrepareShip.wav not found!");
+                sound.Play();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
         }
 
         public void PlayLoop()
@@ -1631,17 +1662,6 @@ namespace Clicktastic
                 catch (Exception ex) { Console.WriteLine(ex); }
                 soundThread = new Thread(() => RunLoop());
             }
-            /*
-            if (stopped)
-            {
-                try
-                {
-                    soundSemaphore.Release();
-                }
-                catch (Exception ex) { Console.WriteLine(ex); }
-                return;
-            }
-            */
             try
             {
                 soundThread.Start();
@@ -1653,20 +1673,19 @@ namespace Clicktastic
         {
             try
             {
-                /*
-                if (stopped)
-                {
-                    try
-                    {
-                        soundSemaphore.Release();
-                    }
-                    catch (Exception ex) { Console.WriteLine(ex); }
-                    return;
-                }
-                */
                 mediaSemaphore.WaitOne(3000);
-                media.URL = "C:\\Users\\Cord\\Desktop\\Start1.wav";
-                media.Ctlcontrols.play();
+                media.URL = currentDirectory + "\\Start1.wav";
+                try
+                {
+                    if (!File.Exists(currentDirectory + "\\Start1.wav"))
+                        throw new Exception("Start1.wav not found!");
+                    media.Ctlcontrols.play();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    mediaSemaphore.Release();
+                }
                 if (stopped)
                 {
                     try
@@ -1683,40 +1702,53 @@ namespace Clicktastic
                     return;
                 }
 
-                mediaSemaphore.WaitOne();
+                mediaSemaphore.WaitOne(Start1Length);
                 try
                 {
                     soundSemaphore.Release();
                 }
                 catch (Exception ex) { Console.WriteLine(ex); }
-                media.URL = "C:\\Users\\Cord\\Desktop\\Start2.wav";
-                media.Ctlcontrols.play();
+                media.URL = currentDirectory + "\\Start2.wav";
+                try
+                {
+                    if (!File.Exists(currentDirectory + "\\Start2.wav"))
+                        throw new Exception("Start2.wav not found!");
+                    media.Ctlcontrols.play();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    mediaSemaphore.Release();
+                }
                 if (stopped)
                 {
                     media.Ctlcontrols.stop();
                     return;
                 }
 
-                mediaSemaphore.WaitOne();
-                sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Loop.wav";
-                sound.PlayLooping();
+                mediaSemaphore.WaitOne(Start2Length);
+                sound.SoundLocation = currentDirectory + "\\Loop.wav";
+                try
+                {
+                    if (!File.Exists(currentDirectory + "\\Loop.wav"))
+                        throw new Exception("Loop.wav not found!");
+                    sound.PlayLooping();
+                }
+                catch (Exception ex) { Console.WriteLine(ex); }
             }
             catch (Exception ex)
             {
-                //stopped = false;
                 Console.WriteLine(ex);
                 try
                 {
                     soundSemaphore.Release();
                 }
                 catch (Exception ex1) { Console.WriteLine(ex1); }
-                //stopped = false;
                 try
                 {
                     mediaSemaphore.Release(); //make sure that the media semaphore gets released as well in case of a race condition
                 }
                 catch (Exception ex2) { Console.WriteLine(ex2); }
-                //stopped = false;
             }
         }
 
@@ -1730,13 +1762,32 @@ namespace Clicktastic
             }
             catch (Exception ex) { Console.WriteLine(ex); }
             media.Ctlcontrols.stop();
-            sound.SoundLocation = "C:\\Users\\Cord\\Desktop\\Stop.wav";
+            sound.SoundLocation = currentDirectory + "\\Stop.wav";
             if (!stopped) //another thread started playing before the stop sound could be played
             {
-                //stopped = true;
                 return; //don't play the sound
             }
-            sound.Play();
+            try
+            {
+                if (!File.Exists(currentDirectory + "\\Stop.wav"))
+                    throw new Exception("Stop.wav not found!");
+                sound.Play();
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+        }
+
+        public static int GetSoundLength(string fileName)
+        {
+            StringBuilder lengthBuf = new StringBuilder(32);
+
+            mciSendString(string.Format("open \"{0}\" type waveaudio alias wave", fileName), null, 0, IntPtr.Zero);
+            mciSendString("status wave length", lengthBuf, lengthBuf.Capacity, IntPtr.Zero);
+            mciSendString("close wave", null, 0, IntPtr.Zero);
+
+            int length = 0;
+            int.TryParse(lengthBuf.ToString(), out length);
+
+            return length;
         }
     }
 }

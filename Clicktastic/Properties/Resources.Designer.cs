@@ -67,23 +67,23 @@ namespace Clicktastic.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap green_circle {
+        internal static System.Drawing.Bitmap GreenCircle {
             get {
-                object obj = ResourceManager.GetObject("green_circle", resourceCulture);
+                object obj = ResourceManager.GetObject("GreenCircle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap red_circle {
+        internal static System.Drawing.Bitmap RedCircle {
             get {
-                object obj = ResourceManager.GetObject("red_circle", resourceCulture);
+                object obj = ResourceManager.GetObject("RedCircle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap yellow_circle {
+        internal static System.Drawing.Bitmap YellowCircle {
             get {
-                object obj = ResourceManager.GetObject("yellow_circle", resourceCulture);
+                object obj = ResourceManager.GetObject("YellowCircle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

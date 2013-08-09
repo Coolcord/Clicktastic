@@ -123,7 +123,7 @@
             // 
             // pbAutoclickerRunning
             // 
-            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.RedCircle;
             this.pbAutoclickerRunning.ImageLocation = "";
             this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
             this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
@@ -134,7 +134,7 @@
             // 
             // pbAutoclickerEnabled
             // 
-            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.red_circle;
+            this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.RedCircle;
             this.pbAutoclickerEnabled.ImageLocation = "";
             this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
             this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";

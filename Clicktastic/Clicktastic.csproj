@@ -95,9 +95,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="clicktastic.ico" />
-    <Content Include="data\green_circle.png" />
-    <Content Include="data\red_circle.png" />
-    <None Include="data\yellow_circle.png" />
+    <None Include="data\YellowCircle.png" />
+    <None Include="data\GreenCircle.png" />
+    <None Include="data\Stop.wav" />
+    <None Include="data\Start2.wav" />
+    <None Include="data\Start1.wav" />
+    <None Include="data\Loop.wav" />
+    <None Include="data\PrepareShip.wav" />
+    <None Include="data\RedCircle.png" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="AxWMPLib">
