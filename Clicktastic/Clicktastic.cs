@@ -1305,7 +1305,7 @@ namespace Clicktastic
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
                 Properties.Settings.Default.Save();
                 setInstructions();
-                if (Startup && profileData.alwaysPlay)
+                if (Startup && (profileData.alwaysPlay || profileData.loadSound))
                 {
                     soundEffects.PlayEffect(); //play the prepare ship sound effect
                 }
