@@ -23,44 +23,55 @@ using System.Windows.Forms;
 
 namespace Clicktastic
 {
+    #region CheatCode Class
     class CheatCode
     {
         int cheatCode = 0;
 
+        //
+        // GetCheatCode(object sender, KeyEventArgs e)
+        // Attempts to read in the cheat code ABBA
+        //
         public void GetCheatCode(object sender, KeyEventArgs e)
         {
             switch (cheatCode)
             {
                 case 0:
-                    if (e.KeyCode == Keys.A) cheatCode++;
-                    else cheatCode = 0;
+                    if (e.KeyCode == Keys.A) cheatCode++; //correct
+                    else cheatCode = 0; //incorrect
                     break;
                 case 1:
-                    if (e.KeyCode == Keys.B) cheatCode++;
-                    else cheatCode = 0;
+                    if (e.KeyCode == Keys.B) cheatCode++; //correct
+                    else cheatCode = 0; //incorrect
                     break;
                 case 2:
-                    if (e.KeyCode == Keys.B) cheatCode++;
-                    else cheatCode = 0;
+                    if (e.KeyCode == Keys.B) cheatCode++; //correct
+                    else cheatCode = 0; //incorrect
                     break;
                 case 3:
-                    if (e.KeyCode == Keys.A)
+                    if (e.KeyCode == Keys.A) //correct
                     {
                         //Play the Mario theme in a separate thread
                         MarioTheme mario = new MarioTheme();
                         Thread marioTheme = new Thread(new ThreadStart(mario.Play));
                         marioTheme.Start();
-                        cheatCode = 0;
+                        cheatCode = 0; //restart
                     }
                     else
-                        cheatCode = 0;
+                        cheatCode = 0; //incorrect
                     break;
             }
         }
     }
+    #endregion
 
+    #region MarioTheme Class
     public class MarioTheme
     {
+        //
+        // Play()
+        // Plays the Mario theme intro in console beeps
+        //
         public void Play()
         {
             Console.Beep(659, 125);
@@ -76,4 +87,5 @@ namespace Clicktastic
             Console.Beep(392, 125);
         }
     }
+    #endregion
 }

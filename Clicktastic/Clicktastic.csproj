@@ -23,6 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -66,6 +68,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoundEffects.cs" />
     <EmbeddedResource Include="Clicktastic.resx">
       <DependentUpon>Clicktastic.cs</DependentUpon>
     </EmbeddedResource>
@@ -95,13 +98,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="clicktastic.ico" />
+    <Content Include="data\MaxTurbo.wav" />
     <None Include="data\YellowCircle.png" />
     <None Include="data\GreenCircle.png" />
     <None Include="data\Stop.wav" />
     <None Include="data\Start2.wav" />
     <None Include="data\Start1.wav" />
     <None Include="data\Loop.wav" />
-    <None Include="data\PrepareShip.wav" />
     <None Include="data\RedCircle.png" />
   </ItemGroup>
   <ItemGroup>

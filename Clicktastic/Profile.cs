@@ -28,6 +28,7 @@ namespace Clicktastic
 {
     class Profile
     {
+        //Define Global Variables
         public static string currentDirectory = Directory.GetCurrentDirectory() + "\\Profiles";
         public static int KeySize = Properties.Settings.Default.KeySize;
 
@@ -44,18 +45,10 @@ namespace Clicktastic
 
         private static Keys GetKey(byte[] bytes)
         {
-            /*
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-            ms.Write(bytes, 0, bytes.Length);
-            return (Keys)binaryFormatter.Deserialize(ms);
-             * */
-
             MemoryStream memStream = new MemoryStream();
             BinaryFormatter binForm = new BinaryFormatter();
             memStream.Write(bytes, 0, bytes.Length);
             memStream.Seek(0, SeekOrigin.Begin);
-            Console.WriteLine(memStream.ToString());
             Object obj = (Object)binForm.Deserialize(memStream);
             return (Keys)obj;
         }
@@ -75,9 +68,8 @@ namespace Clicktastic
                 b.Write(key.mouseButton);
                 b.Write(key.wheel);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 return false;
             }
             return true;
@@ -126,23 +118,10 @@ namespace Clicktastic
 
                 b.Close();
 
-                /*
-                string checksum = GetChecksum(currentDirectory + "\\" + name + ".clk");
-
-                //Append checksum
-                using (var fileStream = new FileStream(currentDirectory + "\\" + name + ".clk", FileMode.Append, FileAccess.Write, FileShare.None))
-                using (var bw = new BinaryWriter(fileStream))
-                {
-                    bw.Write(checksum);
-                }
-                 * */
-
                 success = true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
-                Console.WriteLine("Save Failed!");
                 success = false;
             }
             finally
@@ -171,9 +150,8 @@ namespace Clicktastic
                 key.mouseButton = b.ReadUInt32();
                 key.wheel = b.ReadInt32();
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 return false;
             }
             return true;
@@ -224,10 +202,8 @@ namespace Clicktastic
                  
                 success = true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
-                Console.WriteLine("Load Failed!");
                 success = false;
             }
             finally
@@ -238,7 +214,6 @@ namespace Clicktastic
                     b.Dispose();
                 }
             }
-            Console.WriteLine("Load Success!");
             return success;
         }
     }

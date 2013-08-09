@@ -26,6 +26,94 @@ namespace Clicktastic
     {
         KeysConverter converter = new KeysConverter();
 
+        //
+        // KeyToCmd(Keys key, Keys modifiers, Boolean enter, int turbo)
+        // Converts a key to proper SendWait command syntax
+        //
+        public string KeyToCmd(Keys key, Keys modifiers, Boolean enter, int turbo)
+        {
+            string cmd = KeyToString(key); //convert the key to a string first
+            if (cmd == null)
+                return null; //unable to get a string from the key
+            if (cmd.Length > 1)
+                cmd = cmd.ToUpper(); //make the string all uppercase for the command
+
+            switch (cmd) //attempt to parse the string to a command
+            {
+                case "CTRL":
+                    cmd = "^";
+                    break;
+                case "SHIFT":
+                    cmd = "+";
+                    break;
+                case "ALT":
+                    cmd = "%";
+                    break;
+                case "PAGEUP":
+                    cmd = "PGUP";
+                    break;
+                case "PAGEDOWN":
+                    cmd = "PGDN";
+                    break;
+                case "` (~)":
+                    cmd = "`";
+                    break;
+            }
+
+            //Add turbo as specified
+            if (cmd == "NONE")
+            {
+                if (turbo > 1)
+                    cmd = turbo.ToString(); //build the command with turbo
+                else
+                    cmd = ""; //build the command
+            }
+            else if (cmd == "^" || cmd == "+" || cmd == "%")
+            {
+                if (turbo > 1)
+                    cmd = cmd + " " + turbo; //build the command with turbo
+            }
+            else
+            {
+                if (turbo > 1)
+                    cmd = "{" + cmd + " " + turbo + "}"; //build the command with turbo
+                else
+                    cmd = "{" + cmd + "}"; //build the command
+            }
+
+            //Add any necessary modifiers
+            if ((modifiers & Keys.Control) > 0)
+            {
+                if (cmd.Length == 0)
+                    cmd = "^";
+                else
+                    cmd = "^(" + cmd + ")";
+            }
+            if ((modifiers & Keys.Shift) > 0)
+            {
+                if (cmd.Length == 0)
+                    cmd = "+";
+                else
+                    cmd = "+(" + cmd + ")";
+            }
+            if ((modifiers & Keys.Alt) > 0)
+            {
+                if (cmd.Length == 0)
+                    cmd = "%";
+                else
+                    cmd = "%(" + cmd + ")";
+            }
+
+            if (enter) //add enter to the command
+                cmd = cmd + "{ENTER}";
+
+            return cmd;
+        }
+
+        //
+        // KeyToString(Keys key)
+        // Converts a key to a string
+        //
         public String KeyToString(Keys key)
         {
             switch (key)
@@ -114,23 +202,26 @@ namespace Clicktastic
                     return "PageDown";
                 default:
                     try
-                    {
+                    { //string was not one of the defined methods, so try using the key converter
                         string value = converter.ConvertToString(key);
-                        if (value.Length == 1)
-                            value = value.ToLower();
+                        if (value.Length == 1) //value is a single letter
+                            value = value.ToLower(); //make it lowercase
                         return value;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
+                    catch
+                    { //key converter failed, so return null
                         return null;
                     }
             }
         }
 
+        //
+        // StringToKey(string key)
+        // Converts a string to a key
+        //
         public Keys StringToKey(string key)
         {
-            switch (key)
+            switch (key) //attempt to parse the string to a key
             {
                 case "Ctrl":
                     return Keys.ControlKey;
@@ -206,96 +297,14 @@ namespace Clicktastic
                     return Keys.PageDown;
                 default:
                     try
-                    {
+                    { //string was not one of the defined methods, so try using the key converter
                         return (Keys)converter.ConvertFromString(key);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
+                    catch
+                    { //key converter failed, so return no keys
                         return Keys.None;
                     }
             }
-        }
-
-        public string KeyToCmd(Keys key, Keys modifiers, Boolean enter, int turbo)
-        {
-            string cmd = KeyToString(key);
-            if (cmd == null)
-                return null; //unable to get a string from the key
-            if (cmd.Length > 1)
-                cmd = cmd.ToUpper();
-
-            switch (cmd)
-            {
-                case "CTRL":
-                    cmd = "^";
-                    break;
-                case "SHIFT":
-                    cmd = "+";
-                    break;
-                case "ALT":
-                    cmd = "%";
-                    break;
-                case "PAGEUP":
-                    cmd = "PGUP";
-                    break;
-                case "PAGEDOWN":
-                    cmd = "PGDN";
-                    break;
-                case "` (~)":
-                    cmd = "`";
-                    break;
-            }
-
-            if (cmd == "NONE")
-            {
-                if (turbo > 1)
-                    cmd = turbo.ToString();
-                else
-                    cmd = "";
-            }
-            else if (cmd == "^" || cmd == "+" || cmd == "%")
-            {
-                if (turbo > 1)
-                    cmd = cmd + " " + turbo; //build the command with turbo
-            }
-            else
-            {
-                if (turbo > 1)
-                    cmd = "{" + cmd + " " + turbo + "}"; //build the command with turbo
-                else
-                    cmd = "{" + cmd + "}"; //build the command
-            }
-
-            //Add any necessary modifiers
-            if ((modifiers & Keys.Control) > 0)
-            {
-                if (cmd.Length == 0)
-                    cmd = "^";
-                else
-                    cmd = "^(" + cmd + ")";
-            }
-            if ((modifiers & Keys.Shift) > 0)
-            {
-                if (cmd.Length == 0)
-                    cmd = "+";
-                else
-                    cmd = "+(" + cmd + ")";
-            }
-            if ((modifiers & Keys.Alt) > 0)
-            {
-                if (cmd.Length == 0)
-                    cmd = "%";
-                else
-                    cmd = "%(" + cmd + ")";
-            }
-
-            if (enter)
-                cmd = cmd + "{ENTER}";
-
-            Console.WriteLine(cmd);
-
-            return cmd;
         }
     }
 }
