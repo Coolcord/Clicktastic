@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Clicktastic));
-            this.KeyPreview = true;
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(Clicktastic_KeyDown);
             this.tcClicktastic = new System.Windows.Forms.TabControl();
             this.tbAutoclicker = new System.Windows.Forms.TabPage();
             this.axMedia = new AxWMPLib.AxWindowsMediaPlayer();
@@ -125,7 +123,7 @@
             // 
             this.pbAutoclickerRunning.Image = global::Clicktastic.Properties.Resources.RedCircle;
             this.pbAutoclickerRunning.ImageLocation = "";
-            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 225);
+            this.pbAutoclickerRunning.Location = new System.Drawing.Point(203, 239);
             this.pbAutoclickerRunning.Name = "pbAutoclickerRunning";
             this.pbAutoclickerRunning.Size = new System.Drawing.Size(29, 29);
             this.pbAutoclickerRunning.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -136,7 +134,7 @@
             // 
             this.pbAutoclickerEnabled.Image = global::Clicktastic.Properties.Resources.RedCircle;
             this.pbAutoclickerEnabled.ImageLocation = "";
-            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 190);
+            this.pbAutoclickerEnabled.Location = new System.Drawing.Point(203, 204);
             this.pbAutoclickerEnabled.Name = "pbAutoclickerEnabled";
             this.pbAutoclickerEnabled.Size = new System.Drawing.Size(29, 29);
             this.pbAutoclickerEnabled.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -148,7 +146,7 @@
             this.lblAutoclickerRunning.AutoSize = true;
             this.lblAutoclickerRunning.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAutoclickerRunning.ForeColor = System.Drawing.Color.Red;
-            this.lblAutoclickerRunning.Location = new System.Drawing.Point(238, 225);
+            this.lblAutoclickerRunning.Location = new System.Drawing.Point(238, 239);
             this.lblAutoclickerRunning.Name = "lblAutoclickerRunning";
             this.lblAutoclickerRunning.Size = new System.Drawing.Size(98, 29);
             this.lblAutoclickerRunning.TabIndex = 4;
@@ -159,7 +157,7 @@
             this.lblAutoclickerEnabled.AutoSize = true;
             this.lblAutoclickerEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAutoclickerEnabled.ForeColor = System.Drawing.Color.Red;
-            this.lblAutoclickerEnabled.Location = new System.Drawing.Point(238, 190);
+            this.lblAutoclickerEnabled.Location = new System.Drawing.Point(238, 204);
             this.lblAutoclickerEnabled.Name = "lblAutoclickerEnabled";
             this.lblAutoclickerEnabled.Size = new System.Drawing.Size(112, 29);
             this.lblAutoclickerEnabled.TabIndex = 3;
@@ -171,7 +169,7 @@
             this.lblInstructions.ForeColor = System.Drawing.Color.White;
             this.lblInstructions.Location = new System.Drawing.Point(9, 3);
             this.lblInstructions.Name = "lblInstructions";
-            this.lblInstructions.Size = new System.Drawing.Size(499, 184);
+            this.lblInstructions.Size = new System.Drawing.Size(499, 198);
             this.lblInstructions.TabIndex = 0;
             this.lblInstructions.Text = "Press ~ to activate Autoclicker on Left Click";
             this.lblInstructions.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -631,10 +629,12 @@
             this.Controls.Add(this.tcClicktastic);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Clicktastic";
             this.Text = "Clicktastic";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Clicktastic_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Clicktastic_KeyDown);
             this.tcClicktastic.ResumeLayout(false);
             this.tbAutoclicker.ResumeLayout(false);
             this.tbAutoclicker.PerformLayout();

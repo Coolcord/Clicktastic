@@ -56,6 +56,7 @@ namespace Clicktastic
         Boolean AutoclickerActivated = false;
         Boolean AutoclickerWaiting = true;
         Boolean AutoclickerCharging = false;
+        Boolean AutoclickerCharged = false;
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
         Boolean Loading = false;
@@ -229,7 +230,9 @@ namespace Clicktastic
                         lblAutoclickerRunning.ForeColor = Color.Red;
                     }));
                     AutoclickerWaiting = true;
-                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
+                    AutoclickerCharging = false;
+                    AutoclickerCharged = false;
+                    if (profileData.turbo >= 30 || profileData.alwaysPlay)
                     {
                         if (!profileData.mute)
                         {
@@ -241,43 +244,74 @@ namespace Clicktastic
                 {
                     AutoclickerEnabled = true;
                     AutoclickerActivated = true;
-                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
-                    {
-                        if (!profileData.mute)
-                        {
-                            soundSemaphore.WaitOne();
-                            soundEffects.PlayLoop();
-                        }
-                    }
-                    //soundSemaphore.WaitOne();
-                    this.Invoke(new MethodInvoker(() =>
-                    {
-                        pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
-                        lblAutoclickerEnabled.Text = "Enabled";
-                        lblAutoclickerEnabled.ForeColor = Color.Lime;
-                    }));
-                    Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
-                    if (ButtonHeld && AutoclickerWaiting)
+                    if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
+                        !profileData.mute)
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
-                            lblAutoclickerRunning.Text = "Running";
-                            lblAutoclickerRunning.ForeColor = Color.Lime;
+                            pbAutoclickerEnabled.Image = Properties.Resources.YellowCircle;
+                            lblAutoclickerEnabled.Text = "Charging";
+                            lblAutoclickerEnabled.ForeColor = Color.Yellow;
                         }));
-                        AutoclickerWaiting = false;
+                        Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
+                        if (ButtonHeld && AutoclickerWaiting)
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
+                                lblAutoclickerRunning.Text = "Charging";
+                                lblAutoclickerRunning.ForeColor = Color.Yellow;
+                            }));
+                            AutoclickerWaiting = false;
+                            AutoclickerCharging = true;
+                        }
+                        else
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
+                                lblAutoclickerRunning.Text = "Waiting";
+                                lblAutoclickerRunning.ForeColor = Color.Red;
+                            }));
+                            AutoclickerWaiting = true;
+                            AutoclickerCharging = false;
+                        }
+                        soundSemaphore.WaitOne();
+                        soundEffects.PlayLoop();
                     }
                     else
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
-                            pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
-                            lblAutoclickerRunning.Text = "Waiting";
-                            lblAutoclickerRunning.ForeColor = Color.Red;
+                            pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
+                            lblAutoclickerEnabled.Text = "Enabled";
+                            lblAutoclickerEnabled.ForeColor = Color.Lime;
                         }));
-                        AutoclickerWaiting = true;
+                        AutoclickerCharged = true;
+                        Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
+                        if (ButtonHeld && AutoclickerWaiting)
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
+                                lblAutoclickerRunning.Text = "Running";
+                                lblAutoclickerRunning.ForeColor = Color.Lime;
+                            }));
+                            AutoclickerWaiting = false;
+                            AutoclickerCharging = false;
+                        }
+                        else
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
+                                lblAutoclickerRunning.Text = "Waiting";
+                                lblAutoclickerRunning.ForeColor = Color.Red;
+                            }));
+                            AutoclickerWaiting = true;
+                            AutoclickerCharging = false;
+                        }
                     }
-                    //AutoClick();
                     AutoClicker.RunWorkerAsync();
                 }
             }
@@ -286,7 +320,7 @@ namespace Clicktastic
                 if (AutoclickerActivated && key == profileData.DeactivationKey.key)
                 {
                     AutoclickerActivated = false;
-                    if (!AutoclickerWaiting)
+                    if (!AutoclickerWaiting || AutoclickerCharging)
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
@@ -295,7 +329,9 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
                         AutoclickerWaiting = true;
-                        if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
+                        AutoclickerCharging = false;
+                        AutoclickerCharged = false;
+                        if (profileData.turbo >= 30 || profileData.alwaysPlay)
                         {
                             if (!profileData.mute)
                             {
@@ -306,31 +342,49 @@ namespace Clicktastic
                 }
                 else if (!AutoclickerActivated && key == profileData.ActivationKey.key)
                 {
-                    if (ddbTurboMode.SelectedIndex == 10 || profileData.alwaysPlay)
+                    if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
+                        !profileData.mute)
                     {
-                        if (!profileData.mute)
+                        AutoclickerActivated = true;
+                        if (AutoclickerWaiting)
                         {
-                            soundSemaphore.WaitOne();
-                            soundEffects.PlayLoop();
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
+                                lblAutoclickerRunning.Text = "Charging";
+                                lblAutoclickerRunning.ForeColor = Color.Yellow;
+                            }));
+                            AutoclickerWaiting = false;
+                            AutoclickerCharging = true;
+                        }
+                        soundSemaphore.WaitOne();
+                        soundEffects.PlayLoop();
+                    }
+                    else
+                    {
+                        AutoclickerActivated = true;
+                        if (AutoclickerWaiting)
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
+                                lblAutoclickerRunning.Text = "Running";
+                                lblAutoclickerRunning.ForeColor = Color.Lime;
+                            }));
+                            AutoclickerWaiting = false;
+                            AutoclickerCharging = false;
                         }
                     }
-                    //soundSemaphore.WaitOne();
-                    AutoclickerActivated = true;
-                    if (AutoclickerWaiting)
-                    {
-                        this.Invoke(new MethodInvoker(() =>
-                        {
-                            pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
-                            lblAutoclickerRunning.Text = "Running";
-                            lblAutoclickerRunning.ForeColor = Color.Lime;
-                        }));
-                        AutoclickerWaiting = false;
-                    }
-                    //AutoClick();
+
                     AutoClicker.RunWorkerAsync();
                 }
             }
         }
+
+        //private const int STATUS_WAITING = 0x0001;
+        //private const int STATUS_CHARGING = 0x0002;
+        //private const int STATUS_RUNNING = 0x0003;
+
 
         private static IntPtr SetHookMouse(LowLevelMouseProc proc)
         {
@@ -350,7 +404,18 @@ namespace Clicktastic
             {
                 if (profileData.Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
                 {
-                    if (AutoclickerWaiting)
+                    if (AutoclickerWaiting && !AutoclickerCharged)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
+                            lblAutoclickerRunning.Text = "Charging";
+                            lblAutoclickerRunning.ForeColor = Color.Yellow;
+                        }));
+                        AutoclickerWaiting = false;
+                        AutoclickerCharging = true;
+                    }
+                    else if (AutoclickerWaiting && AutoclickerCharged)
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
@@ -359,6 +424,7 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Lime;
                         }));
                         AutoclickerWaiting = false;
+                        AutoclickerCharging = false;
                     }
                 }
             }
@@ -367,7 +433,7 @@ namespace Clicktastic
             {
                 if (profileData.Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
                 {
-                    if (!AutoclickerWaiting)
+                    if (!AutoclickerWaiting || AutoclickerCharging)
                     {
                         this.Invoke(new MethodInvoker(() =>
                         {
@@ -376,6 +442,7 @@ namespace Clicktastic
                             lblAutoclickerRunning.ForeColor = Color.Red;
                         }));
                         AutoclickerWaiting = true;
+                        AutoclickerCharging = false;
                     }
                 }
             }
@@ -633,6 +700,8 @@ namespace Clicktastic
             stopped = true;
             AutoclickerActivated = false;
             AutoclickerEnabled = false;
+            AutoclickerCharged = false;
+            AutoclickerCharging = false;
             UnhookWindowsHookEx(_hookIDKey);
             UnhookWindowsHookEx(_hookIDMouse);
             try
@@ -819,7 +888,7 @@ namespace Clicktastic
             {
                 instructions = instructions + "Press " + tbActivationButton.Text + " to activate Autoclicker on " + tbAutoclickButton.Text;
                 if (tbActivationButton.Text != tbDeactivationButton.Text)
-                    instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to deactivate Autoclicker";
+                    instructions = instructions + "\nPress " + tbDeactivationButton.Text + " to deactivate Autoclicker";
                 pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
                 lblAutoclickerEnabled.Text = "Enabled";
                 lblAutoclickerEnabled.ForeColor = Color.Lime;
@@ -835,7 +904,7 @@ namespace Clicktastic
                 instructions = instructions + "Press " + tbActivationButton.Text + " to enable Autoclicker on " + tbAutoclickButton.Text;
                 instructions = instructions + "\nHold " + tbAutoclickButton.Text + " to autoclick";
                 if (tbActivationButton.Text != tbDeactivationButton.Text)
-                    instructions = instructions + "\n\nPress " + tbDeactivationButton.Text + " to disable Autoclicker";
+                    instructions = instructions + "\nPress " + tbDeactivationButton.Text + " to disable Autoclicker";
                 pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                 lblAutoclickerEnabled.Text = "Disabled";
                 lblAutoclickerEnabled.ForeColor = Color.Red;
@@ -857,7 +926,11 @@ namespace Clicktastic
                     instructions = instructions + "\nDelay on Autoclicker will be between " + numMinDelay.Value + " ms and " + numMaxDelay.Value + " ms";
             }
             if (ddbTurboMode.SelectedIndex != 0)
+            {
                 instructions = instructions + "\n\nTurbo mode set to " + profileData.turbo + "x speed";
+                if (ddbActivationMode.SelectedIndex != 0)
+                    instructions = instructions + "\nTurbo and Hold mode together may not always be responsive!";
+            }
             lblInstructions.Text = instructions;
         }
 
@@ -1416,10 +1489,13 @@ namespace Clicktastic
             {
                 //Stop the Autoclicker
                 if (AutoclickerActivated && !profileData.mute &&
-                    (ddbTurboMode.SelectedIndex==10 || profileData.alwaysPlay))
+                    (profileData.turbo >= 30 || profileData.alwaysPlay))
                     soundEffects.Stop();
                 AutoclickerEnabled = false;
                 AutoclickerActivated = false;
+                AutoclickerCharged = false;
+                AutoclickerWaiting = true;
+                AutoclickerCharging = false;
                 this.Invoke(new MethodInvoker(() =>
                 {
                     pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
@@ -1429,7 +1505,6 @@ namespace Clicktastic
                     lblAutoclickerRunning.Text = "Waiting";
                     lblAutoclickerRunning.ForeColor = Color.Red;
                 }));
-                AutoclickerWaiting = true;
             }
         }
 
@@ -1566,6 +1641,87 @@ namespace Clicktastic
         private void AutoClicker_DoWork(object sender, DoWorkEventArgs e)
         {
             soundSemaphore.WaitOne();
+            Boolean noChange = true;
+            if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
+                        !profileData.mute)
+            {
+                if (profileData.Hold)
+                {
+                    if (AutoclickerActivated)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            if (tcClicktastic.SelectedIndex == 0)
+                            {
+                                pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
+                                lblAutoclickerEnabled.Text = "Enabled";
+                                lblAutoclickerEnabled.ForeColor = Color.Lime;
+                            }
+                            else
+                                noChange = false;
+                        }));
+                        Boolean ButtonHeld = ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left);
+                        if (ButtonHeld && (AutoclickerWaiting || AutoclickerCharging))
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                if (tcClicktastic.SelectedIndex == 0)
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
+                                    lblAutoclickerRunning.Text = "Running";
+                                    lblAutoclickerRunning.ForeColor = Color.Lime;
+                                    AutoclickerWaiting = false;
+                                }
+                                else
+                                    noChange = false;
+                            }));
+                        }
+                        else
+                        {
+                            this.Invoke(new MethodInvoker(() =>
+                            {
+                                if (tcClicktastic.SelectedIndex == 0)
+                                {
+                                    pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
+                                    lblAutoclickerRunning.Text = "Waiting";
+                                    lblAutoclickerRunning.ForeColor = Color.Red;
+                                    AutoclickerWaiting = true;
+                                }
+                                else
+                                    noChange = false;
+                            }));
+                        }
+                        if (noChange)
+                        {
+                            AutoclickerCharging = false;
+                            AutoclickerCharged = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (AutoclickerActivated)
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            if (tcClicktastic.SelectedIndex == 0)
+                            {
+                                pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
+                                lblAutoclickerRunning.Text = "Running";
+                                lblAutoclickerRunning.ForeColor = Color.Lime;
+                                AutoclickerWaiting = false;
+                            }
+                            else
+                                noChange = false;
+                        }));
+                        if (noChange)
+                        {
+                            AutoclickerCharging = false;
+                            AutoclickerCharged = true;
+                        }
+                    }
+                }
+            }
             AutoClick();
         }
 
