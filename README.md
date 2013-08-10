@@ -25,7 +25,7 @@ that you are autoclicking, it may be a good idea to turn the turbo mode down.
 Ludicrous speed can be very taxing, even for very high end machines. This is 
 mostly a limitation of the current operating systems available, due to the
 way that they handle taking input via message input queues.
- * 
+
 Another problem most autoclickers have is that their speed is constant -- too
 constant. This is part of the reason why autoclickers can often be detected.
 A human can't press a button with that precise of timing for that long.
