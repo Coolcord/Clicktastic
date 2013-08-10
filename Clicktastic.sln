@@ -3,16 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clicktastic", "Clicktastic\Clicktastic.csproj", "{8747519D-E4E8-4241-8BA9-298E678BB12D}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Clicktastic Setup", "Clicktastic Setup\Clicktastic Setup.vdproj", "{484D59A9-9044-4EE6-B469-BCB69D5197F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Debug|x64.ActiveCfg = Release|x64
+		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Debug|x64.Build.0 = Release|x64
 		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Debug|x86.ActiveCfg = Debug|x86
 		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Debug|x86.Build.0 = Debug|x86
+		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Release|x64.ActiveCfg = Release|x64
+		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Release|x64.Build.0 = Release|x64
 		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Release|x86.ActiveCfg = Release|x86
 		{8747519D-E4E8-4241-8BA9-298E678BB12D}.Release|x86.Build.0 = Release|x86
+		{484D59A9-9044-4EE6-B469-BCB69D5197F2}.Debug|x64.ActiveCfg = Release
+		{484D59A9-9044-4EE6-B469-BCB69D5197F2}.Debug|x64.Build.0 = Release
+		{484D59A9-9044-4EE6-B469-BCB69D5197F2}.Debug|x86.ActiveCfg = Debug
+		{484D59A9-9044-4EE6-B469-BCB69D5197F2}.Release|x64.ActiveCfg = Release
+		{484D59A9-9044-4EE6-B469-BCB69D5197F2}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

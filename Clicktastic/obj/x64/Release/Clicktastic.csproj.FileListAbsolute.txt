@@ -1,0 +1,16 @@
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\x64\Release\Clicktastic.exe.config
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\x64\Release\Clicktastic.exe
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\x64\Release\Clicktastic.pdb
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\x64\Release\Interop.WMPLib.dll
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\bin\x64\Release\AxInterop.WMPLib.dll
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\ResolveAssemblyReference.cache
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Interop.WMPLib.dll
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\AxInterop.WMPLib.dll
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.csproj.ResolveComReference.cache
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.Clicktastic.resources
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.ProfileManager.resources
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.Properties.Resources.resources
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\GenerateResource.read.1.tlog
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\GenerateResource.write.1.tlog
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.exe
+e:\documents\visual studio 2010\Projects\Clicktastic\Clicktastic\obj\x64\Release\Clicktastic.pdb
