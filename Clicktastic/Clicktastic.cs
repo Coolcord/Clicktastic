@@ -14,6 +14,61 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* -===========================- About Clicktastic -===========================-
+ *  
+ *  Clicktastic is an autoclicker that I designed for fun. The goal of this 
+ *  project was to make an autoclicker that provided more options and allowed
+ *  for much customization compared to what's currently available.
+ *  
+ *  Like usual for me when I design an application, I look around and try to see
+ *  what's available. With autoclickers, I couldn't find any that were up to my
+ *  liking. Consequently, this project started.
+ *  
+ *  Most autoclickers I found were rather slow, in my opinion, and I was determined
+ *  that I could make one that was faster. This is where the turbo option comes 
+ *  into play. Normally the application will request a click every 1 millisecond.
+ *  However, with turbo, this can be multiplied, allowing for more clicks at each
+ *  request. This speeds up the autoclicking process significantly.
+ *  
+ *  However, turbo mode may not work on every machine. If you experience any kind
+ *  of lag, whether it'd be input lag, mouse lag, or lag within the application 
+ *  that you are autoclicking, it may be a good idea to turn the turbo mode down.
+ *  Ludicrous speed can be very taxing, even for very high end machines. This is 
+ *  mostly a limitation of the current operating systems available, due to the
+ *  way that they handle taking input via message input queues.
+ * 
+ *  Another problem most autoclickers have is that their speed is constant -- too
+ *  constant. This is part of the reason why autoclickers can often be detected.
+ *  A human can't press a button with that precise of timing for that long.
+ *  Random speed mode solves this by allowing the user to input a minimum and 
+ *  maximum delay time, allowing the autoclicker to appear more human like.
+ *  
+ *  I decided to take the autoclicker a step further and add sounds. This enhances
+ *  the autoclicking experience much more. By default, the sounds only play when
+ *  max turbo (Ludicrous speed) is enabled, but they can be turned to always on or
+ *  muted.
+ *  
+ *  By making this application open source, I hope to make it easier for others
+ *  to build an autoclicker that meets their own personal needs, using this
+ *  source code as a base.
+ *  
+ *  If you wish to contact me about the application, or anything of the like,
+ *  feel free to send me an email at coolcord24@gmail.com
+ */
+
+/* -================================- Credits -================================-
+ *  
+ *  The following files included with Clicktastic (though some modified)
+ *  were not originally created by me. Credit shall be given where it is due!
+ * 
+ *  Loop.wav:
+ *  MaxTurbo.wav:
+ *  Start1.wav:
+ *  Start2.wav:
+ *  Stop.wav:
+ *      Original sound effect from Spaceballs
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -49,8 +104,8 @@ namespace Clicktastic
             public KEYCOMBO ActivationKey;
             public KEYCOMBO DeactivationKey;
             public KEYCOMBO AutoclickKey;
-            public Boolean Random;
-            public Boolean Hold;
+            public Boolean random;
+            public Boolean hold;
             public Boolean pressEnter;
             public Boolean useDeactivationKey;
             public Boolean suppressHotkeys;
@@ -84,7 +139,7 @@ namespace Clicktastic
         Boolean Loading = false;
         Boolean SimulatingClicksOnHold = false;
         Boolean Startup = true;
-        Boolean stopped = true;
+        Boolean Stopped = true;
         int RetryAttempts = 0;
         KeyStringConverter keyStringConverter = new KeyStringConverter();
         Profile profile = new Profile();
@@ -100,7 +155,7 @@ namespace Clicktastic
         public Clicktastic()
         {
             InitializeComponent();
-            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore, ref stopped);
+            soundEffects = new SoundEffects(ref axMedia, ref soundSemaphore, ref mediaSemaphore, ref Stopped);
 
             _procKey = HookCallbackKey;
             _procMouse = HookCallbackMouse;
@@ -134,7 +189,7 @@ namespace Clicktastic
                 loaded = AttemptLoad();
             }
             Startup = false;
-            setInstructions();
+            SetInstructions();
         }
         #endregion
 
@@ -149,7 +204,7 @@ namespace Clicktastic
         {
             KEYCOMBO key = GetKeyDialog("Press any key");
             if (isActivationSettingsValid(key))
-            {
+            { //make sure key is valid before accepting it
                 if (key.keyString == tbAutoclickButton.Text)
                 {
                     MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -166,7 +221,7 @@ namespace Clicktastic
         {
             KEYCOMBO key = GetKeyDialog("Press any key or click here");
             if (isAutoclickKeySettingsValid(key))
-            {
+            { //make sure key is valid before accepting it
                 if (key.keyString == tbActivationButton.Text || key.keyString == tbDeactivationButton.Text)
                 {
                     MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -230,6 +285,7 @@ namespace Clicktastic
             CheatCode cheatCode = new CheatCode();
             aboutForm.KeyDown += new KeyEventHandler(cheatCode.GetCheatCode);
 
+            //All done with the about form
             aboutForm.ShowDialog();
             aboutForm.Dispose();
             btnOk.Dispose();
@@ -265,10 +321,10 @@ namespace Clicktastic
         {
             if (profile.Save(ddbProfile.Text, ref profileData))
                 MessageBox.Show(ddbProfile.Text + " saved successfully!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            else
+            else //save failed
                 MessageBox.Show("Unable to save " + ddbProfile.Text + "!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
-            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Save(); //load this profile the next time the application starts
         }
 
         private void cbAlwaysPlay_CheckedChanged(object sender, EventArgs e)
@@ -278,14 +334,7 @@ namespace Clicktastic
 
         private void cbEnter_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbEnter.Checked)
-            {
-                profileData.pressEnter = true;
-            }
-            else
-            {
-                profileData.pressEnter = false;
-            }
+            profileData.pressEnter = cbEnter.Checked;
             //Fix the stored autoclick key command
             profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter, profileData.turbo);
         }
@@ -342,7 +391,7 @@ namespace Clicktastic
                 btnDeactivationButton.Visible = true;
                 profileData.useDeactivationKey = true;
             }
-            else
+            else //no deactivation hotkey
             {
                 lblDeactivationButton.Enabled = false;
                 lblDeactivationButton.Visible = false;
@@ -354,7 +403,7 @@ namespace Clicktastic
                 btnDeactivationButton.Visible = false;
                 profileData.useDeactivationKey = false;
             }
-            setInstructions();
+            SetInstructions();
         }
 
         private void Clicktastic_FormClosing(object sender, FormClosingEventArgs e)
@@ -375,15 +424,15 @@ namespace Clicktastic
             CheckActivationModeSettings();
             if (ddbActivationMode.SelectedIndex == 0)
             {
-                profileData.Hold = false;
+                profileData.hold = false;
                 AutoclickerEnabled = true;
             }
             else
             {
-                profileData.Hold = true;
+                profileData.hold = true;
                 AutoclickerEnabled = false;
             }
-            setInstructions();
+            SetInstructions();
         }
 
         private void ddbProfile_SelectedIndexChanged(object sender, EventArgs e)
@@ -392,7 +441,7 @@ namespace Clicktastic
             {
                 Boolean loaded = false;
                 while (!loaded)
-                {
+                { //keep trying to load a file until one succeeds
                     loaded = AttemptLoad();
                 }
             }
@@ -413,7 +462,7 @@ namespace Clicktastic
                 numMaxDelay.Value = numMinDelay.Value;
                 profileData.MaxDelay = (int)numMaxDelay.Value;
                 lblMinDelay.Text = "Delay Time:";
-                profileData.Random = false;
+                profileData.random = false;
             }
             else //random speed
             {
@@ -426,9 +475,9 @@ namespace Clicktastic
                 numMaxDelay.Value = numMinDelay.Value;
                 profileData.MaxDelay = (int)numMaxDelay.Value;
                 lblMinDelay.Text = "Minimum Delay Time:";
-                profileData.Random = true;
+                profileData.random = true;
             }
-            setInstructions();
+            SetInstructions();
         }
 
         private void ddbTurboMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -437,18 +486,18 @@ namespace Clicktastic
             if (ddbTurboMode.SelectedIndex == 10 && (!Startup || profileData.loadSound))
             {
                 if (!profileData.mute)
-                {
+                { //play the max turbo sound effect
                     soundEffects.PlayEffect();
                 }
             }
-            setInstructions();
+            SetInstructions();
         }
 
         private void DeactivationButton_Click(object sender, EventArgs e)
         {
             KEYCOMBO key = GetKeyDialog("Press any key");
             if (isActivationSettingsValid(key))
-            {
+            { //make sure key is valid before accepting it
                 if (key.keyString == tbAutoclickButton.Text)
                 {
                     MessageBox.Show("Autoclick button and Activator Hotkeys cannot be the same!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -465,7 +514,7 @@ namespace Clicktastic
                 numMinDelay.Value = numMaxDelay.Value;
             profileData.MinDelay = (int)numMinDelay.Value;
             profileData.MaxDelay = (int)numMaxDelay.Value;
-            setInstructions();
+            SetInstructions();
         }
 
         private void numMinDelay_ValueChanged(object sender, EventArgs e)
@@ -474,7 +523,7 @@ namespace Clicktastic
                 numMaxDelay.Value = numMinDelay.Value;
             profileData.MinDelay = (int)numMinDelay.Value;
             profileData.MaxDelay = (int)numMaxDelay.Value;
-            setInstructions();
+            SetInstructions();
         }
 
         private void tbActivationButton_TextChanged(object sender, EventArgs e)
@@ -483,7 +532,7 @@ namespace Clicktastic
             {
                 tbDeactivationButton.Text = tbActivationButton.Text;
             }
-            setInstructions();
+            SetInstructions();
         }
 
         private void tbAutoclickButton_TextChanged(object sender, EventArgs e)
@@ -495,7 +544,7 @@ namespace Clicktastic
                 lblActivationMode.Visible = false;
                 ddbActivationMode.Visible = false;
             }
-            else
+            else //mouse
             {
                 lblActivationMode.Enabled = true;
                 ddbActivationMode.Enabled = true;
@@ -510,12 +559,12 @@ namespace Clicktastic
                 cbEnter.Visible = false;
             }
             SetTurbo();
-            setInstructions();
+            SetInstructions();
         }
 
         private void tbDeactivationButton_TextChanged(object sender, EventArgs e)
         {
-            setInstructions();
+            SetInstructions();
         }
 
         private void tcClicktastic_SelectedIndexChanged(object sender, EventArgs e)
@@ -532,7 +581,7 @@ namespace Clicktastic
                 AutoclickerWaiting = true;
                 AutoclickerCharging = false;
                 this.Invoke(new MethodInvoker(() =>
-                {
+                { //mark status as disabled
                     pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                     lblAutoclickerEnabled.Text = "Disabled";
                     lblAutoclickerEnabled.ForeColor = Color.Red;
@@ -562,7 +611,7 @@ namespace Clicktastic
             if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
                         !profileData.mute)
             {
-                if (profileData.Hold)
+                if (profileData.hold)
                 {
                     if (AutoclickerActivated)
                     {
@@ -650,34 +699,37 @@ namespace Clicktastic
         //
         //===========================================================================
 
+        //
+        // AttemptLoad()
+        // Attempts to load a profile and will try various things to achieve success
+        //
         private Boolean AttemptLoad()
         {
             ProfileData loadProfileData = new ProfileData();
             if (profile.Load(ddbProfile.Text, ref loadProfileData))
-            {
+            { //load from file successful
                 if (!UpdatePreferences(loadProfileData))
-                    return false;
+                    return false; //preferences could not be updated, so the loading failed
                 profileData = loadProfileData;
                 previousProfile = ddbProfile.Text;
                 RetryAttempts = 0;
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
                 Properties.Settings.Default.Save();
-                setInstructions();
+                SetInstructions();
                 if (Startup && profileData.loadSound && (profileData.alwaysPlay || profileData.turbo >= 30))
-                {
-                    soundEffects.PlayEffect(); //play the prepare ship sound effect
+                { //play the prepare ship sound effect at startup
+                    soundEffects.PlayEffect();
                 }
                 return true;
             }
-            else
+            else //load from file failed
             {
                 if (!Directory.Exists(currentDirectory)) //make sure the profile folder exists
                 {
                     try
                     {
-                        Directory.CreateDirectory(currentDirectory);
-                    }
-                    catch { }
+                        Directory.CreateDirectory(currentDirectory); //if not, create it
+                    } catch { }
                 }
                 if (!Startup && RetryAttempts == 0) //only show the error message one time
                     MessageBox.Show("Unable to load profile!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -706,10 +758,14 @@ namespace Clicktastic
             }
         }
 
+        //
+        // AutoClick()
+        // Prepares the timers for autoclicking and performs the clicks
+        //
         private void AutoClick()
         {
-            if (profileData.Random)
-            {
+            if (profileData.random)
+            { //add random delay
                 Random randomGen = new Random();
                 int randomNumber = randomGen.Next(profileData.MinDelay, profileData.MaxDelay);
                 System.Timers.Timer timer1 = new System.Timers.Timer(randomNumber);
@@ -717,7 +773,7 @@ namespace Clicktastic
                 timer1.Enabled = true;
                 timer1.Elapsed += (sender, e) => PerformClick(timer1, randomGen);
             }
-            else
+            else //delay is constant
             {
                 Random randomGen = null;
                 System.Timers.Timer timer1 = new System.Timers.Timer(profileData.MinDelay);
@@ -727,6 +783,10 @@ namespace Clicktastic
             }
         }
 
+        //
+        // CheckActivationModeSettings()
+        // Checks activation mode settings and throws errors if they are not valid
+        //
         private void CheckActivationModeSettings()
         {
             if (ddbActivationMode.SelectedIndex == 0)
@@ -744,6 +804,10 @@ namespace Clicktastic
             return;
         }
 
+        //
+        // CreateDefaultProfile()
+        // Creates the default profile and saves it to a file
+        //
         private void CreateDefaultProfile()
         {
             try
@@ -759,11 +823,13 @@ namespace Clicktastic
                 }
             }
             catch { }
+
+            //Default settings
             profileData.ActivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
             profileData.DeactivationKey = ParseKEYCOMBO("` (~)", Keys.Oemtilde);
             profileData.AutoclickKey = ParseKEYCOMBO("LeftClick", Keys.None);
-            profileData.Random = false;
-            profileData.Hold = false;
+            profileData.random = false;
+            profileData.hold = false;
             profileData.pressEnter = false;
             profileData.useDeactivationKey = false;
             profileData.suppressHotkeys = false;
@@ -776,12 +842,13 @@ namespace Clicktastic
             profileData.MinDelay = 1;
             profileData.MaxDelay = 1000;
             ddbActivationMode.SelectedIndex = 0;
-            profile.Save("Default", ref profileData); //create a new one
+
+            profile.Save("Default", ref profileData); //save the file
             try
             {
                 ddbProfile.Items.Clear();
                 foreach (string file in Directory.GetFiles(currentDirectory, "*.clk"))
-                {
+                { //update the profiles list
                     ddbProfile.Items.Add(Path.GetFileNameWithoutExtension(file));
                 }
                 ddbProfile.SelectedItem = "Default";
@@ -789,8 +856,13 @@ namespace Clicktastic
             catch { }
         }
 
+        //
+        // GetKeyDialog(string message)
+        // Asks the user to press a key and returns the key that the user pressed
+        //
         private KEYCOMBO GetKeyDialog(string message)
         {
+            //Construct the key dialog
             Form keyPrompt = new Form() { FormBorderStyle = FormBorderStyle.FixedSingle, MinimizeBox = false, MaximizeBox = false };
             keyPrompt.StartPosition = FormStartPosition.CenterParent;
             keyPrompt.Width = 250;
@@ -813,7 +885,7 @@ namespace Clicktastic
                     this.Invoke(new MethodInvoker(() =>
                     {
                         switch (textState)
-                        {
+                        { //add dots to the end of the message as time passes
                             case 0:
                                 lblKey.Text = message;
                                 break;
@@ -834,7 +906,7 @@ namespace Clicktastic
             };
             KEYCOMBO key = new KEYCOMBO();
             Keys lastKey = Keys.None;
-            key.valid = false;
+            key.valid = false; //assume invalid unless otherwise stated
             string strKey = null;
             keyPrompt.PreviewKeyDown += (sender, e) =>
             {
@@ -898,12 +970,18 @@ namespace Clicktastic
                 keyPrompt.Close();
             };
             keyPrompt.ShowDialog();
+
+            //All done with the dialog
             keyPrompt.Dispose();
             lblKey.Dispose();
             key = ParseKEYCOMBO(strKey, lastKey);
             return key;
         }
 
+        //
+        // isActivationSettingsValid(KEYCOMBO key)
+        // Checks if the activation hotkey settings are valid. It throws errors and returns false if not
+        //
         private Boolean isActivationSettingsValid(KEYCOMBO key)
         {
             if (!key.valid)
@@ -917,7 +995,7 @@ namespace Clicktastic
                 key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
                 key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
                 key.wheel == 0))
-            {
+            { //unknown combination of settings
                 MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -930,6 +1008,10 @@ namespace Clicktastic
                 return true;
         }
 
+        //
+        // isAutoclickKeySettingsValid(KEYCOMBO key)
+        // Checks if the activation hotkey settings are valid. It throws errors and returns false if not
+        //
         private Boolean isAutoclickKeySettingsValid(KEYCOMBO key)
         {
             if (!key.valid)
@@ -943,7 +1025,7 @@ namespace Clicktastic
                 key.mouseButton != MOUSEEVENTF_RIGHTDOWN &&
                 key.mouseButton != MOUSEEVENTF_MIDDLEDOWN &&
                 key.wheel == 0))
-            {
+            { //unknown combination of settings
                 MessageBox.Show("That button is not supported!", "Clicktastic", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -954,7 +1036,7 @@ namespace Clicktastic
             }
             else if (key.isKeyboard)
             {
-                if (profileData.Hold) //hold is on
+                if (profileData.hold) //hold is on
                 {
                     DialogResult result = DialogResult.Yes;
                     result = MessageBox.Show("Keyboard keys are not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
@@ -966,7 +1048,7 @@ namespace Clicktastic
                         return false;
                 }
             }
-            else if (profileData.Hold && key.wheel != 0)
+            else if (profileData.hold && key.wheel != 0)
             {
                 DialogResult result = DialogResult.Yes;
                 result = MessageBox.Show("Mouse wheel is not supported in hold mode!\nWould you like to switch back to toggle mode?", "Clicktastic", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
@@ -980,6 +1062,10 @@ namespace Clicktastic
             return true;
         }
 
+        //
+        // isKeyAcceptable(Keys key)
+        // Checks the list of unnacceptable hotkeys and returns false if the key is unnacceptable
+        //
         private Boolean isKeyAcceptable(Keys key)
         {
             switch (key)
@@ -1005,13 +1091,17 @@ namespace Clicktastic
             }
         }
 
+        //
+        // ParseKEYCOMBO(string strKey, Keys lastKeyCode)
+        // Creates a KEYCOMBO structure out of a string and a keycode
+        //
         private KEYCOMBO ParseKEYCOMBO(string strKey, Keys lastKeyCode)
         {
             KEYCOMBO key = new KEYCOMBO();
             if (strKey == null)
             {
                 key.valid = false;
-                return key;
+                return key; //key is invalid, so give up
             }
             key.keyString = strKey;
             Boolean ctrl = false;
@@ -1075,6 +1165,8 @@ namespace Clicktastic
                 }
                 previous = button;
             }
+
+            //Add modifier keys
             if (ctrl)
                 key.modifierKeys = key.modifierKeys | Keys.Control;
             if (shift)
@@ -1083,34 +1175,37 @@ namespace Clicktastic
                 key.modifierKeys = key.modifierKeys | Keys.Alt;
             key.cmd = keyStringConverter.KeyToCmd(key.key, key.modifierKeys, profileData.pressEnter, profileData.turbo);
             if (key.isKeyboard && key.cmd == null)
-                key.valid = false;
+                key.valid = false; //key command could not be constructed, so key is invalid
             else
                 key.valid = true;
             return key;
         }
 
+        //
+        // PerformClick(System.Timers.Timer timer, Random randomNumber)
+        // Performs the clicking from the autoclicker
+        //
         private void PerformClick(System.Timers.Timer timer, Random randomNumber)
         {
             try
             {
                 Boolean KeyHeld = ((Control.MouseButtons & MouseButtons.Left) != 0);
-                if ((!profileData.Hold || (AutoclickerEnabled && KeyHeld)))
+                if ((!profileData.hold || (AutoclickerEnabled && KeyHeld)))
                 {
                     if (!AutoclickerActivated) //stop the autoclicker
                     {
                         try
                         {
                             soundSemaphore.Release();
-                        }
-                        catch { }
+                        } catch { }
                         timer.Stop();
                         timer.Dispose();
                         return;
                     }
                     SimulatingClicksOnHold = true;
-                    PlayKeyCombo(profileData.AutoclickKey);
+                    PlayKeyCombo(profileData.AutoclickKey); //autoclick!
                     SimulatingClicksOnHold = false;
-                    if (profileData.Random && randomNumber != null)
+                    if (profileData.random && randomNumber != null)
                         timer.Interval = randomNumber.Next(profileData.MinDelay, profileData.MaxDelay);
                 }
             }
@@ -1128,11 +1223,15 @@ namespace Clicktastic
             }
         }
 
+        //
+        // PlayKeyCombo(KEYCOMBO key)
+        // Simulates a key press or click from a KEYCOMBO structure
+        //
         private void PlayKeyCombo(KEYCOMBO key)
         {
             if (!key.valid)
                 return; //key combo is invalid, so don't try running it
-            if (profileData.Hold)
+            if (profileData.hold)
             {
                 if (key.isKeyboard) //keyboard key
                 {
@@ -1217,7 +1316,11 @@ namespace Clicktastic
             }
         }
 
-        private void setInstructions()
+        //
+        // SetInstructions()
+        // Updates the instructions on the front tab of the application
+        //
+        private void SetInstructions()
         {
             string instructions = "";
             if (ddbActivationMode.SelectedIndex == 0)
@@ -1270,6 +1373,10 @@ namespace Clicktastic
             lblInstructions.Text = instructions;
         }
 
+        //
+        // SetTurbo()
+        // Checks if the turbo mode is valid and calculates it
+        //
         private void SetTurbo()
         {
             if (profileData.pressEnter && (ddbTurboMode.SelectedIndex + 1) > 1)
@@ -1287,7 +1394,7 @@ namespace Clicktastic
             if (profileData.AutoclickKey.isKeyboard)
             {
                 if (profileData.turbo > 1)
-                {
+                { //calculate turbo mode speed
                     cbEnter.Checked = false;
                     cbEnter.Enabled = false;
                     cbEnter.Visible = false;
@@ -1303,7 +1410,7 @@ namespace Clicktastic
             else
             {
                 if (profileData.turbo > 1)
-                {
+                { //calculate turbo mode speed
                     profileData.turbo = (profileData.turbo - 1) * 3;
                 }
             }
@@ -1311,16 +1418,24 @@ namespace Clicktastic
             profileData.AutoclickKey.cmd = keyStringConverter.KeyToCmd(profileData.AutoclickKey.key, profileData.AutoclickKey.modifierKeys, profileData.pressEnter, profileData.turbo);
         }
 
+        //
+        // Shutdown()
+        // Called when the application closes. This prevents the autoclicker from running after close
+        //
         private void Shutdown()
         {
             axMedia.Ctlcontrols.stop();
-            stopped = true;
+            Stopped = true;
             AutoclickerActivated = false;
             AutoclickerEnabled = false;
             AutoclickerCharged = false;
             AutoclickerCharging = false;
+
+            //Release all low level hooks
             UnhookWindowsHookEx(_hookIDKey);
             UnhookWindowsHookEx(_hookIDMouse);
+
+            //Try to release semaphores before disposing and closing
             try
             {
                 mediaSemaphore.Release();
@@ -1343,16 +1458,20 @@ namespace Clicktastic
             catch { }
         }
 
+        //
+        // ToggleAutoClicker(Keys key)
+        // Turns the autoclicker on and off
+        //
         private void ToggleAutoClicker(Keys key)
         {
-            if (profileData.Hold)
+            if (profileData.hold)
             {
                 if (AutoclickerEnabled && key == profileData.DeactivationKey.key)
                 {
                     AutoclickerEnabled = false;
                     AutoclickerActivated = false;
                     this.Invoke(new MethodInvoker(() =>
-                    {
+                    { //mark status as disabled
                         pbAutoclickerEnabled.Image = Properties.Resources.RedCircle;
                         lblAutoclickerEnabled.Text = "Disabled";
                         lblAutoclickerEnabled.ForeColor = Color.Red;
@@ -1366,7 +1485,7 @@ namespace Clicktastic
                     if (profileData.turbo >= 30 || profileData.alwaysPlay)
                     {
                         if (!profileData.mute)
-                        {
+                        { //play stop sound
                             soundEffects.Stop();
                         }
                     }
@@ -1377,9 +1496,9 @@ namespace Clicktastic
                     AutoclickerActivated = true;
                     if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
                         !profileData.mute)
-                    {
+                    { //use sounds
                         this.Invoke(new MethodInvoker(() =>
-                        {
+                        { //mark status as charging
                             pbAutoclickerEnabled.Image = Properties.Resources.YellowCircle;
                             lblAutoclickerEnabled.Text = "Charging";
                             lblAutoclickerEnabled.ForeColor = Color.Yellow;
@@ -1388,7 +1507,7 @@ namespace Clicktastic
                         if (ButtonHeld && AutoclickerWaiting)
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as charging
                                 pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
                                 lblAutoclickerRunning.Text = "Charging";
                                 lblAutoclickerRunning.ForeColor = Color.Yellow;
@@ -1399,7 +1518,7 @@ namespace Clicktastic
                         else
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as waiting
                                 pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                                 lblAutoclickerRunning.Text = "Waiting";
                                 lblAutoclickerRunning.ForeColor = Color.Red;
@@ -1410,10 +1529,10 @@ namespace Clicktastic
                         soundSemaphore.WaitOne();
                         soundEffects.PlayLoop();
                     }
-                    else
+                    else //no sounds
                     {
                         this.Invoke(new MethodInvoker(() =>
-                        {
+                        { //mark status as enabled
                             pbAutoclickerEnabled.Image = Properties.Resources.GreenCircle;
                             lblAutoclickerEnabled.Text = "Enabled";
                             lblAutoclickerEnabled.ForeColor = Color.Lime;
@@ -1423,7 +1542,7 @@ namespace Clicktastic
                         if (ButtonHeld && AutoclickerWaiting)
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as running
                                 pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
                                 lblAutoclickerRunning.Text = "Running";
                                 lblAutoclickerRunning.ForeColor = Color.Lime;
@@ -1434,7 +1553,7 @@ namespace Clicktastic
                         else
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as waiting
                                 pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                                 lblAutoclickerRunning.Text = "Waiting";
                                 lblAutoclickerRunning.ForeColor = Color.Red;
@@ -1443,10 +1562,11 @@ namespace Clicktastic
                             AutoclickerCharging = false;
                         }
                     }
+                    //Run the autoclicker as a background thread
                     AutoClicker.RunWorkerAsync();
                 }
             }
-            else
+            else //toggle mode
             {
                 if (AutoclickerActivated && key == profileData.DeactivationKey.key)
                 {
@@ -1454,7 +1574,7 @@ namespace Clicktastic
                     if (!AutoclickerWaiting || AutoclickerCharging)
                     {
                         this.Invoke(new MethodInvoker(() =>
-                        {
+                        { //mark status as waiting
                             pbAutoclickerRunning.Image = Properties.Resources.RedCircle;
                             lblAutoclickerRunning.Text = "Waiting";
                             lblAutoclickerRunning.ForeColor = Color.Red;
@@ -1465,7 +1585,7 @@ namespace Clicktastic
                         if (profileData.turbo >= 30 || profileData.alwaysPlay)
                         {
                             if (!profileData.mute)
-                            {
+                            { //play stop sound
                                 soundEffects.Stop();
                             }
                         }
@@ -1475,12 +1595,12 @@ namespace Clicktastic
                 {
                     if ((profileData.turbo >= 30 || profileData.alwaysPlay) &&
                         !profileData.mute)
-                    {
+                    { //using sounds
                         AutoclickerActivated = true;
                         if (AutoclickerWaiting)
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as charging
                                 pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
                                 lblAutoclickerRunning.Text = "Charging";
                                 lblAutoclickerRunning.ForeColor = Color.Yellow;
@@ -1491,13 +1611,13 @@ namespace Clicktastic
                         soundSemaphore.WaitOne();
                         soundEffects.PlayLoop();
                     }
-                    else
+                    else //no sounds
                     {
                         AutoclickerActivated = true;
                         if (AutoclickerWaiting)
                         {
                             this.Invoke(new MethodInvoker(() =>
-                            {
+                            { //mark status as running
                                 pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
                                 lblAutoclickerRunning.Text = "Running";
                                 lblAutoclickerRunning.ForeColor = Color.Lime;
@@ -1506,37 +1626,42 @@ namespace Clicktastic
                             AutoclickerCharging = false;
                         }
                     }
-
+                    //Run the autoclicker as a background thread
                     AutoClicker.RunWorkerAsync();
                 }
             }
         }
 
+        //
+        // UpdatePreferences(ProfileData loadProfileData)
+        // Updates the settings after loading a new profile
+        //
         private Boolean UpdatePreferences(ProfileData loadProfileData)
         {
             try
             {
-                if (loadProfileData.Hold)
+                if (loadProfileData.hold) //hold mode
                     ddbActivationMode.SelectedIndex = 1;
-                else
+                else //trigger mode
                     ddbActivationMode.SelectedIndex = 0;
                 int MinDelay = loadProfileData.MinDelay; //store the min delay to prevent losing the value
                 int MaxDelay = loadProfileData.MaxDelay; //store the max delay to prevent losing the value
-                if (loadProfileData.Random)
+                if (loadProfileData.random) //random speed
                     ddbSpeedMode.SelectedIndex = 1;
-                else
+                else //constant speed
                     ddbSpeedMode.SelectedIndex = 0;
 
-                if (loadProfileData.AutoclickKey.isKeyboard && loadProfileData.turbo > 1)
+                //Calculate turbo
+                if (loadProfileData.turbo > 1)
                     ddbTurboMode.SelectedIndex = (loadProfileData.turbo / 3);
-                else if (!loadProfileData.AutoclickKey.isKeyboard && loadProfileData.turbo > 1)
-                    ddbTurboMode.SelectedIndex = (loadProfileData.turbo / 3);
-                else
+                else //no turbo
                     ddbTurboMode.SelectedIndex = loadProfileData.turbo - 1;
 
+                //Number Boxes
                 numMinDelay.Value = MinDelay;
                 numMaxDelay.Value = MaxDelay;
 
+                //Checkboxes
                 cbUseDeactivationButton.Checked = loadProfileData.useDeactivationKey;
                 cbEnter.Checked = loadProfileData.pressEnter;
                 cbSuppressHotkeys.Checked = loadProfileData.suppressHotkeys;
@@ -1544,12 +1669,13 @@ namespace Clicktastic
                 cbLoadSound.Checked = loadProfileData.loadSound;
                 cbAlwaysPlay.Checked = loadProfileData.alwaysPlay;
 
+                //Textboxes
                 tbActivationButton.Text = loadProfileData.ActivationKey.keyString;
                 tbDeactivationButton.Text = loadProfileData.DeactivationKey.keyString;
                 tbAutoclickButton.Text = loadProfileData.AutoclickKey.keyString;
             }
             catch
-            {
+            { //preferences could not be updated -- assume that the loaded file is corrupted
                 return false;
             }
             return true;
@@ -1599,12 +1725,12 @@ namespace Clicktastic
                     ((profileData.ActivationKey.modifierKeys == Control.ModifierKeys &&
                     profileData.ActivationKey.key == Keys.None) ||
                     (profileData.DeactivationKey.modifierKeys == Control.ModifierKeys &&
-                    profileData.DeactivationKey.key == Keys.None))) //Ctrl, Shift, or Alt only
-                {
+                    profileData.DeactivationKey.key == Keys.None)))
+                { //Ctrl, Shift, or Alt only
                     int vkCode = Marshal.ReadInt32(lParam);
                     ToggleAutoClicker(Keys.None);
                     if (cbSuppressHotkeys.Checked)
-                    {
+                    { //suppress the key
                         return (IntPtr)1; //dummy value
                     }
                 }
@@ -1613,10 +1739,10 @@ namespace Clicktastic
                     int vkCode = Marshal.ReadInt32(lParam);
                     if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
                         ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
-                    {
+                    { //hotkey pressed
                         ToggleAutoClicker((Keys)vkCode);
                         if (cbSuppressHotkeys.Checked)
-                        {
+                        { //suppress the key
                             return (IntPtr)1; //dummy value
                         }
                     }
@@ -1700,10 +1826,10 @@ namespace Clicktastic
             if (nCode >= 0 &&
                 MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
             {
-                if (profileData.Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
+                if (profileData.hold && AutoclickerEnabled && !SimulatingClicksOnHold)
                 {
                     if (AutoclickerWaiting && !AutoclickerCharged)
-                    {
+                    { //mark status as charging
                         this.Invoke(new MethodInvoker(() =>
                         {
                             pbAutoclickerRunning.Image = Properties.Resources.YellowCircle;
@@ -1714,7 +1840,7 @@ namespace Clicktastic
                         AutoclickerCharging = true;
                     }
                     else if (AutoclickerWaiting && AutoclickerCharged)
-                    {
+                    { //mark status as running
                         this.Invoke(new MethodInvoker(() =>
                         {
                             pbAutoclickerRunning.Image = Properties.Resources.GreenCircle;
@@ -1729,10 +1855,10 @@ namespace Clicktastic
             if (nCode >= 0 &&
                 MouseMessages.WM_LBUTTONUP == (MouseMessages)wParam)
             {
-                if (profileData.Hold && AutoclickerEnabled && !SimulatingClicksOnHold)
+                if (profileData.hold && AutoclickerEnabled && !SimulatingClicksOnHold)
                 {
                     if (!AutoclickerWaiting || AutoclickerCharging)
-                    {
+                    { //mark status as waiting
                         this.Invoke(new MethodInvoker(() =>
                         {
                             pbAutoclickerRunning.Image = Properties.Resources.RedCircle;

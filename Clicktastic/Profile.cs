@@ -77,8 +77,8 @@ namespace Clicktastic
                 }
 
                 //Load all other profile data
-                profile.Random = b.ReadBoolean();
-                profile.Hold = b.ReadBoolean();
+                profile.random = b.ReadBoolean();
+                profile.hold = b.ReadBoolean();
                 profile.pressEnter = b.ReadBoolean();
                 profile.useDeactivationKey = b.ReadBoolean();
                 profile.suppressHotkeys = b.ReadBoolean();
@@ -134,8 +134,8 @@ namespace Clicktastic
                     throw new Exception("AutoclickKey could not be saved!");
 
                 //Save all other profile data
-                b.Write(profile.Random);
-                b.Write(profile.Hold);
+                b.Write(profile.random);
+                b.Write(profile.hold);
                 b.Write(profile.pressEnter);
                 b.Write(profile.useDeactivationKey);
                 b.Write(profile.suppressHotkeys);
