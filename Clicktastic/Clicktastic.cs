@@ -1595,20 +1595,7 @@ namespace Clicktastic
         {
             if (nCode >= 0)
             {
-                if ((wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN) && tcClicktastic.SelectedIndex == 0)
-                {
-                    int vkCode = Marshal.ReadInt32(lParam);
-                    if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
-                        ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
-                    {
-                        ToggleAutoClicker((Keys)vkCode);
-                        if (cbSuppressHotkeys.Checked)
-                        {
-                            return (IntPtr)1; //dummy value
-                        }
-                    }
-                }
-                else if (tcClicktastic.SelectedIndex == 0 &&
+                if (tcClicktastic.SelectedIndex == 0 &&
                     ((profileData.ActivationKey.modifierKeys == Control.ModifierKeys &&
                     profileData.ActivationKey.key == Keys.None) ||
                     (profileData.DeactivationKey.modifierKeys == Control.ModifierKeys &&
@@ -1619,6 +1606,19 @@ namespace Clicktastic
                     if (cbSuppressHotkeys.Checked)
                     {
                         return (IntPtr)1; //dummy value
+                    }
+                }
+                else if ((wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN) && tcClicktastic.SelectedIndex == 0)
+                {
+                    int vkCode = Marshal.ReadInt32(lParam);
+                    if (((Keys)vkCode == profileData.ActivationKey.key && profileData.ActivationKey.modifierKeys == Control.ModifierKeys) ||
+                        ((Keys)vkCode == profileData.DeactivationKey.key && profileData.DeactivationKey.modifierKeys == Control.ModifierKeys))
+                    {
+                        ToggleAutoClicker((Keys)vkCode);
+                        if (cbSuppressHotkeys.Checked)
+                        {
+                            return (IntPtr)1; //dummy value
+                        }
                     }
                 }
             }
