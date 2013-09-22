@@ -1,3 +1,26 @@
+-===========================- Lag and Crashes -===========================-
+
+Currently, there is a bug with .NET and running Clicktastic on some systems.
+If you have problems with Clicktastic, this may be worth reading.
+
+Once the autoclicker is activated for the first time, if the .NET profile is
+not configured properly, Clicktastic will lag out and crash. When launching
+Clicktastic again, you should have an option to apply a .NET compatibility
+profile for Clicktastic. Apply this compatibility profile and close
+Clicktastic again. When you launch Clicktastic for the third time, the .NET
+profile will take effect and Clicktastic will run normally. Once the
+compatibility profile has been applied, you won't need to apply it again. This
+won't affect your other .NET applications.
+
+Again, I haven't experienced this on every machine, but it is an annoyance, so
+I apologize for any inconvenience.
+
+Some of Clicktastic's features are intended not intended for lower-end systems.
+If you are still having trouble with lag, make sure that you turn off turbo mode,
+as it can be very demanding. If you are still experiencing lag after turning
+off turbo mode, try increasing the delay time.
+
+
 -===========================- About Clicktastic -===========================-
 
 Clicktastic is an autoclicker that I designed for fun. The goal of this 
