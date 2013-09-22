@@ -708,9 +708,13 @@ namespace Clicktastic
             ProfileData loadProfileData = new ProfileData();
             if (profile.Load(ddbProfile.Text, ref loadProfileData))
             { //load from file successful
-                if (!UpdatePreferences(loadProfileData))
-                    return false; //preferences could not be updated, so the loading failed
+                ProfileData previousProfileData = profileData;
                 profileData = loadProfileData;
+                if (!UpdatePreferences())
+                {
+                    profileData = previousProfileData;
+                    return false; //preferences could not be updated, so the loading failed
+                }
                 previousProfile = ddbProfile.Text;
                 RetryAttempts = 0;
                 Properties.Settings.Default.DefaultProfile = ddbProfile.Text;
@@ -1633,46 +1637,46 @@ namespace Clicktastic
         }
 
         //
-        // UpdatePreferences(ProfileData loadProfileData)
+        // UpdatePreferences()
         // Updates the settings after loading a new profile
         //
-        private Boolean UpdatePreferences(ProfileData loadProfileData)
+        private Boolean UpdatePreferences()
         {
             try
             {
-                if (loadProfileData.hold) //hold mode
+                if (profileData.hold) //hold mode
                     ddbActivationMode.SelectedIndex = 1;
                 else //trigger mode
                     ddbActivationMode.SelectedIndex = 0;
-                int MinDelay = loadProfileData.MinDelay; //store the min delay to prevent losing the value
-                int MaxDelay = loadProfileData.MaxDelay; //store the max delay to prevent losing the value
-                if (loadProfileData.random) //random speed
+                int MinDelay = profileData.MinDelay; //store the min delay to prevent losing the value
+                int MaxDelay = profileData.MaxDelay; //store the max delay to prevent losing the value
+                if (profileData.random) //random speed
                     ddbSpeedMode.SelectedIndex = 1;
                 else //constant speed
                     ddbSpeedMode.SelectedIndex = 0;
 
                 //Calculate turbo
-                if (loadProfileData.turbo > 1)
-                    ddbTurboMode.SelectedIndex = (loadProfileData.turbo / 3);
+                if (profileData.turbo > 1)
+                    ddbTurboMode.SelectedIndex = (profileData.turbo / 3);
                 else //no turbo
-                    ddbTurboMode.SelectedIndex = loadProfileData.turbo - 1;
+                    ddbTurboMode.SelectedIndex = profileData.turbo - 1;
 
                 //Number Boxes
                 numMinDelay.Value = MinDelay;
                 numMaxDelay.Value = MaxDelay;
 
                 //Checkboxes
-                cbUseDeactivationButton.Checked = loadProfileData.useDeactivationKey;
-                cbEnter.Checked = loadProfileData.pressEnter;
-                cbSuppressHotkeys.Checked = loadProfileData.suppressHotkeys;
-                cbMute.Checked = loadProfileData.mute;
-                cbLoadSound.Checked = loadProfileData.loadSound;
-                cbAlwaysPlay.Checked = loadProfileData.alwaysPlay;
+                cbUseDeactivationButton.Checked = profileData.useDeactivationKey;
+                cbEnter.Checked = profileData.pressEnter;
+                cbSuppressHotkeys.Checked = profileData.suppressHotkeys;
+                cbMute.Checked = profileData.mute;
+                cbLoadSound.Checked = profileData.loadSound;
+                cbAlwaysPlay.Checked = profileData.alwaysPlay;
 
                 //Textboxes
-                tbActivationButton.Text = loadProfileData.ActivationKey.keyString;
-                tbDeactivationButton.Text = loadProfileData.DeactivationKey.keyString;
-                tbAutoclickButton.Text = loadProfileData.AutoclickKey.keyString;
+                tbActivationButton.Text = profileData.ActivationKey.keyString;
+                tbDeactivationButton.Text = profileData.DeactivationKey.keyString;
+                tbAutoclickButton.Text = profileData.AutoclickKey.keyString;
             }
             catch
             { //preferences could not be updated -- assume that the loaded file is corrupted
