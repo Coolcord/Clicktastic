@@ -42,4 +42,4 @@ to build an autoclicker that meets their own personal needs, using this
 source code as a base.
 
 If you wish to contact me about the application, or anything of the like,
-feel free to send me an email at coolcord24@gmail.com
+feel free to send me an email at coolcord24@tutanota.com
